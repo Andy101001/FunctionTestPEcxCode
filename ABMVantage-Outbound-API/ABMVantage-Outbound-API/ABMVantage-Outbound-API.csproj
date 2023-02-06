@@ -8,9 +8,14 @@
     <RootNamespace>ABMVantage_Outbound_API</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.6.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.12" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0-preview2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="7.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
