@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace ABMVantage_Outbound_API.Functions
 {
-    public class PushVantageAzureFunctionReservation
+    public class PushVantageAzureFunctionReservations
     {
         private readonly ILogger _logger;
         private readonly IObsReservationService _obsReservationService;
 
-        public PushVantageAzureFunctionReservation(ILoggerFactory loggerFactory, IObsReservationService obsReservationService)
+        public PushVantageAzureFunctionReservations(ILoggerFactory loggerFactory, IObsReservationService obsReservationService)
         {
-            _logger = loggerFactory.CreateLogger<PushVantageAzureFunctionReservation>();
+            _logger = loggerFactory.CreateLogger<PushVantageAzureFunctionReservations>();
             _obsReservationService = obsReservationService;
         }
 
