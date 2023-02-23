@@ -19,6 +19,20 @@
         /// Name of the container for metadata.
         /// </summary>
         private const string ObsReservations = nameof(ObsReservations);
+        /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string ElectricVehicleActiveSessions = nameof(ElectricVehicleActiveSessions);
+
+        /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string ElectricVehicleClosedSessions = nameof(ElectricVehicleClosedSessions);
+
+        /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string Tickets = nameof(Tickets);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
@@ -30,12 +44,46 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Reservation>()
+                .HasNoDiscriminator()
+                .ToContainer(Dashboard)
+                .HasPartitionKey(da => da.Id);
+
             modelBuilder.Entity<Booking>()
                     .HasNoDiscriminator()
                     .ToContainer(ObsReservations)
                     .HasPartitionKey(da => da.Id);
+                        
+            modelBuilder.Entity<EvActiveSessions>()
+                    .HasNoDiscriminator()
+                    .ToContainer(ElectricVehicleActiveSessions)
+                    .HasPartitionKey(da => da.Id);
+
+            modelBuilder.Entity<EvClosedSessions>()
+                    .HasNoDiscriminator()
+                    .ToContainer(ElectricVehicleClosedSessions)
+                    .HasPartitionKey(da => da.Id);
+
+            modelBuilder.Entity<Booking>().OwnsMany(b => b.BookingReservations);
+            modelBuilder.Entity<EvActiveSessions>().OwnsMany(e => e.ResponseActiveChargeSession);
+
         }
 
+        /// <summary>
+        /// Gets or sets the Reservations collection.
+        /// </summary>
+        public DbSet<Reservation> Reservations { get; set; }
+        /// <summary>
+        /// Gets or sets the EvActiveSessions collection.
+        /// </summary>
+        public DbSet<EvActiveSessions> EvActiveSessions { get; set; }
+        /// <summary>
+        /// Gets or sets the EvClosedSessions collection.
+        /// </summary>
+        public DbSet<EvClosedSessions> EvClosedSessions { get; set; }        
+        /// <summary>
+        /// OBS Reservations collection
+        /// </summary>
         public DbSet<Booking> Booking { get; set; }
     }
 }
