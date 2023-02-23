@@ -14,12 +14,15 @@ namespace ABMVantage_Outbound_API.Functions
 
         public PushVantageAzureFunctionReservations(ILoggerFactory loggerFactory, IObsReservationService obsReservationService)
         {
+            ArgumentNullException.ThrowIfNull(obsReservationService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+
             _logger = loggerFactory.CreateLogger<PushVantageAzureFunctionReservations>();
             _obsReservationService = obsReservationService;
         }
 
         [Function("PushVantageAzureFunctionOBSReservations")]
-        public async Task<IActionResult> PushVantageAzureFunctionOBSReservations([HttpTrigger(AuthorizationLevel.Function, "get", Route = "OBSReservations")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "OBSReservations")] HttpRequestData req)
         {
             _logger.LogInformation("Executing function Get Reservatons");
             List<Booking> reservations = await _obsReservationService.GetAllReservationsAsync();
@@ -27,15 +30,5 @@ namespace ABMVantage_Outbound_API.Functions
 
             return new OkObjectResult(reservations);
         }
-
-        //[Function("PushVantageAzureFunctionOBSReservation")]
-        //public async Task<IActionResult> PushVantageAzureFunctionOBSReservation([HttpTrigger(AuthorizationLevel.Function, "get", Route = "OBSReservations/{id:string?}")] HttpRequestData req, string? id)
-        //{
-        //    _logger.LogInformation($"Executing function Get Reservatons for id: {id}");
-        //    Booking reservation = await _obsReservationService.GetReservationAsync(id);
-        //    _logger.LogInformation($"Executed Function Get Reservatons for id: {id}\");");
-
-        //    return new OkObjectResult(reservation);
-        //}
     }
 }

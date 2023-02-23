@@ -49,6 +49,8 @@ namespace ABMVantage_Outbound_API
             }).ConfigureServices(s =>
             {
                 s.AddScoped<IObsReservationService, ObsReservationService>();
+                s.AddScoped<IDataAccessService, DataAccessService>();
+                s.AddScoped<IActiveClosedEvChargingSessions, ActiveClosedEvChargingSessions>();
 
                 s.AddOptions();
 
