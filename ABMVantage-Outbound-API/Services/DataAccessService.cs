@@ -64,5 +64,16 @@
 
             return reservation;
         }
+
+        public async Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync(string? id = null)
+        {
+            using var context = _factory.CreateDbContext();
+
+            var obsReservationTransactions = await context.ReservationTransactions.ToListAsync();
+            // Call a service method to do this biz for getting the transactions for the reservation
+            
+
+            return new List<ObsReservationTransactions> {new ObsReservationTransactions() };
+        }
     }
 }

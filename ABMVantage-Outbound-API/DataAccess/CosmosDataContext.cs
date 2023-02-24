@@ -35,6 +35,11 @@
         private const string Tickets = nameof(Tickets);
 
         /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string ObsReservationTransactions = nameof(ObsReservationTransactions);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
         /// <param name="options">The configuration options.</param>
@@ -48,6 +53,11 @@
                 .HasNoDiscriminator()
                 .ToContainer(Dashboard)
                 .HasPartitionKey(da => da.Id);
+
+            modelBuilder.Entity<ObsReservationTransactions>()
+                .HasNoDiscriminator()
+                .ToContainer(ObsReservationTransactions)
+                .HasNoKey();
 
             modelBuilder.Entity<Booking>()
                     .HasNoDiscriminator()
@@ -85,5 +95,11 @@
         /// OBS Reservations collection
         /// </summary>
         public DbSet<Booking> Booking { get; set; }
+
+        /// <summary>
+        /// OBS Reservations Transactions collection
+        /// </summary>
+        public DbSet<ObsReservationTransactions> ReservationTransactions { get; set; }
+
     }
 }

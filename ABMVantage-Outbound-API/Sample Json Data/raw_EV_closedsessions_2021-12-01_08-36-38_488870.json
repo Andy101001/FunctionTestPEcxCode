@@ -1,0 +1,9 @@
+{
+  "highLevelBusinessEntity": "evChargingSessionsClosed",
+  "chargerID": "0086-05-02-02",
+  "ticketID": "0086050202_2021-12-01 13:34:23.501044",
+  "parkingSpace": "EVC-41",
+  "kwHoursDelivered": 20,
+  "chargeStartDateTime": "02-07-2023",
+  "chargeEndDateTime": "02-08-2023"
+}

@@ -1,0 +1,40 @@
+{
+  "highLevelBusinessEntity": "evChargingSessionsActive",
+  "id": 282665,
+  "responseActiveChargeSessions": [
+    {
+      "kwHoursDelivered": 15129,
+      "WhPerMile": 290,
+      "chargeSessionId": "0086110404_2021-12-02 16:57:53.247497",
+      "ticketId": 24967,
+      "energyNeeded": 100,
+      "energyUnit": "miles",
+      "chargeStartDateTime": "2021-12-02T16:58:08Z",
+      "isClaimed": true,
+      "milesNeeded": 100,
+      "minutesAvailable": 480,
+      "parkingSpace": "EVC27",
+      "pfid": "0086-11-04-04",
+      "sessionStartTime": "2021-12-02T16:57:54Z",
+      "userStopped": false,
+      "vehicleId": 37222
+    },
+    {
+      "kwHoursDelivered": 38909,
+      "WhPerMile": null,
+      "chargeSessionId": "0086110407_2021-12-19 16:16:57.066643",
+      "ticketId": null,
+      "energyNeeded": null,
+      "energyUnit": null,
+      "chargeStartDateTime": "2021-12-19T16:16:57Z",
+      "isClaimed": false,
+      "milesNeeded": null,
+      "minutesAvailable": null,
+      "parkingSpace": "EVC30",
+      "pfid": "0086-11-04-07",
+      "sessionStartTime": null,
+      "userStopped": false,
+      "vehicleId": null
+    }
+  ]
+}

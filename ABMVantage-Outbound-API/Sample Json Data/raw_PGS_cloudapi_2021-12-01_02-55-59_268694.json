@@ -1,0 +1,748 @@
+{
+  "ParkingEvents": [
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S3",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-27T03:03:23",
+      "ExitUTC": "2021-11-28T10:31:52",
+      "TimeStampUTC": "2021-11-28T10:31:52",
+      "LPR": {
+        "LPRTimeStampUTC": "11/27/2021 3:03:23 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7RDY489",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S23",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-24T09:23:22",
+      "ExitUTC": "2021-11-24T09:36:44",
+      "TimeStampUTC": "2021-11-24T09:36:44",
+      "LPR": {
+        "LPRTimeStampUTC": "11/24/2021 9:23:22 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8VBE036",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S27",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-26T01:51:53",
+      "ExitUTC": "2021-11-26T01:57:59",
+      "TimeStampUTC": "2021-11-26T01:57:59",
+      "LPR": {
+        "LPRTimeStampUTC": "11/26/2021 1:51:53 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7KFX237",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S35",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T09:18:23",
+      "ExitUTC": "2021-11-30T09:32:47",
+      "TimeStampUTC": "2021-11-30T09:32:47",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 9:18:23 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8BXX850",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S40",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:07:28",
+      "ExitUTC": "2021-11-30T09:33:05",
+      "TimeStampUTC": "2021-11-30T09:33:05",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:07:28 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "BU75D35",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S47",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-12-01T12:35:55",
+      "ExitUTC": "2021-12-01T12:49:32",
+      "TimeStampUTC": "2021-12-01T12:49:32",
+      "LPR": {
+        "LPRTimeStampUTC": "12/1/2021 12:35:55 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8VON646",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S55",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:37:22",
+      "ExitUTC": "2021-11-30T08:37:22",
+      "TimeStampUTC": "2021-11-30T08:37:22",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:37:22 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "3NTL152",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S59",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-12-01T12:46:47",
+      "ExitUTC": "",
+      "TimeStampUTC": "2021-12-01T12:46:47",
+      "LPR": {
+        "LPRTimeStampUTC": "12/1/2021 12:46:47 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7VSA502",
+        "Occupied": true
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S61",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T03:21:25",
+      "ExitUTC": "",
+      "TimeStampUTC": "2021-11-30T03:21:25",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 3:21:25 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8LYC568",
+        "Occupied": true
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S64",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:37:25",
+      "ExitUTC": "2021-11-30T08:37:25",
+      "TimeStampUTC": "2021-11-30T08:37:25",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:37:25 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8LIC300",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S66",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T06:41:41",
+      "ExitUTC": "2021-11-30T07:22:05",
+      "TimeStampUTC": "2021-11-30T07:22:05",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 6:41:41 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7XUU006",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S76",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T06:36:23",
+      "ExitUTC": "2021-11-23T08:20:07",
+      "TimeStampUTC": "2021-11-23T08:20:07",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 6:36:23 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8WAU427",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S91",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:59:15",
+      "ExitUTC": "2021-11-30T09:10:35",
+      "TimeStampUTC": "2021-11-30T09:10:35",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:59:15 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "BF50A02",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S92",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-19T06:39:21",
+      "ExitUTC": "2021-11-19T08:11:03",
+      "TimeStampUTC": "2021-11-19T08:11:03",
+      "LPR": {
+        "LPRTimeStampUTC": "11/19/2021 6:39:21 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7YXB832",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S95",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-26T11:59:47",
+      "ExitUTC": "2021-11-26T01:22:52",
+      "TimeStampUTC": "2021-11-26T01:22:52",
+      "LPR": {
+        "LPRTimeStampUTC": "11/26/2021 11:59:47 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8YOG180",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S99",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T11:02:09",
+      "ExitUTC": "2021-11-30T04:18:35",
+      "TimeStampUTC": "2021-11-30T04:18:35",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 11:02:09 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8MLG342",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S116",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-28T12:36:54",
+      "ExitUTC": "2021-11-28T12:58:07",
+      "TimeStampUTC": "2021-11-28T12:58:07",
+      "LPR": {
+        "LPRTimeStampUTC": "11/28/2021 12:36:54 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "5DQA780",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S118",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-26T08:11:49",
+      "ExitUTC": "2021-11-28T06:51:25",
+      "TimeStampUTC": "2021-11-28T06:51:25",
+      "LPR": {
+        "LPRTimeStampUTC": "11/26/2021 8:11:49 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8JXU630",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S122",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-26T08:11:55",
+      "ExitUTC": "2021-11-30T07:27:08",
+      "TimeStampUTC": "2021-11-30T07:27:08",
+      "LPR": {
+        "LPRTimeStampUTC": "11/26/2021 8:11:55 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8RXG126",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S130",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:37:22",
+      "ExitUTC": "2021-11-30T08:37:22",
+      "TimeStampUTC": "2021-11-30T08:37:22",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:37:22 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8S88624",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S162",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:49",
+      "ExitUTC": "2021-11-30T08:39:49",
+      "TimeStampUTC": "2021-11-30T08:39:49",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:49 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "CONAM",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S167",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:31",
+      "ExitUTC": "2021-11-28T11:12:51",
+      "TimeStampUTC": "2021-11-28T11:12:51",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:31 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8UOW488",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S170",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:31",
+      "ExitUTC": "2021-11-28T08:06:29",
+      "TimeStampUTC": "2021-11-28T08:06:29",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:31 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "PDGI84",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S171",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:31",
+      "ExitUTC": "2021-11-28T05:18:11",
+      "TimeStampUTC": "2021-11-28T05:18:11",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:31 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8FHS294",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S172",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:45",
+      "ExitUTC": "2021-11-30T10:32:09",
+      "TimeStampUTC": "2021-11-30T10:32:09",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:45 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "GZH543",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S173",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-24T12:22:07",
+      "ExitUTC": "2021-11-28T10:35:56",
+      "TimeStampUTC": "2021-11-28T10:35:56",
+      "LPR": {
+        "LPRTimeStampUTC": "11/24/2021 12:22:07 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8EKE094",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S177",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:59:14",
+      "ExitUTC": "2021-11-30T08:59:14",
+      "TimeStampUTC": "2021-11-30T08:59:14",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:59:14 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "SQBB461",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S180",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:29",
+      "ExitUTC": "2021-11-27T02:32:37",
+      "TimeStampUTC": "2021-11-27T02:32:37",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:29 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8MAL505",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S183",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T06:58:57",
+      "ExitUTC": "2021-11-30T04:08:51",
+      "TimeStampUTC": "2021-11-30T04:08:51",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 6:58:57 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8VEA875",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S184",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:29",
+      "ExitUTC": "2021-11-27T12:22:41",
+      "TimeStampUTC": "2021-11-27T12:22:41",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:29 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7MPM559",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S186",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:31",
+      "ExitUTC": "2021-11-29T10:00:59",
+      "TimeStampUTC": "2021-11-29T10:00:59",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:31 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8SQG904",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S188",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:30",
+      "ExitUTC": "2021-11-27T12:46:55",
+      "TimeStampUTC": "2021-11-27T12:46:55",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:30 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8RXK539",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S190",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-23T10:51:30",
+      "ExitUTC": "2021-11-27T07:02:23",
+      "TimeStampUTC": "2021-11-27T07:02:23",
+      "LPR": {
+        "LPRTimeStampUTC": "11/23/2021 10:51:30 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8WTM985",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S204",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-12-01T12:09:57",
+      "ExitUTC": "2021-12-01T12:21:34",
+      "TimeStampUTC": "2021-12-01T12:21:34",
+      "LPR": {
+        "LPRTimeStampUTC": "12/1/2021 12:09:57 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "06613V2",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S209",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T07:46:34",
+      "ExitUTC": "2021-11-30T08:12:16",
+      "TimeStampUTC": "2021-11-30T08:12:16",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 7:46:34 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8UVF673",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S211",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:49",
+      "ExitUTC": "2021-11-30T08:39:49",
+      "TimeStampUTC": "2021-11-30T08:39:49",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:49 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "M089V0",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S219",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T11:57:25",
+      "ExitUTC": "",
+      "TimeStampUTC": "2021-11-30T11:57:25",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 11:57:25 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "EXXCELL",
+        "Occupied": true
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S220",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T11:49:39",
+      "ExitUTC": "2021-12-01T12:40:19",
+      "TimeStampUTC": "2021-12-01T12:40:19",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 11:49:39 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7TRC698",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S221",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:49",
+      "ExitUTC": "2021-12-01T12:31:34",
+      "TimeStampUTC": "2021-12-01T12:31:34",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:49 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8KJE723",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S223",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T10:09:13",
+      "ExitUTC": "2021-11-30T10:09:13",
+      "TimeStampUTC": "2021-11-30T10:09:13",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 10:09:13 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "6XKX650",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S228",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T11:27:35",
+      "ExitUTC": "2021-12-01T12:40:21",
+      "TimeStampUTC": "2021-12-01T12:40:21",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 11:27:35 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8LUA549",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S231",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-12-01T12:54:01",
+      "ExitUTC": "",
+      "TimeStampUTC": "2021-12-01T12:54:01",
+      "LPR": {
+        "LPRTimeStampUTC": "12/1/2021 12:54:01 AM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "6SLY830",
+        "Occupied": true
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S234",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:46",
+      "ExitUTC": "2021-11-30T08:39:46",
+      "TimeStampUTC": "2021-11-30T08:39:46",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:46 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "7KYD789",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "SpaceChange",
+      "UID": "P1-L1-S235",
+      "AreaType": 4,
+      "Mode": 0,
+      "EnterUTC": "2021-11-30T08:39:47",
+      "ExitUTC": "2021-11-30T08:39:47",
+      "TimeStampUTC": "2021-11-30T08:39:47",
+      "LPR": {
+        "LPRTimeStampUTC": "11/30/2021 8:39:47 PM",
+        "LPR": "LPRReadable",
+        "LPRCode": 2,
+        "LPN": "8PHM153",
+        "Occupied": false
+      }
+    },
+    {
+      "EventName": "OccupancyChange",
+      "UID": "P1",
+      "AreaType": 0,
+      "Mode": 0,
+      "TimeStampUTC": "2021-12-01T07:55:44",
+      "OccupiedSpaces": {
+        "All": 1000,
+        "General": 12,
+        "Handicap": 0,
+        "EV": 0,
+        "VIP": 12,
+        "Valet": 0,
+        "NP": 0,
+        "Motorcycle": 0,
+        "Compact": 0,
+        "Monitored": 1000
+      },
+      "Overflow": 0
+    },
+    {
+      "EventName": "OccupancyChange",
+      "UID": "P1-L1",
+      "AreaType": 0,
+      "Mode": 0,
+      "TimeStampUTC": "2021-12-01T07:55:44",
+      "OccupiedSpaces": {
+        "All": 235,
+        "General": 4,
+        "Handicap": 0,
+        "EV": 0,
+        "VIP": 4,
+        "Valet": 0,
+        "NP": 0,
+        "Motorcycle": 0,
+        "Compact": 0,
+        "Monitored": 235
+      },
+      "Overflow": 0
+    }
+  ]
+}
