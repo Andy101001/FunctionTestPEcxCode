@@ -1,0 +1,12 @@
+{
+  "highLevelBusinessEntity": "ObsReservationTransactions",
+  "reservationId": "0086-05-02-02",
+  "ticketID": "111211",
+  "locationId": "1111",
+  "reservationBarcode": "488484994848578575",
+  "reservedEntryDateTime": "02-07-2023",
+  "reservedExitDatetime": "02-08-2023",
+  "exitDateTime": "02-08-2023",
+  "lpn": "rxy-909",
+  "spaceReserved": true
+}
