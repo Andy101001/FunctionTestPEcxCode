@@ -1,0 +1,14 @@
+{
+  "highLevelBusinessEntity": "pgsTicketOccupancies",
+  "occupancyId": "0046-05-02-02",
+  "ticketID": "1111111211",
+  "facitlityId": "2222",
+  "levelId": "4343434",
+  "spaceId": "767676",
+  "bayId": "09090909",
+  "occupancyEntryDateTime": "02-17-2023",
+  "occupancyExitDatetime": "02-18-2023",
+  "exitDateTime": "02-8-2023",
+  "lpn": "yty-909",
+  "occupied": true
+}

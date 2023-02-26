@@ -22,7 +22,7 @@ namespace ABMVantage_Outbound_API.Functions
         }
 
         [Function("PushVantageAzureFunctionOBSReservations")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "OBSReservations")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/vantagePortal/obs/reservations")] HttpRequestData req)
         {
             _logger.LogInformation("Executing function Get Reservatons");
             List<Booking> reservations = await _obsReservationService.GetAllReservationsAsync();

@@ -1,6 +1,7 @@
 ﻿namespace ABMVantage_Outbound_API.DataAccess
 {
     using EntityModels;
+    using Microsoft.Azure.Cosmos;
     using Microsoft.EntityFrameworkCore;
 
     public class CosmosDataContext : DbContext
@@ -43,6 +44,12 @@
         /// Name of the container for metadata.
         /// </summary>
         private const string ParcsTicketOccupancy = nameof(ParcsTicketOccupancy);
+        /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string PgsTicketOccupancy = nameof(PgsTicketOccupancy);
+
+
 
 
         /// <summary>
@@ -85,6 +92,12 @@
                     .ToContainer(ParcsTicketOccupancy)
                     .HasPartitionKey(da => da.Id);
 
+            modelBuilder.Entity<PgsOccupancy>()
+                    .HasNoDiscriminator()
+                    .ToContainer(PgsTicketOccupancy)
+                    .HasPartitionKey(da => da.Id);
+
+
             modelBuilder.Entity<Booking>().OwnsMany(b => b.BookingReservations);
             modelBuilder.Entity<EvActiveSessions>().OwnsMany(e => e.ResponseActiveChargeSession);
 
@@ -114,6 +127,10 @@
         /// OBS Reservations Transactions collection
         /// </summary>
         public DbSet<Occupancy> ParcsTickOccupanies { get; set; }
+        /// <summary>
+        /// OBS Reservations Transactions collection
+        /// </summary>
+        public DbSet<PgsOccupancy> PgsTickOccupanies { get; set; }
 
 
     }
