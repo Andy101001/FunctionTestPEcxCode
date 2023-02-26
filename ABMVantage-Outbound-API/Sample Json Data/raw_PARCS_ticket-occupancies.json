@@ -1,0 +1,14 @@
+{
+  "highLevelBusinessEntity": "parcsTicketOccupancies",
+  "occupancyId": "0086-05-02-02",
+  "ticketID": "111211",
+  "facitlityId": "1111",
+  "levelId": "488484994848578575",
+  "spaceId": "488484994848578575",
+  "bayId": "488484994848578575",
+  "occupancyEntryDateTime": "02-07-2023",
+  "occupancyExitDatetime": "02-08-2023",
+  "exitDateTime": "02-08-2023",
+  "lpn": "rxy-909",
+  "occupied": true
+}

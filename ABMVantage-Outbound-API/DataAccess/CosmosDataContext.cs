@@ -40,6 +40,12 @@
         private const string ObsReservationTransactions = nameof(ObsReservationTransactions);
 
         /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string ParcsTicketOccupancy = nameof(ParcsTicketOccupancy);
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
         /// <param name="options">The configuration options.</param>
@@ -74,6 +80,11 @@
                     .ToContainer(ElectricVehicleClosedSessions)
                     .HasPartitionKey(da => da.Id);
 
+            modelBuilder.Entity<Occupancy>()
+                    .HasNoDiscriminator()
+                    .ToContainer(ParcsTicketOccupancy)
+                    .HasPartitionKey(da => da.Id);
+
             modelBuilder.Entity<Booking>().OwnsMany(b => b.BookingReservations);
             modelBuilder.Entity<EvActiveSessions>().OwnsMany(e => e.ResponseActiveChargeSession);
 
@@ -95,11 +106,15 @@
         /// OBS Reservations collection
         /// </summary>
         public DbSet<Booking> Booking { get; set; }
-
         /// <summary>
         /// OBS Reservations Transactions collection
         /// </summary>
         public DbSet<ObsReservationTransactions> ReservationTransactions { get; set; }
+        /// <summary>
+        /// OBS Reservations Transactions collection
+        /// </summary>
+        public DbSet<Occupancy> ParcsTickOccupanies { get; set; }
+
 
     }
 }
