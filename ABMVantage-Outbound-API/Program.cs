@@ -53,6 +53,7 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IActiveClosedEvChargingSessions, ActiveClosedEvChargingSessions>();
                 s.AddScoped<IOBSReservationTransactionsService, OBSReservationTransactionsService>();
                 s.AddScoped<ITicketOccupanciesService, TicketOccupanciesService>();
+                s.AddScoped<IPgsTicketOccupanciesService, PgsTicketOccupanciesService>();
 
                 s.AddOptions();
 

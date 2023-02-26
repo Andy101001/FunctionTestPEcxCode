@@ -7,19 +7,19 @@ namespace ABMVantage_Outbound_API.Functions
     using Microsoft.Extensions.Logging;
     
     /// <summary>
-    /// Gets the transactinos for online book reservations
+    /// Gets the pgs tickets occupancy for online book reservations
     /// </summary>
-    public class PushVantageAzureFunctionPARCSTicketsOccupancies
+    public class PushVantageAzureFunctionPGSOccupancies
     {
         private readonly ILogger _logger;
-        private readonly ITicketOccupanciesService _ticketOccupanciesService;
+        private readonly IPgsTicketOccupanciesService _ticketOccupanciesService;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="loggerFactory">logger</param>
-        /// <param name="reservationTransactionsService">Reservatin Transactions Service</param>
-        public PushVantageAzureFunctionPARCSTicketsOccupancies(ILoggerFactory loggerFactory, ITicketOccupanciesService ticketOccupanciesService)
+        /// <param name="reservationTransactionsService">pgs tickets occupancies Service</param>
+        public PushVantageAzureFunctionPGSOccupancies(ILoggerFactory loggerFactory, IPgsTicketOccupanciesService ticketOccupanciesService)
         {
             ArgumentNullException.ThrowIfNull(ticketOccupanciesService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -29,12 +29,12 @@ namespace ABMVantage_Outbound_API.Functions
         }
 
         /// <summary>
-        /// Function to push parcs ticket occupancies transactions.
+        /// Function to push pgs ticket occupancies transactions.
         /// </summary>
         /// <param name="req">request data</param>
         /// <returns>IActionResult</returns>
-        [Function("PushVantageAzureFunctionPARCSTicketsOccupancies")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/parcs/occupancies")] HttpRequestData req)
+        [Function("PushVantageAzureFunctionPGSOccupancies")]
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/pgs/occupancies")] HttpRequestData req)
         {
             _logger.LogInformation("Executing function Get parcs ticket occupancies");
             var result = await _ticketOccupanciesService.GetOccupanciesAsync();

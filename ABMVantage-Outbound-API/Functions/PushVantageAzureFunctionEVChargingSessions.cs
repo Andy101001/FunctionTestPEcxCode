@@ -22,7 +22,7 @@ namespace ABMVantage_Outbound_API.Functions
         }
 
         [Function("PushVantageAzureFunctionEVChargingSessions")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "chargingSessions")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/vantagePortal/ev/chargingSessions")] HttpRequestData req)
         {
             _logger.LogInformation("Executing function Get Reservatons");
             var result = await _chargingSessions.GetChargingSessionsAsync();

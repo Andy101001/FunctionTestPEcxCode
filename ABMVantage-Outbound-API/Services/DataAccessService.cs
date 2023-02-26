@@ -62,6 +62,19 @@
 
             return parcsTicketOccupancies;
         }
+        /// <summary>
+        /// Get PGS Ticket Occupancies
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>List<PgsOccupancy></returns>
+        public async Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync(string? id = null)
+        {
+            using var context = _factory.CreateDbContext();
+
+            var pgsTicketOccupancies = await context.PgsTickOccupanies.ToListAsync();
+
+            return pgsTicketOccupancies;
+        }
 
         /// <summary>
         /// Returns a specific reservation for the dashboard
