@@ -1,28 +1,30 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
-    using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// PGS Ticket Occupancies Service
+    /// </summary>
     public class PgsTicketOccupanciesService : IPgsTicketOccupanciesService
     {
-        private readonly ILogger<ObsReservationService> _logger;
+        private readonly ILogger<PgsTicketOccupanciesService> _logger;
+        private readonly IDataAccessService _dataAccessService;
 
         /// <summary>
-        /// Factory to generate <see cref="DocsContext"/> instances.
-        /// </summary>
-        private readonly IDbContextFactory<CosmosDataContext> _factory;
-        
-        /// <summary>
-        /// ctor
+        /// Initializes a new instance of the <see cref="PgsTicketOccupanciesService"/> class.
         /// </summary>
         /// <param name="loggerFactory">logger</param>
-        /// <param name="factory">ef factory</param>
-        public PgsTicketOccupanciesService(ILoggerFactory loggerFactory, IDbContextFactory<CosmosDataContext> factory)
+        /// <param name="dataAccessService">Data Access</param>
+        public PgsTicketOccupanciesService(ILoggerFactory loggerFactory, IDataAccessService dataAccessService)
         {
-            _logger = loggerFactory.CreateLogger<ObsReservationService>();
-            _factory = factory;
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+            ArgumentNullException.ThrowIfNull(dataAccessService);
+
+            _logger = loggerFactory.CreateLogger<PgsTicketOccupanciesService>();
+            _dataAccessService = dataAccessService;
+
+            _logger.LogInformation($"Constructing {nameof(PgsTicketOccupanciesService)}");
         }
 
         /// <summary>
@@ -33,10 +35,7 @@
         {
             _logger.LogInformation("Getting all PGS occupancies");
 
-            using var context = _factory.CreateDbContext();
-            var occupancies = await context.PgsTickOccupanies.ToListAsync();
-
-            _logger.LogInformation("Finished Getting all PGS occupancies");
+            var occupancies = await _dataAccessService.GetPgsTicketOccupanciesAsync().ConfigureAwait(false);
 
             return occupancies;
         }

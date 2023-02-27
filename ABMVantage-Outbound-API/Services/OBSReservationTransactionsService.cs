@@ -4,17 +4,17 @@
     using ABMVantage_Outbound_API.Models;
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
-    
+
     /// <summary>
     /// Service to get reservation transaction for online booking
     /// </summary>
     public class OBSReservationTransactionsService : IOBSReservationTransactionsService
     {
-        private readonly ILogger<ObsReservationService> _logger;
+        private readonly ILogger<OBSReservationTransactionsService> _logger;
         private readonly IDataAccessService _dataAccessService;
 
         /// <summary>
-        /// ctor
+        /// Initializes a new instance of the <see cref="OBSReservationTransactionsService"/> class.
         /// </summary>
         /// <param name="loggerFactory">logging</param>
         /// <param name="dataAccessService">data access</param>
@@ -23,19 +23,23 @@
             ArgumentNullException.ThrowIfNull(dataAccessService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
 
-            _logger = loggerFactory.CreateLogger<ObsReservationService>();
+            _logger = loggerFactory.CreateLogger<OBSReservationTransactionsService>();
             _dataAccessService = dataAccessService;
+
+            _logger.LogInformation($"Constructing {nameof(OBSReservationTransactionsService)}");
         }
 
         /// <summary>
         /// Get all the charging sessions and apply biz rules
         /// </summary>
         /// <returns>ActiveClosedEvChargingSession</returns>
-        public async Task<ReservationTransactions> GetObsReservationTransactions()
+        public async Task<ReservationTransactions> GetObsReservationTransactionsAsync()
         {
-            List<ObsReservationTransactions> obsReservationTransactions = await _dataAccessService.GetReservationsTransactionsAsync().ConfigureAwait(false);    
+            _logger.LogInformation($"Getting OBS Reservation Transactions {nameof(GetObsReservationTransactionsAsync)}");
 
-            return new ReservationTransactions {ObsReservationTransactions = obsReservationTransactions.SingleOrDefault() };
+            List<ObsReservationTransactions> obsReservationTransactions = await _dataAccessService.GetReservationsTransactionsAsync().ConfigureAwait(false);
+
+            return new ReservationTransactions { ObsReservationTransactions = obsReservationTransactions.SingleOrDefault() };
         }
     }
 }

@@ -10,7 +10,7 @@
         /// <summary>
         /// Get all the parcs ticket occupancies and apply biz rules
         /// </summary>
-        /// <returns>Occupancy</returns>
+        /// <returns>List<PgsOccupancy></returns>
         Task<List<PgsOccupancy>> GetOccupanciesAsync();
     }
 }

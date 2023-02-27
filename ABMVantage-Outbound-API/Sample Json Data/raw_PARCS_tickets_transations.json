@@ -1,0 +1,13 @@
+{
+  "highLevelBusinessEntity": "ObsReservationTransactions",
+  "reservationId": "0086-05-02-02",
+  "ticketID": "111211",
+  "chargerId": "1111",
+  "chargingSessionID": "488484994848578575",
+  "chargeStartDateTime": "02-07-2023",
+  "chargeEndDateTime": "02-08-2023",
+  "kWHoursDelivered": "5 hours",
+  "lpn": "rxy-909",
+  "amountCharged": 20.00,
+  "fee": 35.00
+}

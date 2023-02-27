@@ -1,9 +1,11 @@
 ﻿namespace ABMVantage_Outbound_API.DataAccess
 {
     using EntityModels;
-    using Microsoft.Azure.Cosmos;
     using Microsoft.EntityFrameworkCore;
-
+    
+    /// <summary>
+    /// EF Context for CosmosDb
+    /// </summary>
     public class CosmosDataContext : DbContext
     {
         /// <summary>
@@ -20,6 +22,7 @@
         /// Name of the container for metadata.
         /// </summary>
         private const string ObsReservations = nameof(ObsReservations);
+
         /// <summary>
         /// Name of the container for metadata.
         /// </summary>
@@ -44,13 +47,16 @@
         /// Name of the container for metadata.
         /// </summary>
         private const string ParcsTicketOccupancy = nameof(ParcsTicketOccupancy);
+
         /// <summary>
         /// Name of the container for metadata.
         /// </summary>
         private const string PgsTicketOccupancy = nameof(PgsTicketOccupancy);
 
-
-
+        /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string ParcsTicketTransactions = nameof(ParcsTicketTransactions);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
@@ -76,7 +82,7 @@
                     .HasNoDiscriminator()
                     .ToContainer(ObsReservations)
                     .HasPartitionKey(da => da.Id);
-                        
+
             modelBuilder.Entity<EvActiveSessions>()
                     .HasNoDiscriminator()
                     .ToContainer(ElectricVehicleActiveSessions)
@@ -97,41 +103,53 @@
                     .ToContainer(PgsTicketOccupancy)
                     .HasPartitionKey(da => da.Id);
 
+            modelBuilder.Entity<ParcsTicketsTransactions>()
+                    .HasNoDiscriminator()
+                    .ToContainer(ParcsTicketTransactions)
+                    .HasPartitionKey(da => da.Id);
 
             modelBuilder.Entity<Booking>().OwnsMany(b => b.BookingReservations);
             modelBuilder.Entity<EvActiveSessions>().OwnsMany(e => e.ResponseActiveChargeSession);
-
         }
 
         /// <summary>
         /// Gets or sets the Reservations collection.
         /// </summary>
         public DbSet<Reservation> Reservations { get; set; }
+
         /// <summary>
         /// Gets or sets the EvActiveSessions collection.
         /// </summary>
         public DbSet<EvActiveSessions> EvActiveSessions { get; set; }
+
         /// <summary>
         /// Gets or sets the EvClosedSessions collection.
         /// </summary>
-        public DbSet<EvClosedSessions> EvClosedSessions { get; set; }        
+        public DbSet<EvClosedSessions> EvClosedSessions { get; set; }
+
         /// <summary>
-        /// OBS Reservations collection
+        /// OBS booking collection
         /// </summary>
         public DbSet<Booking> Booking { get; set; }
+
         /// <summary>
         /// OBS Reservations Transactions collection
         /// </summary>
         public DbSet<ObsReservationTransactions> ReservationTransactions { get; set; }
+
         /// <summary>
-        /// OBS Reservations Transactions collection
+        /// Parcs Tickets Occupanceis collection
         /// </summary>
         public DbSet<Occupancy> ParcsTickOccupanies { get; set; }
+
         /// <summary>
-        /// OBS Reservations Transactions collection
+        /// PGS Tickets Occupanceis collection
         /// </summary>
         public DbSet<PgsOccupancy> PgsTickOccupanies { get; set; }
 
-
+        /// <summary>
+        /// Parcs ticket Transactions collection
+        /// </summary>
+        public DbSet<ParcsTicketsTransactions> ParcsTicketsTransactions { get; set; }
     }
 }
