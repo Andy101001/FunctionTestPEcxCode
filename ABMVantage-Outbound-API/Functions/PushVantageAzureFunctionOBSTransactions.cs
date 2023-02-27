@@ -5,7 +5,7 @@ namespace ABMVantage_Outbound_API.Functions
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
-    
+
     /// <summary>
     /// Gets the transactinos for online book reservations
     /// </summary>
@@ -15,10 +15,10 @@ namespace ABMVantage_Outbound_API.Functions
         private readonly IOBSReservationTransactionsService _reservationTransactionsService;
 
         /// <summary>
-        /// ctor
+        /// Initializes a new instance of the <see cref="PushVantageAzureFunctionOBSTransactions"/> class.
         /// </summary>
         /// <param name="loggerFactory">logger</param>
-        /// <param name="reservationTransactionsService">Reservatin Transactions Service</param>
+        /// <param name="reservationTransactionsService">Reservation Transactions Service</param>
         public PushVantageAzureFunctionOBSTransactions(ILoggerFactory loggerFactory, IOBSReservationTransactionsService reservationTransactionsService)
         {
             ArgumentNullException.ThrowIfNull(reservationTransactionsService);
@@ -26,6 +26,7 @@ namespace ABMVantage_Outbound_API.Functions
 
             _logger = loggerFactory.CreateLogger<PushVantageAzureFunctionReservations>();
             _reservationTransactionsService = reservationTransactionsService;
+            _logger.LogInformation($"Constructing {nameof(PushVantageAzureFunctionOBSTransactions)}");
         }
 
         /// <summary>
@@ -36,9 +37,9 @@ namespace ABMVantage_Outbound_API.Functions
         [Function("PushVantageAzureFunctionOBSTransactions")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/vantagePortal/obs/transactions")] HttpRequestData req)
         {
-            _logger.LogInformation("Executing function Get Reservation Transactions");
-            var result = await _reservationTransactionsService.GetObsReservationTransactions();
-            _logger.LogInformation("Executed Function Get Reservatons Transactions");
+            _logger.LogInformation($"Executing function {nameof(PushVantageAzureFunctionOBSTransactions)}");
+            var result = await _reservationTransactionsService.GetObsReservationTransactionsAsync();
+            _logger.LogInformation($"Executed function {nameof(PushVantageAzureFunctionOBSTransactions)}");
 
             return new OkObjectResult(result);
         }

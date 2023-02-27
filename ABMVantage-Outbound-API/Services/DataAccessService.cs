@@ -3,23 +3,39 @@
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// EF service for database reads and writes
+    /// EF service for database reads
     /// </summary>
     public class DataAccessService : IDataAccessService
     {
         /// <summary>
-        /// Factory to generate <see cref="DocsContext"/> instances.
+        /// Logger
         /// </summary>
-        private readonly IDbContextFactory<CosmosDataContext> _factory;
+        private readonly ILogger<DataAccessService> _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardService"/> class.
+        /// Factory to generate <see cref="DocsContext"/> instances.
+        /// </summary>
+        private readonly IDbContextFactory<CosmosDataContext> _dbContextFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataAccessService"/> class.
         /// </summary>
         /// <param name="factory">The factory instance.</param>
-        public DataAccessService(IDbContextFactory<CosmosDataContext> factory) => _factory = factory;
+        /// <param name="loggerFactory">Logger factory</param>
+        public DataAccessService(IDbContextFactory<CosmosDataContext> dbContextFactory, ILoggerFactory loggerFactory)
+        {
+            ArgumentNullException.ThrowIfNull(dbContextFactory);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+
+            _logger = loggerFactory.CreateLogger<DataAccessService>();
+            _dbContextFactory = dbContextFactory;
+
+            _logger.LogInformation($"Constructing {nameof(DataAccessService)}");
+        }
 
         /// <summary>
         /// Get active charging sessions
@@ -28,7 +44,9 @@
         /// <returns>List<EvActiveSessions></returns>
         public async Task<List<EvActiveSessions>>? GetActiveChargingSessionsAsync(string? id = null)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(EvActiveSessions)}");
+
+            using var context = _dbContextFactory.CreateDbContext();
 
             var evActiveSessions = await context.EvActiveSessions.ToListAsync();
 
@@ -42,7 +60,8 @@
         /// <returns>List<EvClosedSessions></returns>
         public async Task<List<EvClosedSessions>>? GetClosedChargingSessionsAsync(string? id = null)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(EvClosedSessions)}");
+            using var context = _dbContextFactory.CreateDbContext();
 
             var evClosedSessions = await context.EvClosedSessions.ToListAsync();
 
@@ -56,12 +75,14 @@
         /// <returns>List<Occupancy></returns>
         public async Task<List<Occupancy>>? GetParcsTicketOccupanciesAsync(string? id = null)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(Occupancy)}");
+            using var context = _dbContextFactory.CreateDbContext();
 
             var parcsTicketOccupancies = await context.ParcsTickOccupanies.ToListAsync();
 
             return parcsTicketOccupancies;
         }
+
         /// <summary>
         /// Get PGS Ticket Occupancies
         /// </summary>
@@ -69,7 +90,9 @@
         /// <returns>List<PgsOccupancy></returns>
         public async Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync(string? id = null)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(PgsOccupancy)}");
+
+            using var context = _dbContextFactory.CreateDbContext();
 
             var pgsTicketOccupancies = await context.PgsTickOccupanies.ToListAsync();
 
@@ -83,7 +106,9 @@
         /// <returns>Reservation</returns>
         public async Task<Reservation> GetReservationsAsync(string id)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(Reservation)}");
+
+            using var context = _dbContextFactory.CreateDbContext();
 
             var reservation = await context.Reservations
                             .WithPartitionKey(id)
@@ -99,12 +124,30 @@
         /// <returns>List<ObsReservationTransactions></returns>
         public async Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync(string? id = null)
         {
-            using var context = _factory.CreateDbContext();
+            _logger.LogInformation($"Getting {nameof(ObsReservationTransactions)}");
+
+            using var context = _dbContextFactory.CreateDbContext();
 
             var obsReservationTransactions = await context.ReservationTransactions.ToListAsync();
             // Call a service method to do this biz for getting the transactions for the reservation
 
             return new List<ObsReservationTransactions> { new ObsReservationTransactions() };
+        }
+
+        /// <summary>
+        /// Get Parcs Ticket Transactions
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <returns>List<ParcsTicketsTransactions></returns>
+        public async Task<List<ParcsTicketsTransactions>>? GetParcsTicketTransactionsAsync(string? id = null)
+        {
+            _logger.LogInformation($"Getting {nameof(ParcsTicketsTransactions)}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var parcsTicketTransactions = await context.ParcsTicketsTransactions.ToListAsync();
+
+            return parcsTicketTransactions;
         }
     }
 }

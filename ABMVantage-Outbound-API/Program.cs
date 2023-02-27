@@ -50,10 +50,11 @@ namespace ABMVantage_Outbound_API
             {
                 s.AddScoped<IObsReservationService, ObsReservationService>();
                 s.AddScoped<IDataAccessService, DataAccessService>();
-                s.AddScoped<IActiveClosedEvChargingSessions, ActiveClosedEvChargingSessions>();
+                s.AddScoped<IActiveClosedEvChargingService, ActiveClosedEvChargingService>();
                 s.AddScoped<IOBSReservationTransactionsService, OBSReservationTransactionsService>();
                 s.AddScoped<ITicketOccupanciesService, TicketOccupanciesService>();
                 s.AddScoped<IPgsTicketOccupanciesService, PgsTicketOccupanciesService>();
+                s.AddScoped<IParcsTicketTransactionsService, ParcsTicketTransactionsService>();
 
                 s.AddOptions();
 

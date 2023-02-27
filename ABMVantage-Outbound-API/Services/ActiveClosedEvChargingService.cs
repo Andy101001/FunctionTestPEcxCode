@@ -1,26 +1,32 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage_Outbound_API.EntityModels;
     using ABMVantage_Outbound_API.Models;
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
-
-    public class ActiveClosedEvChargingSessions : IActiveClosedEvChargingSessions
+    
+    /// <summary>
+    /// Active and Closed EV charging sessions service
+    /// </summary>
+    public class ActiveClosedEvChargingService : IActiveClosedEvChargingService
     {
-        private readonly ILogger<ObsReservationService> _logger;
+        private readonly ILogger<ActiveClosedEvChargingService> _logger;
         private readonly IDataAccessService _dataAccessService;
 
         /// <summary>
-        /// ctor
+        /// Initializes a new instance of the <see cref="ActiveClosedEvChargingService"/> class.
         /// </summary>
         /// <param name="loggerFactory">logging</param>
         /// <param name="dataAccessService">data access</param>
-        public ActiveClosedEvChargingSessions(ILoggerFactory loggerFactory, IDataAccessService dataAccessService)
+        public ActiveClosedEvChargingService(ILoggerFactory loggerFactory, IDataAccessService dataAccessService)
         {
             ArgumentNullException.ThrowIfNull(dataAccessService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
 
-            _logger = loggerFactory.CreateLogger<ObsReservationService>();
+            _logger = loggerFactory.CreateLogger<ActiveClosedEvChargingService>();
             _dataAccessService = dataAccessService;
+            
+            _logger.LogInformation($"Constructing {nameof(ActiveClosedEvChargingService)}");
         }
 
         /// <summary>
@@ -29,6 +35,8 @@
         /// <returns>ActiveClosedEvChargingSession</returns>
         public async Task<ActiveClosedEvChargingSession> GetChargingSessionsAsync()
         {
+            _logger.LogInformation($"Getting session data for {nameof(EvActiveSessions)} and {nameof(EvClosedSessions)}");
+
             var closed = await _dataAccessService.GetClosedChargingSessionsAsync().ConfigureAwait(false);
             var active = await _dataAccessService.GetActiveChargingSessionsAsync().ConfigureAwait(false);
 
