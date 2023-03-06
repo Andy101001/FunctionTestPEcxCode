@@ -73,7 +73,7 @@
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<Occupancy></returns>
-        public async Task<List<Occupancy>>? GetParcsTicketOccupanciesAsync(string? id = null)
+        public async Task<List<Occupancy>>? GetParcsTicketOccupanciesAsync()
         {
             _logger.LogInformation($"Getting {nameof(Occupancy)}");
             using var context = _dbContextFactory.CreateDbContext();
@@ -88,7 +88,7 @@
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<PgsOccupancy></returns>
-        public async Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync(string? id = null)
+        public async Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync()
         {
             _logger.LogInformation($"Getting {nameof(PgsOccupancy)}");
 
@@ -122,7 +122,7 @@
         /// </summary>
         /// <param name="id">ID</param>
         /// <returns>List<ObsReservationTransactions></returns>
-        public async Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync(string? id = null)
+        public async Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync()
         {
             _logger.LogInformation($"Getting {nameof(ObsReservationTransactions)}");
 
@@ -139,7 +139,7 @@
         /// </summary>
         /// <param name="id">ID</param>
         /// <returns>List<ParcsTicketsTransactions></returns>
-        public async Task<List<ParcsTicketsTransactions>>? GetParcsTicketTransactionsAsync(string? id = null)
+        public async Task<List<ParcsTicketsTransactions>>? GetParcsTicketTransactionsAsync()
         {
             _logger.LogInformation($"Getting {nameof(ParcsTicketsTransactions)}");
 
@@ -148,6 +148,41 @@
             var parcsTicketTransactions = await context.ParcsTicketsTransactions.ToListAsync();
 
             return parcsTicketTransactions;
+        }
+
+        /// <summary>
+        /// Get OBS Reservations
+        /// </summary>
+        /// <returns>List<Booking></returns>
+        public async Task<List<Booking>>? GetAllObsReservationsAsync()
+        {
+            _logger.LogInformation("Getting all booking reservations");
+
+            using var context = _dbContextFactory.CreateDbContext();
+            var bookings = await context.Booking.ToListAsync();
+
+            _logger.LogInformation("Finished Getting all booking reservations");
+
+            return bookings;
+        }
+
+        /// <summary>
+        /// Get a OBS Reservation
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>Booking</returns>
+        public async Task<Booking> GetReservationAsync(string id)
+        {
+            _logger.LogInformation($"Getting booking for Id:{id}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+            var booking = await context.Booking
+                                    .WithPartitionKey(id)
+                                    .SingleOrDefaultAsync(d => d.Id == id);
+
+            _logger.LogInformation($"Finished Getting booking for Id:{id}");
+
+            return booking;
         }
     }
 }
