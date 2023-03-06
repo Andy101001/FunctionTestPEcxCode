@@ -3,7 +3,7 @@
     using ABMVantage_Outbound_API.EntityModels;
     
     /// <summary>
-    /// Dataaccess readonly interface
+    /// Data access readonly interface
     /// </summary>
     public interface IDataAccessService
     {
@@ -33,27 +33,40 @@
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<ObsReservationTransactions></returns>
-        Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync(string? id = null);
+        Task<List<ObsReservationTransactions>>? GetReservationsTransactionsAsync();
 
         /// <summary>
         /// Parcs Tickets Occupancies
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<Occupancy></returns>
-        Task<List<Occupancy>>? GetParcsTicketOccupanciesAsync(string? id = null);
+        Task<List<Occupancy>>? GetParcsTicketOccupanciesAsync();
 
         /// <summary>
         /// PGS Ticket Occupancies
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<PgsOccupancy></returns>
-        Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync(string? id = null);
+        Task<List<PgsOccupancy>>? GetPgsTicketOccupanciesAsync();
 
         /// <summary>
         /// Parcs Ticket Transactions
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>List<ParcsTicketsTransactions></returns>
-        Task<List<ParcsTicketsTransactions>>? GetParcsTicketTransactionsAsync(string? id = null);
+        Task<List<ParcsTicketsTransactions>>? GetParcsTicketTransactionsAsync();
+
+        /// <summary>
+        /// All OBS Reservations
+        /// </summary>        
+        /// <returns>List<List<Booking>></returns>
+        Task<List<Booking>>? GetAllObsReservationsAsync();
+
+        /// <summary>
+        /// Get OBS Reservation
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>Booking</returns>
+        Task<Booking> GetReservationAsync(string id);
     }
 }
