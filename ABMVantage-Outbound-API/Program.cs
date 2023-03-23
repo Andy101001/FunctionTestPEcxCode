@@ -1,22 +1,39 @@
 using ABMVantage_Outbound_API.Configuration;
 using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.Services;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ABMVantage_Outbound_API
 {
+    /// <summary>
+    /// Start up for isolated functions
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Static CTOR
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
         }
 
+        /// <summary>
+        /// IConfiguration
+        /// </summary>
         public static IConfiguration? Configuration { get; set; }
+
+        /// <summary>
+        /// Configuration Builder
+        /// </summary>
+        public static IConfigurationBuilder? ConfigurationBuilder { get; set; }
 
         /// <summary>
         /// Create the host builder for the application
@@ -28,18 +45,26 @@ namespace ABMVantage_Outbound_API
             ConfigureFunctionsWorkerDefaults(builder =>
             {
                 builder.UseDefaultWorkerMiddleware();
+                //Read security settings from configuration or local settings
+                builder.Services.AddOptions<SecuritySettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("SecurityOptions").Bind(settings);
+                });
+
+                //Read cosmos settings from configuration or local settings
+                builder.Services.AddOptions<CosmosSettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("CosmosSettings").Bind(settings);
+                });
+
             }).ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 // load environment variables into the config
                 configurationBuilder.AddEnvironmentVariables();
 
-                // Get the configuration
+                // Get the configurations we need to add kv and app configs
                 Configuration = context.Configuration;
-
-
-
-                // load Azure App Configuration variables
-                //configurationBuilder.AddAppConfiguration();
+                ConfigurationBuilder = configurationBuilder;
 
 #if DEBUG
                 // finally, ensure that appsettings.Development.json overrides all in debug mode
@@ -58,17 +83,33 @@ namespace ABMVantage_Outbound_API
 
                 s.AddOptions();
 
-                s.AddDbContextFactory<CosmosDataContext>(
-                (IServiceProvider sp, DbContextOptionsBuilder opts) =>
-                {
-                    var cosmosSettings = sp
-                        .GetRequiredService<IOptions<CosmosSettings>>()
-                        .Value;
+                // Read the settings from the function config or the local settings file during debug
+                var securitySettings = s.BuildServiceProvider().GetRequiredService<IOptions<SecuritySettings>>().Value;
+                var cosmosSettings = s.BuildServiceProvider().GetRequiredService<IOptions<CosmosSettings>>().Value;
 
-                    opts.UseCosmos(
-                        cosmosSettings.EndPoint = "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
-                        cosmosSettings.AccessKey = "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
-                        databaseName: "VantageDB");
+
+                // Make sure we successfully read in the security settings
+                if (securitySettings != null)
+                {
+                    // Check for the null strings
+                    if (!string.IsNullOrEmpty(securitySettings.KeyVaultUri))
+                        ConfigurationBuilder.AddAzureKeyVault(new Uri(securitySettings.KeyVaultUri), new DefaultAzureCredential());
+                }
+
+                //// Add the cosmos db context factory
+                s.AddDbContextFactory<CosmosDataContext>((IServiceProvider sp, DbContextOptionsBuilder opts) =>
+                {
+                    // Make sure we successfully read in the security settings
+                    if (cosmosSettings != null)
+                    {
+                        // Check for the null strings
+                        if (!string.IsNullOrEmpty(cosmosSettings.EndPoint) &&
+                            !string.IsNullOrEmpty(cosmosSettings.AccessKey) &&
+                            !string.IsNullOrEmpty(cosmosSettings.DatabaseName))
+                        {
+                            opts.UseCosmos(cosmosSettings.EndPoint, cosmosSettings.AccessKey, databaseName: cosmosSettings.DatabaseName);
+                        }
+                    }
                 });
             });
     }

@@ -1,7 +1,26 @@
 {
-    "IsEncrypted": false,
-    "Values": {
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
-    }
+  "IsEncrypted": false,
+  "AzureAppConfigEndpoint": null,
+
+  "SecurityOptions": {
+    "KeyVaultName": "abm-vtg-kv01-dev",
+    "AzureADApplicationId": "Azure AD Application ID",
+    "AzureADCertThumbprint": "Azure AD Certificate Thumbprint",
+    "AzureADDirectoryId": "Azure AD Directory ID",
+    "KeyVaultUri": "https://abm-vtg-kv01-dev.vault.azure.net/"
+  },
+
+  "CosmosSettings": {
+    "EndPoint": "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
+    "AccessKey": "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
+    "EnableMigration": true,
+    "DocumentToCheck": "web-api_index",
+    "DatabaseName": "VantageDB"
+  },
+
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ServiceBusConnectionString": "Endpoint=sb://abm-vtg-sb01-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gwN1BGC3XZAHkANqJHT2aAc6i9m5lnimr+kgW7hgwmQ="
+  }
 }
