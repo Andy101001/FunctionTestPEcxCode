@@ -1,10 +1,14 @@
 namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage_Outbound_API.EntityModels;
     using ABMVantage_Outbound_API.Services;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
     using Microsoft.Extensions.Logging;
+    using System.Net;
 
     /// <summary>
     /// Gets the transactinos for parcs ticket transactions
@@ -35,6 +39,11 @@ namespace ABMVantage_Outbound_API.Functions
         /// <param name="req">request data</param>
         /// <returns>IActionResult</returns>
         [Function("PushVantageAzureFunctionPARCSTicketsTransactions")]
+        [OpenApiOperation(operationId: "PushVantageAzureFunctionPARCSTicketsTransactions", tags: new[] { "PushVantageAzureFunctionPARCSTicketsTransactions" }, Summary = "Get PARCS Ticket Transactions", Description = "This gets an existing PARCS Ticket Transactions.", Visibility = OpenApiVisibilityType.Important)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ParcsTicketsTransactions), Summary = "Get PARCS Ticket Transactions", Description = "Get PARCS Ticket Transactions")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid ID supplied", Description = "Invalid ID supplied")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Summary = "PARCS Ticket Transactions not found", Description = "PARCS Ticket Transactions not found")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/vantageAzureFunction/parcs/tickets/transactions")] HttpRequestData req)
         {
             _logger.LogInformation($"Executing function {nameof(PushVantageAzureFunctionPARCSTicketsTransactions)}");
