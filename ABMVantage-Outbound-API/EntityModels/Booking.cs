@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 namespace ABMVantage_Outbound_API.EntityModels
-{
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+{    
     public class BookingReservation
     {
         [JsonProperty("id")]
