@@ -45,7 +45,7 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid ID supplied", Description = "Invalid ID supplied")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Summary = "PARCS Ticket Occupancy not found", Description = "PARCS Ticket Occupancy not found")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/parcs/occupancies")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get",Route = "v1/parcs/occupancies")] HttpRequestData req)
         {
             _logger.LogInformation($"Executing function {nameof(PushVantageAzureFunctionPARCSTicketsOccupancies)}");
             var result = await _ticketOccupanciesService.GetOccupanciesAsync();

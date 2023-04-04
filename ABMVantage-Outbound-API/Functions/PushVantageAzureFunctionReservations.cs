@@ -4,11 +4,13 @@ namespace ABMVantage_Outbound_API.Functions
     using ABMVantage_Outbound_API.Services;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
     using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
     using Microsoft.Extensions.Logging;
     using System.Net;
+    using System.Net.WebSockets;
 
     /// <summary>
     /// OBS Reservations
@@ -47,6 +49,8 @@ namespace ABMVantage_Outbound_API.Functions
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "v1/vantagePortal/obs/reservations")] HttpRequestData req)
         {
             _logger.LogInformation("Executing function Get Reservatons");
+
+           
             List<Booking> reservations = await _obsReservationService.GetAllReservationsAsync();
             _logger.LogInformation("Executed Function Get Reservatons");
 
