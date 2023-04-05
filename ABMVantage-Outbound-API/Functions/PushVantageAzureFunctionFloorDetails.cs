@@ -1,13 +1,19 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using ABMVantage_Outbound_API.EntityModels;
+using ABMVantage_Outbound_API.Models;
 using ABMVantage_Outbound_API.Services;
+using AzureFunctions.Extensions.Swashbuckle.Attribute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace ABMVantage_Outbound_API.Functions
 {
@@ -31,7 +37,9 @@ namespace ABMVantage_Outbound_API.Functions
         /// <param name="req"></param>
         /// <returns></returns>
         [Function("PushVantageAzureFunctionFloorDetails")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Facility), Summary = "Get PARCS Floor details", Description = "Get PARCS Floor details")]
+        [OpenApiOperation(operationId: "PushVantageAzureFunctionFloorDetails", tags: new[] { "PushVantageAzureFunctionFloorDetails" }, Summary = "Get PARCS Floor details", Description = "This gets loor details.", Visibility = OpenApiVisibilityType.Important)]
+        [OpenApiParameter(name: "customerId", In = ParameterLocation.Query, Required = false, Type = typeof(string), Description = "")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(FloorDetails), Summary = "Get PARCS Floor details", Description = "Get PARCS Floor details")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid ID supplied", Description = "Invalid ID supplied")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Summary = "PARCS Floor details not found", Description = "PARCS Floor details not found")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]

@@ -43,6 +43,7 @@ namespace ABMVantage_Outbound_API.Services
 
         public async Task<FloorDetails> GetFloorDetails(string id)
         {
+            
             var products = await _dataAccessService.GetProductAsync(id);
             var lstlevels = await _dataAccessService.GetLevelAsync(id);
             var lstFacility = await _dataAccessService.GetFacilityAsync(id);

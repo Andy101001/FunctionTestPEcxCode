@@ -64,6 +64,12 @@ namespace ABMVantage_Outbound_API
                     configuration.GetSection("CosmosSettings").Bind(settings);
                 });
 
+                //Read Sql settings from configuration or local settings
+                builder.Services.AddOptions<SqlSettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("SqlSettings").Bind(settings);
+                });
+
             }).ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 // load environment variables into the config
@@ -177,7 +183,7 @@ namespace ABMVantage_Outbound_API
                 // Read the settings from the function config or the local settings file during debug
                 var securitySettings = s.BuildServiceProvider().GetRequiredService<IOptions<SecuritySettings>>().Value;
                 var cosmosSettings = s.BuildServiceProvider().GetRequiredService<IOptions<CosmosSettings>>().Value;
-
+                var sqlSettings = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings>>().Value;
 
                 // Make sure we successfully read in the security settings
                 if (securitySettings != null)
@@ -202,6 +208,21 @@ namespace ABMVantage_Outbound_API
                         }
                     }
                 });
+
+                //// Add the cosmos db context factory
+                s.AddDbContextFactory<SqlDataContext>((IServiceProvider sp, DbContextOptionsBuilder opts) =>
+                {
+                    // Make sure we successfully read in the security settings
+                    if (sqlSettings != null)
+                    {
+                        // Check for the null strings
+                        if (!string.IsNullOrEmpty(sqlSettings.ConnectionString))
+                        {
+                            opts.UseSqlServer(sqlSettings.ConnectionString);
+                        }
+                    }
+                });
+
             });
     }
 }

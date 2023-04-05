@@ -20,19 +20,22 @@
         /// Factory to generate <see cref="DocsContext"/> instances.
         /// </summary>
         private readonly IDbContextFactory<CosmosDataContext> _dbContextFactory;
+        private readonly IDbContextFactory<SqlDataContext> _dbSqlContextFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataAccessService"/> class.
         /// </summary>
         /// <param name="factory">The factory instance.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public DataAccessService(IDbContextFactory<CosmosDataContext> dbContextFactory, ILoggerFactory loggerFactory)
+        public DataAccessService(IDbContextFactory<CosmosDataContext> dbContextFactory, IDbContextFactory<SqlDataContext> dbSqlContextFactory, ILoggerFactory loggerFactory)
         {
             ArgumentNullException.ThrowIfNull(dbContextFactory);
             ArgumentNullException.ThrowIfNull(loggerFactory);
+            ArgumentNullException.ThrowIfNull(dbSqlContextFactory);
 
             _logger = loggerFactory.CreateLogger<DataAccessService>();
             _dbContextFactory = dbContextFactory;
+            _dbSqlContextFactory = dbSqlContextFactory;
 
             _logger.LogInformation($"Constructing {nameof(DataAccessService)}");
         }
@@ -189,55 +192,49 @@
         {
             _logger.LogInformation($"Getting product for Id:{id}");
 
-            var lstProduct=new List<Product>();
-            lstProduct.Add(new Product
-            {
-                Id=101,
-                LevelName="None EV"
-            });
-            lstProduct.Add(new Product
-            {
-                Id = 102,
-                LevelName = "EV"
-            });
+            using var context = _dbSqlContextFactory.CreateDbContext();
+
+            //TODO: make this async call and filler with Id
+            var lstProduct = context.Products.ToList();
+
 
             _logger.LogInformation($"Finished Getting product for Id:{id}");
 
-            return await Task.FromResult<List<Product>>(lstProduct);
+            return lstProduct;
         }
 
         public async Task<List<Level>> GetLevelAsync(string id)
         {
-            var lstLevel = new List<Level>();
-            lstLevel.Add(new Level
-            {
-                Id = 101,
-                LevelName = "Level 1"
-            });
-            lstLevel.Add(new Level
-            {
-                Id = 102,
-                LevelName = "Level 2"
-            });
+            _logger.LogInformation($"Getting product for Id:{id}");
 
-            _logger.LogInformation($"Finished Getting product for Id:{id}");
+            var lstLevel=new List<Level>();
 
-            return await Task.FromResult<List<Level>>(lstLevel);
+            try
+            {
+                using var context = _dbSqlContextFactory.CreateDbContext();
+
+                //TODO: make this async call and filler with Id
+                lstLevel = context.Levels.ToList();
+
+                _logger.LogInformation($"Finished Getting product for Id:{id}");
+            }
+            catch(Exception ex)
+            {
+                    _logger.LogInformation($"Error fetching data from Synapse database:{ex.Message}");
+            }
+            
+
+            return lstLevel;
         }
+
 
         public async Task<List<Facility>> GetFacilityAsync(string id)
         {
-            var lstFacility = new List<Facility>();
-            lstFacility.Add(new Facility
-            {
-                Id = 101,
-               FacilityName = "EWR"
-            });
-            lstFacility.Add(new Facility
-            {
-                Id = 102,
-                FacilityName = "JFK"
-            });
+            
+             using var context = _dbSqlContextFactory.CreateDbContext();
+
+            //TODO: make this async call and filler with Id
+            var lstFacility = context.Facilities.ToList();
 
             _logger.LogInformation($"Finished Getting Facility for Id:{id}");
 
