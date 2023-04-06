@@ -90,6 +90,7 @@ namespace ABMVantage_Outbound_API
             {
                 s.AddScoped<IObsReservationService, ObsReservationService>();
                 s.AddScoped<IDataAccessService, DataAccessService>();
+                s.AddScoped<IDataAccessSqlService, DataAccessSqlService>();
                 s.AddScoped<IActiveClosedEvChargingService, ActiveClosedEvChargingService>();
                 s.AddScoped<IOBSReservationTransactionsService, OBSReservationTransactionsService>();
                 s.AddScoped<ITicketOccupanciesService, TicketOccupanciesService>();

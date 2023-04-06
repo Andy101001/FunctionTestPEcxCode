@@ -13,11 +13,11 @@ namespace ABMVantage_Outbound_API.Services
     public class FloorDetailsService : IFloorDetailsService
     {
         private readonly ILogger<FloorDetailsService> _logger;
-        private readonly IDataAccessService _dataAccessService;
-        public FloorDetailsService(ILoggerFactory loggerFactory, IDataAccessService dataAccessService) {
+        private readonly IDataAccessSqlService _dataAccessSqlService;
+        public FloorDetailsService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService) {
 
             _logger = loggerFactory.CreateLogger<FloorDetailsService>();
-            _dataAccessService = dataAccessService;
+            _dataAccessSqlService = dataAccessSqlService;
 
             _logger.LogInformation($"Constructing {nameof(FloorDetailsService)}");
         }
@@ -30,13 +30,13 @@ namespace ABMVantage_Outbound_API.Services
 
         public async Task<List<Level>> GetAllLevelAsync(string id)
         {
-            var lstlevels = await _dataAccessService.GetLevelAsync(id);
+            var lstlevels = await _dataAccessSqlService.GetLevelAsync(id);
             return lstlevels;
         }
 
         public async Task<List<Product>> GetAllProductAsync(string id)
         {
-            var products= await _dataAccessService.GetProductAsync(id);
+            var products= await _dataAccessSqlService.GetProductAsync(id);
 
             return products;
         }
@@ -44,9 +44,9 @@ namespace ABMVantage_Outbound_API.Services
         public async Task<FloorDetails> GetFloorDetails(string id)
         {
             
-            var products = await _dataAccessService.GetProductAsync(id);
-            var lstlevels = await _dataAccessService.GetLevelAsync(id);
-            var lstFacility = await _dataAccessService.GetFacilityAsync(id);
+            var products = await _dataAccessSqlService.GetProductAsync(id);
+            var lstlevels = await _dataAccessSqlService.GetLevelAsync(id);
+            var lstFacility = await _dataAccessSqlService.GetFacilityAsync(id);
             var floor=new FloorDetails { Facilities = lstFacility, Levels= lstlevels, Products= products };
 
             return floor;

@@ -27,15 +27,13 @@
         /// </summary>
         /// <param name="factory">The factory instance.</param>
         /// <param name="loggerFactory">Logger factory</param>
-        public DataAccessService(IDbContextFactory<CosmosDataContext> dbContextFactory, IDbContextFactory<SqlDataContext> dbSqlContextFactory, ILoggerFactory loggerFactory)
+        public DataAccessService(IDbContextFactory<CosmosDataContext> dbContextFactory, ILoggerFactory loggerFactory)
         {
             ArgumentNullException.ThrowIfNull(dbContextFactory);
             ArgumentNullException.ThrowIfNull(loggerFactory);
-            ArgumentNullException.ThrowIfNull(dbSqlContextFactory);
 
             _logger = loggerFactory.CreateLogger<DataAccessService>();
             _dbContextFactory = dbContextFactory;
-            _dbSqlContextFactory = dbSqlContextFactory;
 
             _logger.LogInformation($"Constructing {nameof(DataAccessService)}");
         }
@@ -188,57 +186,57 @@
             return booking;
         }
 
-        public async Task<List<Product>> GetProductAsync(string id)
-        {
-            _logger.LogInformation($"Getting product for Id:{id}");
+        //public async Task<List<Product>> GetProductAsync(string id)
+        //{
+        //    _logger.LogInformation($"Getting product for Id:{id}");
 
-            using var context = _dbSqlContextFactory.CreateDbContext();
+        //    using var context = _dbSqlContextFactory.CreateDbContext();
 
-            //TODO: make this async call and filler with Id
-            var lstProduct = context.Products.ToList();
+        //    //TODO: make this async call and filler with Id
+        //    var lstProduct = context.Products.ToList();
 
 
-            _logger.LogInformation($"Finished Getting product for Id:{id}");
+        //    _logger.LogInformation($"Finished Getting product for Id:{id}");
 
-            return lstProduct;
-        }
+        //    return lstProduct;
+        //}
 
-        public async Task<List<Level>> GetLevelAsync(string id)
-        {
-            _logger.LogInformation($"Getting product for Id:{id}");
+        //public async Task<List<Level>> GetLevelAsync(string id)
+        //{
+        //    _logger.LogInformation($"Getting product for Id:{id}");
 
-            var lstLevel=new List<Level>();
+        //    var lstLevel=new List<Level>();
 
-            try
-            {
-                using var context = _dbSqlContextFactory.CreateDbContext();
+        //    try
+        //    {
+        //        using var context = _dbSqlContextFactory.CreateDbContext();
 
-                //TODO: make this async call and filler with Id
-                lstLevel = context.Levels.ToList();
+        //        //TODO: make this async call and filler with Id
+        //        lstLevel = context.Levels.ToList();
 
-                _logger.LogInformation($"Finished Getting product for Id:{id}");
-            }
-            catch(Exception ex)
-            {
-                    _logger.LogInformation($"Error fetching data from Synapse database:{ex.Message}");
-            }
+        //        _logger.LogInformation($"Finished Getting product for Id:{id}");
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //            _logger.LogInformation($"Error fetching data from Synapse database:{ex.Message}");
+        //    }
             
 
-            return lstLevel;
-        }
+        //    return lstLevel;
+        //}
 
 
-        public async Task<List<Facility>> GetFacilityAsync(string id)
-        {
+        //public async Task<List<Facility>> GetFacilityAsync(string id)
+        //{
             
-             using var context = _dbSqlContextFactory.CreateDbContext();
+        //     using var context = _dbSqlContextFactory.CreateDbContext();
 
-            //TODO: make this async call and filler with Id
-            var lstFacility = context.Facilities.ToList();
+        //    //TODO: make this async call and filler with Id
+        //    var lstFacility = context.Facilities.ToList();
 
-            _logger.LogInformation($"Finished Getting Facility for Id:{id}");
+        //    _logger.LogInformation($"Finished Getting Facility for Id:{id}");
 
-            return await Task.FromResult<List<Facility>>(lstFacility);
-        }
+        //    return await Task.FromResult<List<Facility>>(lstFacility);
+        //}
     }
 }
