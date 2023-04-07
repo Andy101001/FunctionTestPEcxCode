@@ -88,6 +88,7 @@
                     .ToContainer(ElectricVehicleActiveSessions)
                     .HasPartitionKey(da => da.Id);
 
+           
             modelBuilder.Entity<EvClosedSessions>()
                     .HasNoDiscriminator()
                     .ToContainer(ElectricVehicleClosedSessions)
