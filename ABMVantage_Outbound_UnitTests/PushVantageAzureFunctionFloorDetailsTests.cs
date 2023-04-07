@@ -5,9 +5,12 @@
     using ABMVantage_Outbound_API.Services;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Internal;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using System.Configuration;
     using System.Data.Common;
+    using System.Text;
     using Xunit;
 
     public class PushVantageAzureFunctionFloorDetailsTests
@@ -19,12 +22,22 @@
         public PushVantageAzureFunctionFloorDetailsTests()
         {
             _mockLogger = new Mock<ILoggerFactory>();
+         
         }
 
         [Fact]
         public async Task PushVantageAzureFunctionFloorDetailsTestS_Success()
         {
             // ARRANGE
+
+            var appSettings = @"{""SqlSettings"":{
+            ""IsSqlDbConnectionOn"" : ""true""
+            }}";
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(appSettings)));
+            var configuration = builder.Build();
+
+
             var mockDbFactory = new Mock<IDbContextFactory<SqlDataContext>>();
 
             mockDbFactory.Setup(f => f.CreateDbContext()).Returns(() => new SqlDataContext(new DbContextOptionsBuilder<SqlDataContext>()
@@ -64,7 +77,7 @@
             var sqlDbService = new DataAccessSqlService(mockDbFactory.Object, _mockLogger.Object);
 
             // ACT
-            _floorDetailsService = new FloorDetailsService(_mockLogger.Object, sqlDbService);
+            _floorDetailsService = new FloorDetailsService(_mockLogger.Object, sqlDbService, configuration);
             var result = await _floorDetailsService.GetFloorDetails("01");
 
             // ASSERT
