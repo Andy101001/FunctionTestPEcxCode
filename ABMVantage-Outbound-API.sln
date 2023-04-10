@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABMVantage-Outbound-API", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8AEE0D09-AEB8-40E0-B135-05BC60659FEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABMVantage_Outbound_UnitTests", "ABMVantage_Outbound_UnitTests\ABMVantage_Outbound_UnitTests.csproj", "{25F81C87-2B14-49CE-A459-103FCA630CF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABMVantage_Outbound_UnitTests", "ABMVantage_Outbound_UnitTests\ABMVantage_Outbound_UnitTests.csproj", "{25F81C87-2B14-49CE-A459-103FCA630CF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
