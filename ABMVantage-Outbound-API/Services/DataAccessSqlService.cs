@@ -41,57 +41,60 @@ namespace ABMVantage_Outbound_API.Services
 
         }
 
-        public async Task<List<Product>> GetProductAsync(string id)
+        public async Task<IList<DimFacility>> GetFacilityAsync(string id)
         {
-            _logger.LogInformation($"Getting product for Id:{id}");
+            var lstFacility=new List<DimFacility>();
 
-            using var context = _dbSqlContextFactory.CreateDbContext();
+            using(var db= _dbSqlContextFactory.CreateDbContext())
+            {
+                
+                var dbSet = from c in db.DimCustomers
+                                join l in db.DimLocations on c.BuCode equals l.BuCode
+                                join f in db.DimFacilities on l.LocationId equals f.LocationId
+                                where c.CustomerId == id
+                                select new DimFacility { LocationId=l.LocationId, FacilityId = f.FacilityId,  FacilityName = f.FacilityName };
 
-            //TODO: make this async call and filler with Id
-            var lstProduct = context.Products.ToList();
+                lstFacility = await dbSet.ToListAsync();
+
+            }
 
 
-            _logger.LogInformation($"Finished Getting product for Id:{id}");
 
-            return lstProduct;
+            return lstFacility;
+
+
         }
 
-        public async Task<List<Level>> GetLevelAsync(string id)
+        public async Task<List<DimLevel>> GetLevelAsync(string id)
         {
-            _logger.LogInformation($"Getting product for Id:{id}");
+            var lstLevel = new List<DimLevel>();
 
-            var lstLevel = new List<Level>();
-
-            try
+            using (var db = _dbSqlContextFactory.CreateDbContext())
             {
-                using var context = _dbSqlContextFactory.CreateDbContext();
 
-                //TODO: make this async call and filler with Id
-                lstLevel = context.Levels.ToList();
-
-                _logger.LogInformation($"Finished Getting product for Id:{id}");
+                lstLevel = await db.DimLevels.Where(d => d.FacilityId.Equals(id)).ToListAsync();
+   
             }
-            catch (Exception ex)
-            {
-                _logger.LogInformation($"Error fetching data from Synapse database:{ex.Message}");
-            }
-
 
             return lstLevel;
         }
 
-
-        public async Task<List<Facility>> GetFacilityAsync(string id)
+        public async Task<List<DimProduct>> GetProductAsync(string id)
         {
+            var lstLevel = new List<DimProduct>();
 
-            using var context = _dbSqlContextFactory.CreateDbContext();
+            using (var db = _dbSqlContextFactory.CreateDbContext())
+            {
 
-            //TODO: make this async call and filler with Id
-            var lstFacility = context.Facilities.ToList();
+                var dbSet= from dsp in db.DimParkingSpaces
+                           join sp in db.SpaceProducts on dsp.ParkingSpaceId equals sp.ParkingSpaceId
+                           join p in db.DimProducts on sp.ParkingProductId equals p.ProductId
+                           select new DimProduct { ProductId=p.ProductId, ProductName=p.ProductName };
 
-            _logger.LogInformation($"Finished Getting Facility for Id:{id}");
+                lstLevel= await dbSet.ToListAsync();
+            }
 
-            return await Task.FromResult<List<Facility>>(lstFacility);
+            return lstLevel;
         }
 
     }

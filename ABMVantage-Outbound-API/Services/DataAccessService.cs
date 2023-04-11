@@ -186,57 +186,35 @@
             return booking;
         }
 
-        //public async Task<List<Product>> GetProductAsync(string id)
+
+
+        //public async Task<Location> GetLocaitonAsync(string id)
         //{
-        //    _logger.LogInformation($"Getting product for Id:{id}");
+        //    _logger.LogInformation($"Getting booking for Id:{id}");
 
-        //    using var context = _dbSqlContextFactory.CreateDbContext();
-
-        //    //TODO: make this async call and filler with Id
-        //    var lstProduct = context.Products.ToList();
-
-
-        //    _logger.LogInformation($"Finished Getting product for Id:{id}");
-
-        //    return lstProduct;
-        //}
-
-        //public async Task<List<Level>> GetLevelAsync(string id)
-        //{
-        //    _logger.LogInformation($"Getting product for Id:{id}");
-
-        //    var lstLevel=new List<Level>();
+        //    Location location = new Location();
 
         //    try
         //    {
-        //        using var context = _dbSqlContextFactory.CreateDbContext();
+        //        using var context = _dbContextFactory.CreateDbContext();
+        //        location = await context.DimLocations
+        //                                .WithPartitionKey(id)
+        //                                .SingleOrDefaultAsync(d => d.LocationId == id);
 
-        //        //TODO: make this async call and filler with Id
-        //        lstLevel = context.Levels.ToList();
-
-        //        _logger.LogInformation($"Finished Getting product for Id:{id}");
+        //        _logger.LogInformation($"Finished Getting booking for Id:{id}");
         //    }
         //    catch(Exception ex)
         //    {
-        //            _logger.LogInformation($"Error fetching data from Synapse database:{ex.Message}");
+        //        string message = ex.Message;
         //    }
-            
+           
 
-        //    return lstLevel;
+           
+
+        //    return location;
         //}
 
 
-        //public async Task<List<Facility>> GetFacilityAsync(string id)
-        //{
-            
-        //     using var context = _dbSqlContextFactory.CreateDbContext();
-
-        //    //TODO: make this async call and filler with Id
-        //    var lstFacility = context.Facilities.ToList();
-
-        //    _logger.LogInformation($"Finished Getting Facility for Id:{id}");
-
-        //    return await Task.FromResult<List<Facility>>(lstFacility);
-        //}
+       
     }
 }

@@ -3,6 +3,7 @@
     using ABMVantage_Outbound_API.EntityModels;
     using ABMVantage_Outbound_API.Models;
     using Microsoft.Extensions.Logging;
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     
     /// <summary>
@@ -36,6 +37,10 @@
         public async Task<ActiveClosedEvChargingSession> GetChargingSessionsAsync()
         {
             _logger.LogInformation($"Getting session data for {nameof(EvActiveSessions)} and {nameof(EvClosedSessions)}");
+
+            //var data = await _dataAccessService.GetLocaitonAsync("1");
+
+
 
             var closed = await _dataAccessService.GetClosedChargingSessionsAsync().ConfigureAwait(false);
             var active = await _dataAccessService.GetActiveChargingSessionsAsync().ConfigureAwait(false);

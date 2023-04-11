@@ -69,25 +69,7 @@
         /// <returns>Booking</returns>
         Task<Booking> GetReservationAsync(string id);
 
-        ///// <summary>
-        ///// Get Products
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //Task<List<Product>> GetProductAsync(string id);
-
-        ///// <summary>
-        ///// Ge tLevels
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //Task<List<Level>> GetLevelAsync(string id);
-
-        ///// <summary>
-        ///// Get Facilites
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //Task<List<Facility>> GetFacilityAsync(string id);
+        //Task<Location> GetLocaitonAsync(string id);
+        
     }
 }

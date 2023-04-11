@@ -59,6 +59,11 @@
         private const string ParcsTicketTransactions = nameof(ParcsTicketTransactions);
 
         /// <summary>
+        /// Name of the container for metadata.
+        /// </summary>
+        private const string DimLocation = nameof(DimLocation);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
         /// <param name="options">The configuration options.</param>
@@ -109,6 +114,17 @@
                     .ToContainer(ParcsTicketTransactions)
                     .HasPartitionKey(da => da.Id);
 
+            //modelBuilder.Entity<DimLocation>()
+            //       .HasNoDiscriminator()
+            //       .ToContainer(DimLocation)
+            //       .HasNoKey()
+            //       .ToContainer(DimLocation)
+            //       .HasPartitionKey(da => da.LocationId)
+            //       .HasMany(da => da.Facilities);
+
+
+
+
             modelBuilder.Entity<Booking>().OwnsMany(b => b.BookingReservations);
             modelBuilder.Entity<EvActiveSessions>().OwnsMany(e => e.ResponseActiveChargeSession);
         }
@@ -152,5 +168,9 @@
         /// Parcs ticket Transactions collection
         /// </summary>
         public DbSet<ParcsTicketsTransactions> ParcsTicketsTransactions { get; set; }
+
+        public DbSet<Location> DimLocations { get; set; }
+
+        
     }
 }

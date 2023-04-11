@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -8,28 +9,39 @@ using System.Threading.Tasks;
 namespace ABMVantage_Outbound_API.EntityModels
 {
    
-    [Table("DIM_LEVEL")]
+   // [Table("DIM_LEVEL")]
     public class Level
     {
-        [Column("LEVEL_ID")]
+        [JsonProperty("LevelId")]
+        //[Column("LEVEL_ID")]
         public string? LevelId { get; set; }
 
-        [Column("FACILITY_ID")]
+        //DimFacilityFacilityId
+        [JsonProperty("DimFacilityFacilityId")]
+        public string? DimFacilityFacilityId { get; set; }
+
+        [JsonProperty("FacilityId")]
+        //[Column("FACILITY_ID")]
         public string? FacilityId { get; set; }
 
-        [Column("LEVEL")]
+        [JsonProperty("Level")]
+        //[Column("LEVEL")]
         public int? LevelName { get; set; }
 
-        [Column("TOTAL_SPACES")]
+        [JsonProperty("TotalSpaces")]
+        //[Column("TOTAL_SPACES")]
         public int? TotalSpace { get; set; }
 
-        [Column("SUPPORTS_OVERFLOW")]
+        [JsonProperty("SupportsOverflow")]
+        //[Column("SUPPORTS_OVERFLOW")]
         public bool? SupportOverflow { get; set; }
 
-        [Column("IS_ROOF")]
+        [JsonProperty("IsRoof")]
+        //[Column("IS_ROOF")]
         public bool? IsRoof { get; set; }
 
-        [Column("LEVEL_DESCRIPTION")]
+        [JsonProperty("LevelDescription")]
+        //[Column("LEVEL_DESCRIPTION")]
         public string? LevelDescription { get; set; }
     }
 }

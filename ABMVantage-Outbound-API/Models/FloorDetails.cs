@@ -9,8 +9,8 @@ namespace ABMVantage_Outbound_API.Models
 {
     public class FloorDetails
     {
-        public IList<Product> Products { get; set; }
-        public IList<Level> Levels { get; set; }
-        public IList<Facility> Facilities { get; set; }
+        public IList<DimProduct> Products { get; set; }
+        public IList<DimLevel> Levels { get; set; }
+        public IList<DimFacility> Facilities { get; set; }
     }
 }

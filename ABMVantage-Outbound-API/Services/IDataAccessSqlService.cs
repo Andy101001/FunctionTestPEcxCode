@@ -14,20 +14,20 @@ namespace ABMVantage_Outbound_API.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<List<Product>> GetProductAsync(string id);
+        Task<List<DimProduct>> GetProductAsync(string id);
 
         /// <summary>
         /// Ge tLevels
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<List<Level>> GetLevelAsync(string id);
+        Task<List<DimLevel>> GetLevelAsync(string id);
 
         /// <summary>
         /// Get Facilites
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<List<Facility>> GetFacilityAsync(string id);
+        Task<IList<DimFacility>> GetFacilityAsync(string id);
     }
 }

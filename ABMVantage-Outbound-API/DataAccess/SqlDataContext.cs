@@ -22,22 +22,63 @@ namespace ABMVantage_Outbound_API.DataAccess
         {
             //modelBuilder.Entity<Level>();
             //modelBuilder.Entity<Product>();
-            //modelBuilder.Entity<Facility>();
+           
             modelBuilder.HasDefaultSchema("BASE");
+            modelBuilder.Entity<DimCustomer>().HasKey(c => c.CustomerBuKey);
+            modelBuilder.Entity<DimFacility>().HasKey(c=>c.FacilityId);
+            modelBuilder.Entity<DimLocation>().HasKey(c => c.LocationId);
+            modelBuilder.Entity<DimLevel>().HasKey(c => c.LevelId);
+            modelBuilder.Entity<DimParkingSpace>().HasKey(c => c.ParkingSpaceId);
+            modelBuilder.Entity<SpaceProduct>().HasNoKey();
+            modelBuilder.Entity<DimProduct>().HasKey(c => c.ProductId);
 
         }
         #endregion
+
+
+
+
         /// <summary>
-        ///  Get the Levels 
+        ///  Get the Customers 
         /// </summary>
-        public DbSet<Level> Levels { get; set; }
+        public DbSet<DimCustomer> DimCustomers { get; set; }
+
         /// <summary>
-        /// Get Products
+        ///  Get the DimLocations 
         /// </summary>
-        public DbSet<Product> Products { get; set; }
+        public DbSet<DimLocation> DimLocations { get; set; }
+
         /// <summary>
-        /// Get Facilities
+        ///  Get the DimLevels 
         /// </summary>
-        public DbSet<Facility> Facilities { get; set; }
+        public DbSet<DimLevel> DimLevels { get; set; }
+
+        /// <summary>
+        ///  Get the DimParkingSpaces 
+        /// </summary>
+        public DbSet<DimParkingSpace> DimParkingSpaces { get; set; }
+
+        /// <summary>
+        ///  Get the SpaceProducts 
+        /// </summary>
+        public DbSet<SpaceProduct> SpaceProducts { get; set; }
+
+        /// <summary>
+        ///  Get the SpaceProducts 
+        /// </summary>
+        public DbSet<DimProduct> Dimroducts { get; set; }
+
+        /// <summary>
+        ///  Get the DimFacilities 
+        /// </summary>
+        public DbSet<DimFacility> DimFacilities { get; set; }
+
+        /// <summary>
+        ///  Get the DimFacilities 
+        /// </summary>
+        public DbSet<DimProduct> DimProducts { get; set; }
+
+
+
     }
 }

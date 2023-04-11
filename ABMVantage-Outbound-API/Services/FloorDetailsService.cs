@@ -17,57 +17,49 @@ namespace ABMVantage_Outbound_API.Services
     {
         private readonly ILogger<FloorDetailsService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
+        private readonly IDataAccessService _dataAccessService;
         private readonly IConfiguration _configuration;
         private readonly bool IsSqlDbConnectionOn;
-        public FloorDetailsService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IConfiguration configuration) {
+        public FloorDetailsService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IDataAccessService dataAccessService, IConfiguration configuration) {
 
             _logger = loggerFactory.CreateLogger<FloorDetailsService>();
-
+            _dataAccessService= dataAccessService;
             _configuration = configuration;
             IsSqlDbConnectionOn = Convert.ToBoolean(_configuration.GetSection("SqlSettings")["IsSqlDbConnectionOn"]);
 
             _dataAccessSqlService = dataAccessSqlService;
 
-          
-
-
             _logger.LogInformation($"Constructing {nameof(FloorDetailsService)}");
         }
         
-        public async Task<List<Facility>> GetAllFacilityAsync(string id)
-
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Level>> GetAllLevelAsync(string id)
-        {
-            var lstlevels = await _dataAccessSqlService.GetLevelAsync(id);
-            return lstlevels;
-        }
-
-        public async Task<List<Product>> GetAllProductAsync(string id)
-        {
-            var products= await _dataAccessSqlService.GetProductAsync(id);
-
-            return products;
-        }
-
         public async Task<FloorDetails> GetFloorDetails(string id)
         {
             FloorDetails floor =new FloorDetails();
 
             if(IsSqlDbConnectionOn)
             {
-                var products = await _dataAccessSqlService.GetProductAsync(id);
-                var lstlevels = await _dataAccessSqlService.GetLevelAsync(id);
-                var lstFacility = await _dataAccessSqlService.GetFacilityAsync(id);
-                floor = new FloorDetails { Facilities = lstFacility, Levels = lstlevels, Products = products };
+                try
+                {
+                    floor.Facilities = await _dataAccessSqlService.GetFacilityAsync(id);
+                    string facilityId = floor.Facilities.FirstOrDefault().FacilityId;
+                    floor.Levels = await _dataAccessSqlService.GetLevelAsync(facilityId);
+                    floor.Products = await _dataAccessSqlService.GetProductAsync(facilityId);
+
+                }
+                catch(Exception ex)
+                {
+                    string msg = ex.Message;
+                }
+                
             }
             else
             {
                 //TODO: Cosmos db implementatin go here
-                throw new Exception($"ERROR: IsSqlDbConnectionOn is {IsSqlDbConnectionOn}");
+
+              // var data = _dataAccessService.GetLocaitonAsync(id);
+
+
+               
             }
           
 
