@@ -13,6 +13,9 @@
         private readonly Mock<ILoggerFactory> _mockLogger;
         private readonly Mock<IDataAccessService> _mockDataAccessService;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public PushVantageAzureFunctionEVChargingSessionsTests()
         {
             _mockLogger = new Mock<ILoggerFactory>();

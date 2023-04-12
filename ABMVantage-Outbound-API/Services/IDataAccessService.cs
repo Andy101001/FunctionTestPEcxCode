@@ -1,7 +1,7 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {    
     using ABMVantage_Outbound_API.EntityModels;
-    
+
     /// <summary>
     /// Data access readonly interface
     /// </summary>
@@ -68,5 +68,8 @@
         /// <param name="id">id</param>
         /// <returns>Booking</returns>
         Task<Booking> GetReservationAsync(string id);
+
+        //Task<Location> GetLocaitonAsync(string id);
+        
     }
 }

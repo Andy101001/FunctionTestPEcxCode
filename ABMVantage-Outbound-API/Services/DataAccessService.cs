@@ -20,6 +20,7 @@
         /// Factory to generate <see cref="DocsContext"/> instances.
         /// </summary>
         private readonly IDbContextFactory<CosmosDataContext> _dbContextFactory;
+        private readonly IDbContextFactory<SqlDataContext> _dbSqlContextFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataAccessService"/> class.
@@ -184,5 +185,36 @@
 
             return booking;
         }
+
+
+
+        //public async Task<Location> GetLocaitonAsync(string id)
+        //{
+        //    _logger.LogInformation($"Getting booking for Id:{id}");
+
+        //    Location location = new Location();
+
+        //    try
+        //    {
+        //        using var context = _dbContextFactory.CreateDbContext();
+        //        location = await context.DimLocations
+        //                                .WithPartitionKey(id)
+        //                                .SingleOrDefaultAsync(d => d.LocationId == id);
+
+        //        _logger.LogInformation($"Finished Getting booking for Id:{id}");
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        string message = ex.Message;
+        //    }
+           
+
+           
+
+        //    return location;
+        //}
+
+
+       
     }
 }
