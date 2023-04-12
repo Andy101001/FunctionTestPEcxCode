@@ -29,7 +29,7 @@ namespace ABMVantage_Outbound_API.DataAccess
             modelBuilder.Entity<DimLocation>().HasKey(c => c.LocationId);
             modelBuilder.Entity<DimLevel>().HasKey(c => c.LevelId);
             modelBuilder.Entity<DimParkingSpace>().HasKey(c => c.ParkingSpaceId);
-            modelBuilder.Entity<SpaceProduct>().HasNoKey();
+            modelBuilder.Entity<SpaceProduct>().HasKey(c=>c.ParkingProductId);
             modelBuilder.Entity<DimProduct>().HasKey(c => c.ProductId);
 
         }

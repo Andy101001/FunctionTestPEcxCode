@@ -17,8 +17,9 @@
     {
         private IFloorDetailsService? _floorDetailsService;
         private readonly Mock<ILoggerFactory> _mockLogger;
-        private readonly Mock<IDataAccessSqlService> _mockDataAccessService;
+        private readonly IDataAccessService _dataAccessService;
         private readonly IDataAccessSqlService _dataAccessSqlService;
+        private IConfiguration configuration;
         public PushVantageAzureFunctionFloorDetailsTests()
         {
             _mockLogger = new Mock<ILoggerFactory>();
@@ -69,18 +70,21 @@
 
             using (var context = mockDbFactory.Object.CreateDbContext())
             {
-                context.Add(new Level { LevelId = "01", LevelName = 10 });
-                context.Add(new Facility { FacilityId = "01", FacilityName = "Facililty 1" });
-                context.Add(new Product { ProductId = "01", ProductName = "Product 1" });
+                context.Add(new DimCustomer {CustomerBuKey=01,BuCode= "LAX", CustomerId= "PQR_1576" });
+                context.Add(new DimLocation {BuCode= "LAX", LocationId= 3576 });
+                context.Add(new DimFacility { FacilityId = "LAX3576BLDG01", FacilityName = "LAXPARKINGBLDG01", LocationId= 3576 });
+                context.Add(new DimLevel { LevelId = "01",LavelName=5, FacilityId= "LAX3576BLDG01" });
+                context.Add(new DimParkingSpace {ParkingProductId= "2545", ParkingSpaceId= "LAX_P1-L1-S3" });
+                context.Add(new SpaceProduct {ParkingSpaceId = "LAX_P1-L1-S3",ParkingProductId= 2545 });
+                context.Add(new DimProduct { ProductId = 2545, ProductName = "Product 1" });
                 context.SaveChanges();
             }
             var sqlDbService = new DataAccessSqlService(mockDbFactory.Object, _mockLogger.Object);
 
             // ACT
-            //_floorDetailsService = new FloorDetailsService(_mockLogger.Object, sqlDbService, configuration);
-            //var result = await _floorDetailsService.GetFloorDetails("01");
+            _floorDetailsService = new FloorDetailsService(_mockLogger.Object, sqlDbService, _dataAccessService, configuration);
+            var result = await _floorDetailsService.GetFloorDetails("PQR_1576");
 
-            string result = "ok";
             // ASSERT
             Assert.NotNull(result);
 
