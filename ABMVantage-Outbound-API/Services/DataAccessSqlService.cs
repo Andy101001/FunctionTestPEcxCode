@@ -1,11 +1,14 @@
 ﻿using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.EntityModels;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -95,6 +98,72 @@ namespace ABMVantage_Outbound_API.Services
             }
 
             return lstLevel;
+        }
+
+
+        //public async Task<int> GetDailyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        //{
+        //    var lstLevel = new List<DimProduct>();
+        //    int dailyCount = 0;
+
+        //    using (var db = _dbSqlContextFactory.CreateDbContext())
+        //    {
+
+        //        //var dbSet = from pas in db.FactPaymentsTicketAndStageds
+        //        //            join ft in db.FactTickets on pas.TicketId equals ft.TicketId
+        //        //            join f in db.DimFacilities on ft.FacilityId equals f.FacilityId
+        //        //            ;
+
+
+                
+        //    }
+
+        //    return dailyCount;
+        //}
+
+        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            var lstLevel = new List<DimProduct>();
+            decimal dailyCount = 0;
+
+            using (var db = _dbSqlContextFactory.CreateDbContext())
+            {
+                /*
+                SqlParameter param1 = new SqlParameter("@parkingProductId", parkingProductId);
+                SqlParameter param2 = new SqlParameter("@facilityId", facilityId);
+                SqlParameter param3 = new SqlParameter("@StartDate", calculationDate);
+                SqlParameter param4 = new SqlParameter("@facilityId", facilityId);
+                string endDate = "2022-12-09 23:59:59.000";
+                string startDate = "2022-07-08 05:00:00.000";
+
+                var conn = new SqlConnection(db.Database.GetConnectionString());
+                conn.Open();
+
+                string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                sql = "EXEC BASE.DailyTotalRevenue '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                var rdr = await cmd.ExecuteScalarAsync();
+                //while(rdr.Read())
+                //{
+                    dailyCount= Convert.ToDecimal(rdr);
+                //}
+
+
+                //var result = db.Database.SqlQuery<decimal>($"{sql}").AsEnumerable();
+                */
+
+                ///TODO this has to do better way
+                var result = db.Database.SqlQuery<decimal>($"EXEC [BASE].[DailyTotalRevenue] '2545', 'LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'").AsEnumerable();
+
+
+                dailyCount = result.FirstOrDefault();
+
+            }
+
+            return dailyCount;
         }
 
     }

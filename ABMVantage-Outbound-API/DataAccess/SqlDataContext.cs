@@ -32,6 +32,11 @@ namespace ABMVantage_Outbound_API.DataAccess
             modelBuilder.Entity<SpaceProduct>().HasKey(c=>c.ParkingProductId);
             modelBuilder.Entity<DimProduct>().HasKey(c => c.ProductId);
 
+
+            modelBuilder.Entity<FactOccupancyEvent>().HasKey(c => c.OccupancyId);
+            modelBuilder.Entity<FactTicket>().HasKey(c => c.TicketId);
+            modelBuilder.Entity<FactPaymentsTicketAndStaged>().HasKey(c => c.PaymentId);
+
         }
         #endregion
 
@@ -79,6 +84,20 @@ namespace ABMVantage_Outbound_API.DataAccess
         public DbSet<DimProduct> DimProducts { get; set; }
 
 
+        /// <summary>
+        ///  Get the FactOccupancyEvents 
+        /// </summary>
+        public DbSet<FactOccupancyEvent> FactOccupancyEvents { get; set; }
 
+        /// <summary>
+        ///  Get the FactOccupancyEvents 
+        /// </summary>
+        public DbSet<FactTicket> FactTickets { get; set; }
+
+        //FactPaymentsTicketAndStaged
+        /// <summary>
+        ///  Get the FactPaymentsTicketAndStaged
+        /// </summary>
+        public DbSet<FactPaymentsTicketAndStaged> FactPaymentsTicketAndStageds { get; set; }
     }
 }

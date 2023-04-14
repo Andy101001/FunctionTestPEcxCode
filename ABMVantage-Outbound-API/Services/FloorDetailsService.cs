@@ -66,6 +66,30 @@ namespace ABMVantage_Outbound_API.Services
             return floor;
         }
 
-        
+
+        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            decimal totalCount = 0;
+
+            if (IsSqlDbConnectionOn)
+            {
+                try
+                {
+                    totalCount = await _dataAccessSqlService.GetDailyTotalRevenueAsync(calculationDate, facilityId, levelId, parkingProductId);
+                   
+                    
+                }
+                catch (Exception ex)
+                {
+                    string msg = ex.Message;
+                }
+
+            }
+            
+
+
+            return totalCount;
+        }
+
     }
 }
