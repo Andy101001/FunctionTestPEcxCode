@@ -14,6 +14,12 @@ namespace ABMVantage_Outbound_API.DashboardFunctionModels
     public class TransactionCountForMonth
     {
         public string Month { get; set; }
-        public int TransactionCount { get; set; }
+        public IEnumerable<TransactionsForProduct> Data { get; set; }
+    }
+
+    public class TransactionsForProduct
+    {
+        public string? Product { get; set; }
+        public int NoOfTransactions { get; set; }
     }
 }

@@ -30,6 +30,18 @@ namespace ABMVantage_Outbound_API.Services
         /// <returns></returns>
         Task<IList<DimFacility>> GetFacilityAsync(string id);
 
+        /// <summary>
+        /// Gets the total number of transactions for each month, potentially filtered by facility, level and product.
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="facilityId"></param>
+        /// <param name="levelId"></param>
+        /// <param name="parkingProductId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCounts(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId);
+
+
         Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }
