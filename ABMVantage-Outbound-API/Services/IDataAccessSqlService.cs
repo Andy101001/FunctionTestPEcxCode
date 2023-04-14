@@ -30,6 +30,10 @@ namespace ABMVantage_Outbound_API.Services
         /// <returns></returns>
         Task<IList<DimFacility>> GetFacilityAsync(string id);
 
-        Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+
+        Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
+
+        Task<int> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }

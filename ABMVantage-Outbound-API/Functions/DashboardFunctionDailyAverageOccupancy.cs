@@ -1,4 +1,5 @@
 ﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -12,10 +13,14 @@ namespace ABMVantage_Outbound_API.Functions
     public class DashboardFunctionDailyAverageOccupancy
     {
         private readonly ILogger _logger;
-        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory)
+        private readonly ITransactionService _dailyTransactionCountService;
+        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService)
         {
-            _logger = loggerFactory.CreateLogger<DashboardFunctionDailyAverageOccupancy>();
-            _logger.LogInformation($"Constructing{nameof(DashboardFunctionDailyAverageOccupancy)}");
+            ArgumentNullException.ThrowIfNull(dailyTransactionCountService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+            _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
+            _dailyTransactionCountService = dailyTransactionCountService;
+            _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyAverageOccupancy)}");
         }
 
         [Function("ABM Dashboard - Get Daily Average Occupancy")]
@@ -29,7 +34,22 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiParameter(name: "parkingProductId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, then the average occupancy is calculated using only parking spots for the given product. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by parking product.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "dailyaverageoccupancy")] HttpRequestData reg, [FromQuery] DateTime calculationDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyAverageOccupancy)}");
+
+            if (string.IsNullOrEmpty(parkingProductId))
+            {
+                _logger.LogError($"{nameof(DashboardFunctionDailyAverageOccupancy)} Query string  parametr customerId is EMPTY OR not supplied!");
+                throw new ArgumentNullException("parkingProductId");
+            }
+
+            var result = await _dailyTransactionCountService.GetDailyAverageOccupancy(calculationDate, facilityId, levelId, parkingProductId);
+            _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyAverageOccupancy)}");
+
+            return new OkObjectResult(new
+            {
+                averageDailyOccupancyInteger = result,
+                averageDailyOccupancyPercentage = 0
+            });
         }
     }
 }

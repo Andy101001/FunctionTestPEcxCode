@@ -100,30 +100,45 @@ namespace ABMVantage_Outbound_API.Services
             return lstLevel;
         }
 
-
-        //public async Task<int> GetDailyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
-        //{
-        //    var lstLevel = new List<DimProduct>();
-        //    int dailyCount = 0;
-
-        //    using (var db = _dbSqlContextFactory.CreateDbContext())
-        //    {
-
-        //        //var dbSet = from pas in db.FactPaymentsTicketAndStageds
-        //        //            join ft in db.FactTickets on pas.TicketId equals ft.TicketId
-        //        //            join f in db.DimFacilities on ft.FacilityId equals f.FacilityId
-        //        //            ;
-
-
-                
-        //    }
-
-        //    return dailyCount;
-        //}
-
-        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        
+        public async Task<int> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var lstLevel = new List<DimProduct>();
+        
+            int dailyCount = 0;
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    var rdr = await cmd.ExecuteScalarAsync();
+
+                    dailyCount = Convert.ToInt32(rdr);
+                }
+            }
+            catch(Exception ex)
+            {
+                string error = ex.Message;
+            }
+            
+
+            return dailyCount;
+        }
+
+        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+
+
             decimal dailyCount = 0;
 
             using (var db = _dbSqlContextFactory.CreateDbContext())
@@ -166,5 +181,37 @@ namespace ABMVantage_Outbound_API.Services
             return dailyCount;
         }
 
+        public async Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            int dailyCount = 0;
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    var rdr = await cmd.ExecuteScalarAsync();
+
+                    dailyCount = Convert.ToInt32(rdr);
+                }
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+
+            return dailyCount;
+        }
     }
 }
