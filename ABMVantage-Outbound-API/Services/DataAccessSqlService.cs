@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.DataAccess;
+﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.EntityModels;
 using ABMVantage_Outbound_API.Functions;
 using Microsoft.Data.SqlClient;
@@ -102,10 +103,11 @@ namespace ABMVantage_Outbound_API.Services
         }
 
         
-        public async Task<int> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
         
             int dailyCount = 0;
+            var occupancy =new DashboardDailyAverageOccupancy();
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
@@ -124,9 +126,15 @@ namespace ABMVantage_Outbound_API.Services
 
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
-                    var rdr = await cmd.ExecuteScalarAsync();
+                    //var rdr = await cmd.ExecuteScalarAsync();
+                    var rdr = await cmd.ExecuteReaderAsync();
+                    while (rdr.Read())
+                    {
+                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["averageOccupancy"]);
+                        occupancy.AverageDailyOccupancyPercentage= Convert.ToInt32(rdr["averageOccupancyPercentage"]);
+                    }
 
-                    dailyCount = Convert.ToInt32(rdr);
+                    //dailyCount = Convert.ToInt32(rdr);
                 }
             }
             catch(Exception ex)
@@ -136,7 +144,7 @@ namespace ABMVantage_Outbound_API.Services
             }
             
 
-            return dailyCount;
+            return occupancy;
         }
 
         public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)

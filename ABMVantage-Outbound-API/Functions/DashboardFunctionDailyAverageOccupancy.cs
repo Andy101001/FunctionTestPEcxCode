@@ -45,11 +45,8 @@ namespace ABMVantage_Outbound_API.Functions
             var result = await _dailyTransactionCountService.GetDailyAverageOccupancy(calculationDate, facilityId, levelId, parkingProductId);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyAverageOccupancy)}");
 
-            return new OkObjectResult(new
-            {
-                averageDailyOccupancyInteger = result,
-                averageDailyOccupancyPercentage = 0
-            });
+            //Just to make out json as required to UI
+            return new OkObjectResult(new{ averageDailyOccupancyInteger=result.AverageDailyOccupancyInteger, averageDailyOccupancyPercentage=result.AverageDailyOccupancyPercentage });
         }
     }
 }

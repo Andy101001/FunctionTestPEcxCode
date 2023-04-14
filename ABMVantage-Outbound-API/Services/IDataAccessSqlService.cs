@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.EntityModels;
+﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.EntityModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,6 @@ namespace ABMVantage_Outbound_API.Services
 
         Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
 
-        Task<int> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }

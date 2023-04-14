@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace ABMVantage_Outbound_API.Services
        
         public async Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var result = await _dataAccessSqlService.GetDailyAverageOccupancy(tranactionDate, facilityId, levelId, parkingProductId);
+            var result = await _dataAccessSqlService.GetDailyTransactionCountAsync(tranactionDate, facilityId, levelId, parkingProductId);
 
             return result;
         }
@@ -44,7 +45,7 @@ namespace ABMVantage_Outbound_API.Services
             return result;
         }
 
-        public async Task<int> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var result = await _dataAccessSqlService.GetDailyAverageOccupancy(tranactionDate, facilityId, levelId, parkingProductId);
 

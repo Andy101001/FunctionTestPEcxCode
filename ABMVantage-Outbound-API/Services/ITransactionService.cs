@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,6 @@ namespace ABMVantage_Outbound_API.Services
     {
         Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
         Task<decimal> GetDailyTotalRevenueAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
-        Task<int> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }
