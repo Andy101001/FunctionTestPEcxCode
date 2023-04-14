@@ -1,5 +1,6 @@
 ﻿using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.EntityModels;
+using ABMVantage_Outbound_API.Functions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -109,15 +110,17 @@ namespace ABMVantage_Outbound_API.Services
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
                     string endDate = "2022-12-09 23:59:59.000";
                     string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
 
-                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string sql = $"EXEC BASE.DailyAverageOccupancy '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
 
-                    string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -128,7 +131,8 @@ namespace ABMVantage_Outbound_API.Services
             }
             catch(Exception ex)
             {
-                string error = ex.Message;
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
             }
             
 
@@ -137,46 +141,38 @@ namespace ABMVantage_Outbound_API.Services
 
         public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-
-
             decimal dailyCount = 0;
 
-            using (var db = _dbSqlContextFactory.CreateDbContext())
+            try
             {
-                /*
-                SqlParameter param1 = new SqlParameter("@parkingProductId", parkingProductId);
-                SqlParameter param2 = new SqlParameter("@facilityId", facilityId);
-                SqlParameter param3 = new SqlParameter("@StartDate", calculationDate);
-                SqlParameter param4 = new SqlParameter("@facilityId", facilityId);
-                string endDate = "2022-12-09 23:59:59.000";
-                string startDate = "2022-07-08 05:00:00.000";
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
 
-                var conn = new SqlConnection(db.Database.GetConnectionString());
-                conn.Open();
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
 
-                string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
 
-                sql = "EXEC BASE.DailyTotalRevenue '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+                    //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                var rdr = await cmd.ExecuteScalarAsync();
-                //while(rdr.Read())
-                //{
-                    dailyCount= Convert.ToDecimal(rdr);
-                //}
+                    SqlCommand cmd = new SqlCommand(sql, conn);
 
+                    var rdr = await cmd.ExecuteScalarAsync();
 
-                //var result = db.Database.SqlQuery<decimal>($"{sql}").AsEnumerable();
-                */
-
-                ///TODO this has to do better way
-                var result = db.Database.SqlQuery<decimal>($"EXEC [BASE].[DailyTotalRevenue] '2545', 'LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'").AsEnumerable();
-
-
-                dailyCount = result.FirstOrDefault();
-
+                    dailyCount = Convert.ToDecimal(rdr);
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
 
             return dailyCount;
         }
@@ -188,15 +184,18 @@ namespace ABMVantage_Outbound_API.Services
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
                     string endDate = "2022-12-09 23:59:59.000";
                     string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
 
-                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string sql = $"EXEC DailyTransaction '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
 
-                    string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+                    //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -207,10 +206,10 @@ namespace ABMVantage_Outbound_API.Services
             }
             catch (Exception ex)
             {
-                string error = ex.Message;
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
             }
-
-
+            
             return dailyCount;
         }
     }
