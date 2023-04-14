@@ -1,8 +1,10 @@
 ﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Net;
@@ -12,10 +14,14 @@ namespace ABMVantage_Outbound_API.Functions
     public class DashboardFunctionDailyTotalRevenue
     {
         private readonly ILogger _logger;
-        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory) 
+        private readonly IFloorDetailsService _floorDetailsService;
+        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory, IFloorDetailsService floorDetailsService) 
         {
+            ArgumentNullException.ThrowIfNull(floorDetailsService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
-            _logger.LogInformation($"Constrinctung{nameof(DashboardFunctionDailyTotalRevenue)}");
+            _floorDetailsService = floorDetailsService;
+            _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyTotalRevenue)}");
         }
 
 
@@ -30,7 +36,10 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiParameter (name: "parkingProductId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, only revenue from transactions for that parking product are included in the total revenue. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then the revenue is not filtered by parking product.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "dailytotalrevenue")] HttpRequestData reg, [FromQuery] DateTime calculationDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
         {
-            throw new NotImplementedException();
+            var result = await _floorDetailsService.GetDailyTotalRevenueAsync(calculationDate, facilityId, levelId, parkingProductId);
+            _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTotalRevenue)}");
+
+            return new OkObjectResult(new { totalRevenue = result });
         }
     }
 }

@@ -14,6 +14,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Configurations;
 using Microsoft.OpenApi.Models;
 using AutoFixture;
 using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ABMVantage_Outbound_API
 {
@@ -70,6 +71,12 @@ namespace ABMVantage_Outbound_API
                     configuration.GetSection("SqlSettings").Bind(settings);
                 });
 
+                //Read Dashboard function settings from configuration or local settings
+                builder.Services.AddOptions<DashboardFunctionSettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("DashboardFunctionSettings").Bind(settings);
+                });
+
             }).ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 // load environment variables into the config
@@ -96,6 +103,7 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<ITicketOccupanciesService, TicketOccupanciesService>();
                 s.AddScoped<IPgsTicketOccupanciesService, PgsTicketOccupanciesService>();
                 s.AddScoped<IParcsTicketTransactionsService, ParcsTicketTransactionsService>();
+                s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
                 s.AddScoped<IReservationService, ReservationService>();
 
@@ -186,6 +194,15 @@ namespace ABMVantage_Outbound_API
                 var securitySettings = s.BuildServiceProvider().GetRequiredService<IOptions<SecuritySettings>>().Value;
                 var cosmosSettings = s.BuildServiceProvider().GetRequiredService<IOptions<CosmosSettings>>().Value;
                 var sqlSettings = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings>>().Value;
+                var dashboardSettings = s.BuildServiceProvider().GetRequiredService<IOptions<DashboardFunctionSettings>>().Value;
+
+
+                if (dashboardSettings != null)
+                {
+                    s.AddScoped<DashboardFunctionSettings, DashboardFunctionSettings>(sp =>
+                        dashboardSettings
+                    );
+                }
 
                 // Make sure we successfully read in the security settings
                 if (securitySettings != null)
@@ -224,6 +241,8 @@ namespace ABMVantage_Outbound_API
                         }
                     }
                 });
+
+
 
             });
     }
