@@ -31,6 +31,9 @@ namespace ABMVantage_Outbound_API.DataAccess
             modelBuilder.Entity<DimParkingSpace>().HasKey(c => c.ParkingSpaceId);
             modelBuilder.Entity<SpaceProduct>().HasKey(c=>c.ParkingProductId);
             modelBuilder.Entity<DimProduct>().HasKey(c => c.ProductId);
+            modelBuilder.Entity<FactTicket>().HasKey(c => c.TicketId);
+            modelBuilder.Entity<FactPaymentsTicketAndStaged>().HasKey(c => c.PaymentId);
+            modelBuilder.Entity<TransactionsByMonthAndProduct>().HasNoKey();
 
 
             modelBuilder.Entity<FactOccupancyEvent>().HasKey(c => c.OccupancyId);
@@ -82,6 +85,18 @@ namespace ABMVantage_Outbound_API.DataAccess
         ///  Get the DimFacilities 
         /// </summary>
         public DbSet<DimProduct> DimProducts { get; set; }
+
+        /// <summary>
+        /// Gets the Transactions
+        /// </summary>
+        public DbSet<FactPaymentsTicketAndStaged> FactPaymentsTicketsAndStageds { get; set; }
+
+        public DbSet<FactTicket> FactTickets { get; set; }
+
+        /// <summary>
+        /// Used by SQL stored procedure to get the Transactions by Month and Product
+        /// </summary>
+        public DbSet<TransactionsByMonthAndProduct> TransactionsByMonthAndProduct { get; set; }
 
 
         /// <summary>
