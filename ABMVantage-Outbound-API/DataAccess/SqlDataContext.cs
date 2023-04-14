@@ -104,15 +104,6 @@ namespace ABMVantage_Outbound_API.DataAccess
         /// </summary>
         public DbSet<FactOccupancyEvent> FactOccupancyEvents { get; set; }
 
-        /// <summary>
-        ///  Get the FactOccupancyEvents 
-        /// </summary>
-        public DbSet<FactTicket> FactTickets { get; set; }
 
-        //FactPaymentsTicketAndStaged
-        /// <summary>
-        ///  Get the FactPaymentsTicketAndStaged
-        /// </summary>
-        public DbSet<FactPaymentsTicketAndStaged> FactPaymentsTicketAndStageds { get; set; }
     }
 }

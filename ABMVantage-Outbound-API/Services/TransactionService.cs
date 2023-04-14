@@ -33,7 +33,7 @@ namespace ABMVantage_Outbound_API.Services
             }
             var startDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
             var endDate = startDate.AddMonths(_settings.MonthlyTransactionCountInterval).AddDays(-1);
-            var monthlyTransactionCounts = await _dataAccessService.GetMonthlyTransactionCounts(startDate, endDate, facilityId, levelId, parkingProductId);
+            var monthlyTransactionCounts = await _dataAccessService.GetMonthlyTransactionCountsAsync(startDate, endDate, facilityId, levelId, parkingProductId);
             var results = from TransactionsByMonthAndProduct cnt in monthlyTransactionCounts
                                group cnt by new {cnt.Year, cnt.Month} into monthlyGroup
                           select new TransactionCountForMonth

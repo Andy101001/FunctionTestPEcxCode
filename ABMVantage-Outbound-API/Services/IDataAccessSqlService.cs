@@ -39,7 +39,7 @@ namespace ABMVantage_Outbound_API.Services
         /// <param name="levelId"></param>
         /// <param name="parkingProductId"></param>
         /// <returns></returns>
-        Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCounts(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 
         Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);

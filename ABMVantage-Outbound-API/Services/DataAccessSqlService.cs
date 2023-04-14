@@ -101,58 +101,37 @@ namespace ABMVantage_Outbound_API.Services
             return lstLevel;
         }
 
-        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCounts(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var results = new List<TransactionsByMonthAndProduct>();
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
 
 
-                try
+                var conn = db.Database.GetDbConnection();
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
+                cmd.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var reader = cmd.ExecuteReader())
                 {
-                    var conn = db.Database.GetDbConnection();
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.TransactionsByMonthAndProduct '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                    cmd.CommandType = CommandType.Text;
-                    db.Database.OpenConnection();
-                    using(var reader = cmd.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            var transaction = new TransactionsByMonthAndProduct();
-                            transaction.Year = int.Parse(reader["YEAR"].ToString() ?? "0000");
-                            transaction.Month = int.Parse(reader["MONTH"].ToString() ?? "0000");
-                            transaction.TransactionCount = Convert.ToInt32(reader["TRANSACTION_COUNT"]);
-                            transaction.ParkingProduct = reader["PRODUCT_NAME"].ToString();
-                            results.Add(transaction);
-                        }
+                        var transaction = new TransactionsByMonthAndProduct();
+                        transaction.Year = int.Parse(reader["YEAR"].ToString() ?? "0000");
+                        transaction.Month = int.Parse(reader["MONTH"].ToString() ?? "0000");
+                        transaction.TransactionCount = Convert.ToInt32(reader["TRANSACTION_COUNT"]);
+                        transaction.ParkingProduct = reader["PRODUCT_NAME"].ToString();
+                        results.Add(transaction);
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                return results;
+            }
+        }
 
 
 
 
-                /*
-                                var conn = (SqlConnection) db.Database.GetDbConnection();
-                                conn.Open();
-                                string sql = $"EXEC BASE.TransactionsByMonthAndProduct '{facilityId}','{levelId}','{parkingProductId}','{startDate}','{endDate}'";
-                                SqlCommand cmd = new SqlCommand(sql, conn);
-                                cmd.CommandType = CommandType.StoredProcedure;
-                                var rdr = await cmd.ExecuteReaderAsync();
-                                while (rdr.Read())
-                                {
-                                    var transaction = new TransactionsByMonthAndProduct();
-                                    transaction.Year = int.Parse(rdr["Year"].ToString() ?? "0000");
-                                    transaction.Month = int.Parse(rdr["Year"].ToString() ?? "0000");
-                                    transaction.TransactionCount = Convert.ToInt32(rdr["TransactionCount"]);
-                                    transaction.ParkingProduct = rdr["ParkingProductName"].ToString();
-                                    results.Add(transaction);
-
-                                }
 
 
         //public async Task<int> GetDailyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
