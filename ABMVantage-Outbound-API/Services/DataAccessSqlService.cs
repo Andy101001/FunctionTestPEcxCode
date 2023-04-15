@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.DataAccess;
+﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.EntityModels;
 using ABMVantage_Outbound_API.Functions;
 using Microsoft.Data.SqlClient;
@@ -101,103 +102,173 @@ namespace ABMVantage_Outbound_API.Services
             return lstLevel;
         }
 
-        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var results = new List<TransactionsByMonthAndProduct>();
-            using (var db = _dbSqlContextFactory.CreateDbContext())
+        
+            int dailyCount = 0;
+            var occupancy =new DashboardDailyAverageOccupancy();
+            try
             {
-
-
-                var conn = db.Database.GetDbConnection();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                cmd.CommandType = CommandType.Text;
-                db.Database.OpenConnection();
-                using (var reader = cmd.ExecuteReader())
+                using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    while (reader.Read())
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    string sql = $"EXEC BASE.DailyAverageOccupancy '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    //var rdr = await cmd.ExecuteScalarAsync();
+                    var rdr = await cmd.ExecuteReaderAsync();
+                    while (rdr.Read())
                     {
-                        var transaction = new TransactionsByMonthAndProduct();
-                        transaction.Year = int.Parse(reader["YEAR"].ToString() ?? "0000");
-                        transaction.Month = int.Parse(reader["MONTH"].ToString() ?? "0000");
-                        transaction.TransactionCount = Convert.ToInt32(reader["TRANSACTION_COUNT"]);
-                        transaction.ParkingProduct = reader["PRODUCT_NAME"].ToString();
-                        results.Add(transaction);
+                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["averageOccupancy"]);
+                        occupancy.AverageDailyOccupancyPercentage= Convert.ToInt32(rdr["averageOccupancyPercentage"]);
                     }
+
+                    //dailyCount = Convert.ToInt32(rdr);
                 }
-                return results;
             }
+            catch(Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+            
+
+            return occupancy;
         }
 
-
-
-
-
-
-        //public async Task<int> GetDailyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
-        //{
-        //    var lstLevel = new List<DimProduct>();
-        //    int dailyCount = 0;
-
-        //    using (var db = _dbSqlContextFactory.CreateDbContext())
-        //    {
-
-        //        //var dbSet = from pas in db.FactPaymentsTicketAndStageds
-        //        //            join ft in db.FactTickets on pas.TicketId equals ft.TicketId
-        //        //            join f in db.DimFacilities on ft.FacilityId equals f.FacilityId
-        //        //            ;
-
-
-                
-        //    }
-
-        //    return dailyCount;
-        //}
-
-        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var lstLevel = new List<DimProduct>();
             decimal dailyCount = 0;
 
-            using (var db = _dbSqlContextFactory.CreateDbContext())
+            try
             {
-                /*
-                SqlParameter param1 = new SqlParameter("@parkingProductId", parkingProductId);
-                SqlParameter param2 = new SqlParameter("@facilityId", facilityId);
-                SqlParameter param3 = new SqlParameter("@StartDate", calculationDate);
-                SqlParameter param4 = new SqlParameter("@facilityId", facilityId);
-                string endDate = "2022-12-09 23:59:59.000";
-                string startDate = "2022-07-08 05:00:00.000";
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
 
-                var conn = new SqlConnection(db.Database.GetConnectionString());
-                conn.Open();
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
 
-                string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
 
-                sql = "EXEC BASE.DailyTotalRevenue '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+                    //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                var rdr = await cmd.ExecuteScalarAsync();
-                //while(rdr.Read())
-                //{
-                    dailyCount= Convert.ToDecimal(rdr);
-                //}
+                    SqlCommand cmd = new SqlCommand(sql, conn);
 
+                    var rdr = await cmd.ExecuteScalarAsync();
 
-                //var result = db.Database.SqlQuery<decimal>($"{sql}").AsEnumerable();
-                */
-
-                ///TODO this has to do better way
-                var result = db.Database.SqlQuery<decimal>($"EXEC [BASE].[DailyTotalRevenue] '2545', 'LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'").AsEnumerable();
-
-
-                dailyCount = result.FirstOrDefault();
-
+                    dailyCount = Convert.ToDecimal(rdr);
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
 
             return dailyCount;
         }
 
+        public async Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            int dailyCount = 0;
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    string sql = $"EXEC DailyTransaction '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    var rdr = await cmd.ExecuteScalarAsync();
+
+                    dailyCount = Convert.ToInt32(rdr);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+            
+            return dailyCount;
+        }
+
+        public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            int dailyCount = 0;
+
+            var lstDaysRervation=new List<DashboardFuctionDayReservation>();
+             
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    //var conn = new SqlConnection(db.Database.GetConnectionString());
+                    //conn.Open();
+
+                    //string sql = $"EXEC DailyTransaction '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    ////string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    //SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    //var rdr = await cmd.ExecuteScalarAsync();
+
+                    //dailyCount = Convert.ToInt32(rdr);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
+
+            ///TODO: this will change when SP is ready.
+
+            lstDaysRervation.Add(new DashboardFuctionDayReservation{NoOfReservations=100, WeekDay="Mon" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
+
+            return lstDaysRervation;
+        }
     }
 }

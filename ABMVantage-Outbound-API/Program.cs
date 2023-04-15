@@ -105,7 +105,10 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IParcsTicketTransactionsService, ParcsTicketTransactionsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
-                
+                s.AddScoped<ITransactionService, TransactionService>();
+                s.AddScoped<IDayReservationService, DayReservationService>();
+
+
                 s.AddOptions();
 
                 s.AddSingleton<Fixture>(new Fixture())
