@@ -1,4 +1,6 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+﻿using ABMVantage_Outbound_API.Configuration;
+using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.EntityModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,10 +18,12 @@ namespace ABMVantage_Outbound_API.Services
     public class TransactionService : ITransactionService
     {
 
-        private readonly ILogger<TransactionService> _logger;
+
+        private DashboardFunctionSettings _settings; private readonly ILogger<TransactionService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
         private readonly IConfiguration _configuration;
-        public TransactionService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService)
+        //private IDataAccessSqlService _dataAccessService;
+        public TransactionService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, DashboardFunctionSettings settings)
         {
             _logger = loggerFactory.CreateLogger<TransactionService>();
 
@@ -50,6 +54,30 @@ namespace ABMVantage_Outbound_API.Services
             var result = await _dataAccessSqlService.GetDailyAverageOccupancy(tranactionDate, facilityId, levelId, parkingProductId);
 
             return result;
+        }
+
+        public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCount(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            _logger.LogInformation($"Getting Dashboard Monthly Transaction Count {nameof(GetMonthlyTransactionCount)}");
+            if (calculationDate < _settings.MinimumValidCalculationDate)
+            {
+                throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
+            }
+            var startDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
+            var endDate = startDate.AddMonths(_settings.MonthlyTransactionCountInterval).AddDays(-1);
+            var monthlyTransactionCounts = await _dataAccessSqlService.GetMonthlyTransactionCountsAsync(startDate, endDate, facilityId, levelId, parkingProductId);
+            var results = from TransactionsByMonthAndProduct cnt in monthlyTransactionCounts
+                          group cnt by new { cnt.Year, cnt.Month } into monthlyGroup
+                          select new TransactionCountForMonth
+                          {
+                              Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
+                              Data = monthlyGroup.Select(x => new TransactionsForProduct { NoOfTransactions = x.TransactionCount, Product = x.ParkingProduct })
+                          };
+            var result = new DashboardMonthlyTransactionCount { MonthlyTransactions = results };
+            return result;
+
+
+
         }
     }
 }

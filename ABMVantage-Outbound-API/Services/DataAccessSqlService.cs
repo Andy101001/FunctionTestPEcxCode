@@ -270,5 +270,10 @@ namespace ABMVantage_Outbound_API.Services
 
             return lstDaysRervation;
         }
+
+        public Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
