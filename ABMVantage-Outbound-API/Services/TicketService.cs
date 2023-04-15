@@ -2,8 +2,6 @@
 {
     using ABMVantage_Outbound_API.Configuration;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
-    using ABMVantage_Outbound_API.EntityModels;
-    using ABMVantage_Outbound_API.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
@@ -11,9 +9,9 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Service for all things to do with reservations
+    /// Service for all things to do with tickets
     /// </summary>
-    public class ReservationService : IReservationService
+    public class TicketService : ITicketService
     {
         private readonly ILogger<ReservationService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
@@ -29,7 +27,7 @@
         /// <param name="dataAccessSqlService">sql</param>
         /// <param name="dataAccessService">cosmo</param>
         /// <param name="configuration">configuration</param>
-        public ReservationService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IDataAccessService dataAccessService, IConfiguration configuration, DashboardFunctionSettings settings)
+        public TicketService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IDataAccessService dataAccessService, IConfiguration configuration, DashboardFunctionSettings settings)
         {
             _logger = loggerFactory.CreateLogger<ReservationService>();
             _dataAccessService = dataAccessService;
@@ -42,24 +40,23 @@
         }
 
         /// <summary>
-        /// The number of reservations for each hour of the day by hour.
-        /// This is calculated as the number of reservations for which the reservation date and time range intersect the hour.
-        /// For example, the reservations for hour 9:00 (9AM to 10AM) is the total number of reservations for which the start date/time is before 10AM,
-        /// or the end date/time is after 9AM.
+        /// This api will take in a calculation date, and possible filters for facility, level and product
+        /// and will return the total transactions by month for 13 months after the start date.For example,
+        /// if the calculation date is 2021-01-11, the api returns transactions by month for 2021/01/01 through 2022/01/31
         /// </summary>
         /// <param name="hourlyReservationParameters">Date, facilityId, levelId, and parkingProductId </param>
-        /// <returns>ReservationByHour</returns>
-        public async Task<List<ReservationByHour>> ReservationPerHour(HourlyReservationParameters hourlyReservationParameters)
-        {            
-            _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(ReservationPerHour)}");
+        /// <returns>DashboardMonthlyAverageTicketValue</returns>
+        public async Task<List<DashboardMonthlyAverageTicketValue>> AverageTicketValuePerYear(TicketPerYearParameters ticketPerYearParameters)
+        {
+            _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(AverageTicketValuePerYear)}");
 
-            if (hourlyReservationParameters.calculationDate < _settings.MinimumValidCalculationDate)
+            if (ticketPerYearParameters.StartDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
             }
-            var reservationByHour = await _dataAccessSqlService.GetReservationByHourCountsAsync(hourlyReservationParameters);
-            
-            return reservationByHour.ToList();
+            var ticketValuesPerYear = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(ticketPerYearParameters);
+
+            return ticketValuesPerYear.ToList();
         }
     }
 }

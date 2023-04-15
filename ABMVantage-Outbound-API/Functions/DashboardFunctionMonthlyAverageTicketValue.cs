@@ -13,15 +13,19 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ABMVantage_Outbound_API.Services;
+using Microsoft.Azure.Cosmos.Core;
 
 namespace ABMVantage_Outbound_API.Functions
 {
     public class DashboardFunctionMonthlyAverageTicketValue
     {
         private readonly ILogger _logger;
-        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory)
+        private readonly ITicketService _ticketService;
+        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService)
         {
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyAverageTicketValue>();
+            _ticketService = ticketService;
         }
 
         [Function("ABM Dashboard - Get Monthly Average Ticket Value")]
@@ -34,9 +38,33 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiParameter(name: "facilityId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional facilityId for filtering.", Description = "When a facilityId is provided, only tickets in that facility are included in average. If the facilityId is \"all\" or \"ALL\", or empty, or null, then the tickets are not filtered by facility.")]
         [OpenApiParameter(name: "levelId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional levelId for filtering", Description = "When a levelId is provided, then the tickets included in the average are filtered by level. If the levelId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by level.")]
         [OpenApiParameter(name: "parkingProductId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, then the tickets used in the average are filtered by parking product. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by parking product.")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "monthlyaverageticketvalue")] HttpRequestData reg, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "monthlyaverageticketvalue")] HttpRequestData reg, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyReservationCountByHour)}");
+
+            TicketPerYearParameters ticketPerYearParameters = new TicketPerYearParameters();
+
+            if (startDate.HasValue && endDate.HasValue && !string.IsNullOrEmpty(facilityId) && !string.IsNullOrEmpty(levelId) && !string.IsNullOrEmpty(parkingProductId))
+            {
+                ticketPerYearParameters = new TicketPerYearParameters
+                {
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    FacilityId = facilityId,
+                    LevelId = levelId,
+                    ParkingProductId = parkingProductId
+                };
+
+                var result = await _ticketService.AverageTicketValuePerYear(ticketPerYearParameters).ConfigureAwait(false);
+
+                return new OkObjectResult(result);
+            }
+            else
+            {
+                _logger.LogError($"Executing function {nameof(DashboardFunctionDailyReservationCountByHour)} has invalid parameters {JsonConvert.SerializeObject(ticketPerYearParameters)}");
+            }
+
+            return new OkObjectResult(null);
         }
     }
 }
