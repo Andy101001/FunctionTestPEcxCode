@@ -220,5 +220,55 @@ namespace ABMVantage_Outbound_API.Services
             
             return dailyCount;
         }
+
+        public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            int dailyCount = 0;
+
+            var lstDaysRervation=new List<DashboardFuctionDayReservation>();
+             
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    string endDate = "2022-12-09 23:59:59.000";
+                    string startDate = "2022-07-08 05:00:00.000";
+
+                    //var conn = new SqlConnection(db.Database.GetConnectionString());
+                    //conn.Open();
+
+                    //string sql = $"EXEC DailyTransaction '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+
+                    ////string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+
+                    //SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    //var rdr = await cmd.ExecuteScalarAsync();
+
+                    //dailyCount = Convert.ToInt32(rdr);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
+
+            ///TODO: this will change when SP is ready.
+
+            lstDaysRervation.Add(new DashboardFuctionDayReservation{NoOfReservations=100, WeekDay="Mon" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
+            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
+
+            return lstDaysRervation;
+        }
     }
 }
