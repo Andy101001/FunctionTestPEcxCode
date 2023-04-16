@@ -231,6 +231,32 @@
             }
         }
 
+        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            using (var db = _dbSqlContextFactory.CreateDbContext())
+            {
+                var conn = db.Database.GetDbConnection();
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = $"BASE.OccupancyByMonth '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
+                cmd.CommandType = CommandType.Text;
+                db.Database.OpenConnection();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var results = new List<OccupancyByMonth>();
+                    while (reader.Read())
+                    {
+                        var occupancy = new OccupancyByMonth();
+                        occupancy.Year = int.Parse(reader["YEAR"].ToString() ?? "0");
+                        occupancy.Month = int.Parse(reader["MONTH"].ToString() ?? "0");
+                        occupancy.OccupancyInteger = Convert.ToInt32(reader["OCCUPANCY"]);
+                        occupancy.OccupancyPercentage = Convert.ToDecimal(reader["OCCUPANCY_PERCENTAGE"]);
+                        results.Add(occupancy);
+                    }
+                    return Task.FromResult<IEnumerable<OccupancyByMonth>>(results);
+                }
+            }
+        }
+
 
         public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
@@ -492,10 +518,7 @@
             }
         }
 
-        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
