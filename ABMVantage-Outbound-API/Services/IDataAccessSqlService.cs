@@ -58,6 +58,18 @@ namespace ABMVantage_Outbound_API.Services
         Task<IEnumerable<DashboardMonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(TicketPerYearParameters ticketValuesPerYear);
 
 
-        Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+
+        Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
+
+        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+
+
+        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate,DateTime endDate,string? facilityId,string? levelId,string? parkingProductId);
+
+
+
     }
 }

@@ -1,11 +1,13 @@
 ﻿
 
 using ABMVantage_Outbound_API.DashboardFunctionModels;
+using ABMVantage_Outbound_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Net;
 
@@ -14,9 +16,13 @@ namespace ABMVantage_Outbound_API.Functions
     public class DashboardFunctionDailyTransactionCount
     {
         private readonly ILogger _logger;
-        public DashboardFunctionDailyTransactionCount(ILoggerFactory loggerFactory)
+        private readonly ITransactionService _dailyTransactionCountService;
+        public DashboardFunctionDailyTransactionCount(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService)
         {
-            _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTransactionCount>();
+            ArgumentNullException.ThrowIfNull(dailyTransactionCountService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+            _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
+            _dailyTransactionCountService = dailyTransactionCountService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyTransactionCount)}");
         }
 
@@ -31,7 +37,18 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "dailytransactioncount")] HttpRequestData req, [FromQuery] DateTime calculationDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyTransactionCount)}");
+
+            if (string.IsNullOrEmpty(parkingProductId))
+            { 
+                _logger.LogError($"{nameof(PushVantageAzureFunctionFloorDetails)} Query string  parametr customerId is EMPTY OR not supplied!");
+                throw new ArgumentNullException("parkingProductId");
+            }
+
+            var result = await _dailyTransactionCountService.GetDailyTransactiontCountAsync(calculationDate,facilityId, levelId, parkingProductId);
+            _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTransactionCount)}");
+
+            return new OkObjectResult(new { totalTransactions = result });
         }
 
 
