@@ -1,16 +1,5 @@
 ﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
 using ABMVantage_Outbound_API.EntityModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.EntityModels;
-using ABMVantage_Outbound_API.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ABMVantage_Outbound_API.Services
 {
@@ -61,6 +50,6 @@ namespace ABMVantage_Outbound_API.Services
         Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate,DateTime endDate,string? facilityId,string? levelId,string? parkingProductId);
 
 
-        Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+
     }
 }

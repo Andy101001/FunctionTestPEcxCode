@@ -17,12 +17,11 @@ namespace ABMVantage_Outbound_API.Services
   
     public class TransactionService : ITransactionService
     {
-        private DashboardFunctionSettings _settings;
-        private ILogger<TransactionService> _logger;
-        private IDataAccessSqlService _dataAccessService;
 
 
-        private DashboardFunctionSettings _settings; private readonly ILogger<TransactionService> _logger;
+
+        private DashboardFunctionSettings _settings; 
+        private readonly ILogger<TransactionService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
         private readonly IConfiguration _configuration;
         //private IDataAccessSqlService _dataAccessService;
