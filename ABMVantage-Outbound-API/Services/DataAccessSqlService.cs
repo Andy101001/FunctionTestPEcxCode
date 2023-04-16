@@ -221,11 +221,10 @@ namespace ABMVantage_Outbound_API.Services
             return dailyCount;
         }
 
-        public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            int dailyCount = 0;
 
-            var lstDaysRervation=new List<DashboardFuctionDayReservation>();
+            var lstRevnue=new List<DashboardFuctionDayRevenue>();
              
             try
             {
@@ -234,21 +233,29 @@ namespace ABMVantage_Outbound_API.Services
                     ///TOO: Synapse DB does not have properdata so hardcoding date parameters
                     ///This is to change with calculate date
                     ///
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
+                    string endDate = "2023-04-20 00:00:00.000";
+                    string startDate = "2023-04-10 00:00:00.000";
 
-                    //var conn = new SqlConnection(db.Database.GetConnectionString());
-                    //conn.Open();
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
 
-                    //string sql = $"EXEC DailyTransaction '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string sql = $"EXEC BASE.RevenueByDay '{parkingProductId}','{facilityId}','{levelId}','{startDate}','{endDate}'";
 
-                    ////string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
 
-                    //SqlCommand cmd = new SqlCommand(sql, conn);
+                    var rdr = await cmd.ExecuteReaderAsync();
 
-                    //var rdr = await cmd.ExecuteScalarAsync();
+                    while(rdr.Read())
+                    {
+                        var revenue= new DashboardFuctionDayRevenue
+                        {
+                            WeekDay = Convert.ToString(rdr["DayName"]),
+                            Amount = Convert.ToDecimal(rdr["Revenue"])
+                        };
 
-                    //dailyCount = Convert.ToInt32(rdr);
+                        lstRevnue.Add(revenue);
+                    }
+                   
                 }
             }
             catch (Exception ex)
@@ -257,21 +264,15 @@ namespace ABMVantage_Outbound_API.Services
                 throw;
             }
 
-
-            ///TODO: this will change when SP is ready.
-
-            lstDaysRervation.Add(new DashboardFuctionDayReservation{NoOfReservations=100, WeekDay="Mon" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
-
-            return lstDaysRervation;
+            return lstRevnue;
         }
 
         public Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             throw new NotImplementedException();
         }

@@ -106,7 +106,7 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
-                s.AddScoped<IDayReservationService, DayReservationService>();
+                s.AddScoped<IRevenueService, RevenueService>();
 
 
                 s.AddOptions();

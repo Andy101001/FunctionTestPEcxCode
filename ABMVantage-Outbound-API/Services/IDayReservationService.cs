@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ABMVantage_Outbound_API.Services
 {
-    public interface IDayReservationService
+    public interface IRevenueService
     {
 
-        Task<IList<DashboardFuctionDayReservation>> GetDaysResversation(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IList<DashboardFuctionDayRevenue>> GetRevenueByDay(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }
