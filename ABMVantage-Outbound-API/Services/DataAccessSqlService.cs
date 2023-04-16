@@ -4,6 +4,7 @@
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
     using ABMVantage_Outbound_API.Models;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System.Data;
@@ -425,21 +426,26 @@
 
                     ////string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                dailyCount = result.FirstOrDefault();
+                    //dailyCount = result.FirstOrDefault();
+                }
+
+
+                ///TODO: this will change when SP is ready.
+
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
+                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
+
+                return lstDaysRervation;
             }
-
-
-            ///TODO: this will change when SP is ready.
-
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
-            lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
-
-            return lstDaysRervation;
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
