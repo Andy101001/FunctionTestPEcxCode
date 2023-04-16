@@ -11,5 +11,7 @@ namespace ABMVantage_Outbound_API.Services
     {
 
         Task<IList<DashboardFuctionDayRevenue>> GetRevenueByDay(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
+
+        Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }

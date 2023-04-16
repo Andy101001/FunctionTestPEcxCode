@@ -401,7 +401,51 @@
             return lstRevnue;
         }
 
+        public async Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
 
+            var lstRevnue = new List<DashboardFuctionMonthRevenue>();
+
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    //string endDate = "2023-04-20 00:00:00.000";
+                    //string startDate = "2023-04-10 00:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    //EXEC BASE.RevenueByMonth '2545','LAX3576BLDG01', 'AGPK01_05', '2023-04-13 00:00:00.000', '2023-04-20 00:00:00'
+                    string sql = $"EXEC BASE.RevenueByMonth '{parkingProductId}','{facilityId}','{levelId}','{startDate}','{endDate}'";
+
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    var rdr = await cmd.ExecuteReaderAsync();
+
+                    while (rdr.Read())
+                    {
+                        var revenue = new DashboardFuctionMonthRevenue
+                        {
+                            Month = Convert.ToString(rdr["MonthName"]),
+                            Amount = Convert.ToDecimal(rdr["Revenue"])
+                        };
+
+                        lstRevnue.Add(revenue);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
+            return lstRevnue;
+        }
 
         public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
@@ -451,6 +495,67 @@
         public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+
+            var lstRevnue = new List<RevenueAndBudget>();
+
+            try
+            {
+                using (var db = _dbSqlContextFactory.CreateDbContext())
+                {
+                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
+                    ///This is to change with calculate date
+                    ///
+                    //string endDate = "2023-04-20 00:00:00.000";
+                    //string startDate = "2023-04-10 00:00:00.000";
+
+                    var conn = new SqlConnection(db.Database.GetConnectionString());
+                    conn.Open();
+
+                    //string sql = $"EXEC BASE.RevenueAndBudget '{parkingProductId}','{facilityId}','{levelId}','{startDate}','{endDate}'";
+
+                    //SqlCommand cmd = new SqlCommand(sql, conn);
+
+                    //var rdr = await cmd.ExecuteReaderAsync();
+
+                    //while (rdr.Read())
+                    //{
+                    //    var revenue = new RevenueAndBudget
+                    //    {
+                    //        Month = Convert.ToString(rdr["MonthName"]),
+                    //        Revenue = Convert.ToInt32(rdr["Revenue"]),
+                    //        BudgetedRevenue= Convert.ToInt32(rdr["BudgetedRevenue"])
+                    //    };
+
+                    //    lstRevnue.Add(revenue);
+                    //}
+
+                    lstRevnue.Add(new RevenueAndBudget { 
+                    
+                        BudgetedRevenue=5000,
+                        Month="Jan",
+                        Revenue=4000
+                    });
+                    lstRevnue.Add(new RevenueAndBudget
+                    {
+
+                        BudgetedRevenue = 6000,
+                        Month = "Feb",
+                        Revenue = 5000
+                    });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
+                throw;
+            }
+
+            return lstRevnue;
         }
     }
 }

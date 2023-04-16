@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 namespace ABMVantage_Outbound_API.Services
 {
 
- 
-  
+
+
     public class TransactionService : ITransactionService
     {
 
 
 
-        private DashboardFunctionSettings _settings; 
+        private DashboardFunctionSettings _settings;
         private readonly ILogger<TransactionService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
         private readonly IConfiguration _configuration;
@@ -34,9 +34,9 @@ namespace ABMVantage_Outbound_API.Services
             _logger.LogInformation($"Constructing {nameof(TransactionService)}");
         }
 
-       
 
-       
+
+
         public async Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var result = await _dataAccessSqlService.GetDailyTransactionCountAsync(tranactionDate, facilityId, levelId, parkingProductId);
@@ -81,5 +81,13 @@ namespace ABMVantage_Outbound_API.Services
 
 
         }
+
+        public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string parkingProductId)
+        {
+            var result = await _dataAccessSqlService.GetMonthlyRevenueAndBudget(startDate, endDate, facilityId, levelId, parkingProductId);
+
+            return result;
+        }
     }
+
 }

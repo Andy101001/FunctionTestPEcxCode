@@ -6,15 +6,20 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Net;
+using ABMVantage_Outbound_API.Services;
 
 namespace ABMVantage_Outbound_API.Functions
 {
     public class DashboardFunctionMonthlyRevenueAndBudget
     {
         private readonly ILogger _logger;
-        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory)
+        private readonly ITransactionService _transactionService;
+        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService)
         {
+            ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
+            ArgumentNullException.ThrowIfNull(nameof(transactionService));
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyRevenueAndBudget>();
+            _transactionService = transactionService;
         }
 
         [Function("ABM Dashboard - Get Monthly Revenue and Budget")]
@@ -29,7 +34,19 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiParameter(name: "parkingProductId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, then the transactions used for calculating revenue are filtered by parking product. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by parking product.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "monthlyrevenueandbudget")] HttpRequestData reg, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");
+
+            if (string.IsNullOrEmpty(parkingProductId))
+            {
+                _logger.LogError($"{nameof(DashboardFunctionRevenueByDay)} Query string  parametr customerId is EMPTY OR not supplied!");
+                throw new ArgumentNullException("parkingProductId");
+            }
+
+            var result = await _transactionService.GetMonthlyRevenueAndBudget(startDate, endDate, facilityId, levelId, parkingProductId);
+            _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueByDay)}");
+
+            //Just to make out json as required to UI
+            return new OkObjectResult(result);
         }
     }
 }

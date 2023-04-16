@@ -29,5 +29,12 @@ namespace ABMVantage_Outbound_API.Services
 
             return revenues;
         }
+
+        public async Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        {
+            var revenues = await _dataAccessSqlService.GetRevnueByMonth(startDate, endDate, facilityId, levelId, parkingProductId);
+
+            return revenues;
+        }
     }
 }
