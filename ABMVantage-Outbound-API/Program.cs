@@ -104,6 +104,7 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IPgsTicketOccupanciesService, PgsTicketOccupanciesService>();
                 s.AddScoped<IParcsTicketTransactionsService, ParcsTicketTransactionsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
+                s.AddScoped<IParkingOccupancyService, ParkingOccupancyService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IRevenueService, RevenueService>();

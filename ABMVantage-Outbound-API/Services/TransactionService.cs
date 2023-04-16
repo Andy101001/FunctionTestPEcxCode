@@ -19,7 +19,9 @@ namespace ABMVantage_Outbound_API.Services
     {
 
 
-        private DashboardFunctionSettings _settings; private readonly ILogger<TransactionService> _logger;
+
+        private DashboardFunctionSettings _settings; 
+        private readonly ILogger<TransactionService> _logger;
         private readonly IDataAccessSqlService _dataAccessSqlService;
         private readonly IConfiguration _configuration;
         //private IDataAccessSqlService _dataAccessService;
@@ -56,9 +58,9 @@ namespace ABMVantage_Outbound_API.Services
             return result;
         }
 
-        public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCount(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            _logger.LogInformation($"Getting Dashboard Monthly Transaction Count {nameof(GetMonthlyTransactionCount)}");
+            _logger.LogInformation($"Getting Dashboard Monthly Transaction Count {nameof(GetMonthlyTransactionCountAsync)}");
             if (calculationDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");

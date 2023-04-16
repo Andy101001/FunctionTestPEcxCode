@@ -46,7 +46,7 @@ namespace ABMVantage_Outbound_API.Functions
             try
             {
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyTransactionCount)}");
-                var result = await _transactionService.GetMonthlyTransactionCount(calculationDate, facilityId, levelId, parkingProductId);
+                var result = await _transactionService.GetMonthlyTransactionCountAsync(calculationDate, facilityId, levelId, parkingProductId);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 return new OkObjectResult(result);
             }

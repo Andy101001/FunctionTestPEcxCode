@@ -12,8 +12,10 @@ namespace ABMVantage_Outbound_API.Configuration
         {
             MinimumValidCalculationDate = new DateTime(1900, 1, 1);
             MonthlyTransactionCountInterval = 13;
+            MonthlyParkingOccupancyInterval = 6;
         }
         public int MonthlyTransactionCountInterval { get; set; }
         public DateTime MinimumValidCalculationDate { get; set; }
+        public int MonthlyParkingOccupancyInterval { get; internal set; }
     }
 }
