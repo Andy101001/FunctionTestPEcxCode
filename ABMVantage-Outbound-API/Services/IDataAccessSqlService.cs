@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ABMVantage_Outbound_API.DashboardFunctionModels;
 using ABMVantage_Outbound_API.EntityModels;
+using ABMVantage_Outbound_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,6 @@ namespace ABMVantage_Outbound_API.Services
         /// <returns></returns>
         Task<IList<DimFacility>> GetFacilityAsync(string id);
 
-
         /// <summary>
         /// Gets the total number of transactions for each month, potentially filtered by facility, level and product.
         /// </summary>
@@ -57,5 +57,10 @@ namespace ABMVantage_Outbound_API.Services
         Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
         Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
 
+
+        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate,DateTime endDate,string? facilityId,string? levelId,string? parkingProductId);
+
+
+        Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }

@@ -8,15 +8,15 @@ namespace ABMVantage_Outbound_API.DashboardFunctionModels
 {
     public class DashboardMonthlyParkingOccupancy
     {
-        public IEnumerable<ParkingOccupancy> MonthlyOccupancy { get; set; }
+        public IEnumerable<ParkingOccupancy> MonthlyParkingOccupancy { get; set; }
     }
 
     public class ParkingOccupancy
     {
         public string Month { get; set; }
         public int OccupancyInteger { get; set; }
-        public int OccupancyPercentage { get; set; }
+        public decimal OccupancyPercentage { get; set; }
         public int PreviousYearOccupancyInteger { get; set; }
-        public int PreviousYearOccupancyPercentage { get; set; }
+        public decimal PreviousYearOccupancyPercentage { get; set; }
     }
 }
