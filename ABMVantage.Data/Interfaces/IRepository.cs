@@ -11,5 +11,6 @@ namespace ABMVantage.Data.Interfaces
     public interface IRepository: IDisposable
     {
         OccupancyRepository<OccRevenueByProduct> OccupancyRepository { get; }
+        ReservationsRepository<ReservationsByHour> ReservationsRepository { get; }
     }
 }

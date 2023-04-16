@@ -14,6 +14,7 @@ namespace ABMVantage.Data.Repository
         readonly IDapperConnection dapperContext;
         bool disposed = false;
         private OccupancyRepository<OccRevenueByProduct> _occupancyRepository;
+        private ReservationsRepository<ReservationsByHour> _reservationRepository;
         #endregion
 
         #region Constructor
@@ -32,6 +33,17 @@ namespace ABMVantage.Data.Repository
                     _occupancyRepository = new OccupancyRepository<OccRevenueByProduct>(dapperContext);
 
                 return _occupancyRepository;
+            }
+        }
+
+        public ReservationsRepository<ReservationsByHour> ReservationsRepository
+        {
+            get
+            {
+                if (_reservationRepository == null)
+                    _reservationRepository = new ReservationsRepository<ReservationsByHour>(dapperContext);
+
+                return _reservationRepository;
             }
         }
         #endregion
