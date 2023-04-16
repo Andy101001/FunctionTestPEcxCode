@@ -20,4 +20,16 @@ namespace ABMVantage_Outbound_API.DashboardFunctionModels
         public string Hour { get; set; }
         public int Reservations { get; set; }
     }
+
+    /// <summary>
+    /// Input Parameters for hourly reservation
+    /// </summary>
+    public class HourlyReservationParameters
+    {
+        public DateTime? calculationDate { get; set; }
+        public string facilityId { get; set; }
+        public string levelId { get; set; }
+        public string parkingProductId { get; set; }
+        
+    }
 }
