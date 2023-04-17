@@ -15,6 +15,7 @@ namespace ABMVantage.Data.Repository
         bool disposed = false;
         private OccupancyRepository<OccRevenueByProduct> _occupancyRepository;
         private ReservationsRepository<ReservationsByHour> _reservationRepository;
+        private TransactionRepository<BudgetVariance> _transactionRepository;
         #endregion
 
         #region Constructor
@@ -46,6 +47,18 @@ namespace ABMVantage.Data.Repository
                 return _reservationRepository;
             }
         }
+
+        public TransactionRepository<BudgetVariance> TransactionRepository
+        {
+            get
+            {
+                if (_transactionRepository == null)
+                    _transactionRepository = new TransactionRepository<BudgetVariance>(dapperContext);
+
+                return _transactionRepository;
+            }
+        }
+
         #endregion
 
         #region Dispose Method
