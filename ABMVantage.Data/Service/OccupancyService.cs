@@ -18,8 +18,8 @@ namespace ABMVantage.Data.Service
         #endregion
 
         #region Public Methods
-        public Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(string userId, int customerId)
-            => _repository.OccupancyRepository.GetTotalOccRevenue(userId, customerId);
+        public Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam inputFilter)
+            => _repository.OccupancyRepository.GetTotalOccRevenue(inputFilter);
         public Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(string userId, int customerId)
            => _repository.OccupancyRepository.GetWeeklyOccByDuration(userId, customerId);
         public Task<IEnumerable<OccCurrent>> GetOccCurrent(string userId, int customerId)
