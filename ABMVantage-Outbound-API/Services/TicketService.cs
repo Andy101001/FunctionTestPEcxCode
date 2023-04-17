@@ -2,6 +2,7 @@
 {
     using ABMVantage_Outbound_API.Configuration;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.EntityModels;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
@@ -46,17 +47,36 @@
         /// </summary>
         /// <param name="hourlyReservationParameters">Date, facilityId, levelId, and parkingProductId </param>
         /// <returns>DashboardMonthlyAverageTicketValue</returns>
-        public async Task<List<DashboardMonthlyAverageTicketValue>> AverageTicketValuePerYear(TicketPerYearParameters ticketPerYearParameters)
+        public async Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(AverageTicketValuePerYear)}");
 
-            if (ticketPerYearParameters.StartDate < _settings.MinimumValidCalculationDate)
+            if (calculationDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
             }
-            var ticketValuesPerYear = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(ticketPerYearParameters);
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters();
 
-            return ticketValuesPerYear.ToList();
+            queryParameters.StartDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
+            queryParameters.EndDate = queryParameters.StartDate.AddMonths(_settings.MonthlyAverageTicketValueInterval);
+            queryParameters.FacilityId = queryParameters.FacilityId;
+            queryParameters.LevelId = queryParameters.LevelId;
+            queryParameters.ParkingProductId = queryParameters.ParkingProductId;
+
+
+
+            var monthlyAverageTicketValues = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(queryParameters);
+
+            var result = from MonthlyAverageTicketValue data in monthlyAverageTicketValues
+                         group data by new { data.Year, data.Month } into monthlyGroup
+                         select new AverageTicketValueForMonth
+                         {
+                             Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
+                             Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ParkingProduct, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
+                         };
+
+            return new DashboardMonthlyAverageTicketValue { Response = result };
+
         }
     }
 }

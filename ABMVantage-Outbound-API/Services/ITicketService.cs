@@ -7,11 +7,7 @@
     /// </summary>
     public interface ITicketService
     {
-        /// <summary>
-        /// Get reservation data
-        /// </summary>
-        /// <param name="hourlyReservationParameters">params</param>
-        /// <returns>ReservationDetails</returns>
-        Task<List<DashboardMonthlyAverageTicketValue>> AverageTicketValuePerYear(TicketPerYearParameters ticketPerYearParameters);
+
+        Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
     }
 }

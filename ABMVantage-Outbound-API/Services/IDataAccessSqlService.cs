@@ -50,12 +50,8 @@ namespace ABMVantage_Outbound_API.Services
         /// <returns>IEnumerable<ReservationByHourData></returns>
         Task<IEnumerable<ReservationByHour>> GetReservationByHourCountsAsync(HourlyReservationParameters hourlyReservationParameters);
 
-        /// <summary>
-        /// Gets the average ticket value per year, potentially filtered by facility, level and product.
-        /// </summary>
-        /// <param name="hourlyReservationParameters">ticketValuesPerYear</param>
-        /// <returns>IEnumerable<ReservationByHourData></returns>
-        Task<IEnumerable<DashboardMonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(TicketPerYearParameters ticketValuesPerYear);
+
+        Task<IEnumerable<MonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
 
         Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
