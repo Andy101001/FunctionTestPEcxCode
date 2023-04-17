@@ -31,6 +31,8 @@ namespace ABMVantage_Outbound_API.Services
 
             _dataAccessSqlService = dataAccessSqlService;
 
+            _settings = settings;
+
             _logger.LogInformation($"Constructing {nameof(TransactionService)}");
         }
 
