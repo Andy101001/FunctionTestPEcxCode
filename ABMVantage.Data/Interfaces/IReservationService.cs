@@ -9,9 +9,9 @@ namespace ABMVantage.Data.Interfaces
 {
     public interface IReservationService
     {
-        Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(string userId, int CustomerId);
-        Task<IEnumerable<ReservationsByDay>> GetDailyReservations(string userId, int CustomerId);
-        Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(string userId, int CustomerId);
-        Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(string userId, int CustomerId);
+        Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(FilterParam inputFilter);
+        Task<IEnumerable<ReservationsByDay>> GetDailyReservations(FilterParam inputFilter);
+        Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(FilterParam inputFilter);
+        Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam inputFilter);
     }
 }

@@ -19,14 +19,14 @@ namespace ABMVantage.Data.Service
 
         #region Public Methods
         
-        public Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(string userId, int CustomerId)
-            => _repository.ReservationsRepository.GetHourlyReservations(userId, CustomerId);
-        public Task<IEnumerable<ReservationsByDay>> GetDailyReservations(string userId, int CustomerId)
-            => _repository.ReservationsRepository.GetDailyReservations(userId, CustomerId);
-        public Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(string userId, int CustomerId)
-            => _repository.ReservationsRepository.GetMonthlyReservations(userId, CustomerId);
-        public Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(string userId, int CustomerId)
-            => _repository.ReservationsRepository.GetReservationsAvgTkt(userId, CustomerId);
+        public Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(FilterParam inputFilter)
+            => _repository.ReservationsRepository.GetHourlyReservations(inputFilter);
+        public Task<IEnumerable<ReservationsByDay>> GetDailyReservations(FilterParam inputFilter)
+            => _repository.ReservationsRepository.GetDailyReservations(inputFilter);
+        public Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(FilterParam inputFilter)
+            => _repository.ReservationsRepository.GetMonthlyReservations(inputFilter);
+        public Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam inputFilter)
+            => _repository.ReservationsRepository.GetReservationsAvgTkt(inputFilter);
 
         #endregion
     }

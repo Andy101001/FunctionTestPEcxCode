@@ -44,11 +44,9 @@ namespace ABMVantage.Data.Repository
             return null;
         }
 
-        public async Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(string userId, int customerId)
+        public async Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam inputFilter)
         {
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add("@UserId", userId, DbType.String, ParameterDirection.Input);
-            dynamicParams.Add("@CustomerId", customerId, DbType.Int32, ParameterDirection.Input);
+            var dynamicParams = GetInputParam(inputFilter);
 
             var result = await SqlMapper.QueryAsync<OccWeeklyOccByDuration>(
                     DapperConnection,
@@ -60,11 +58,9 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<OccCurrent>> GetOccCurrent(string userId, int customerId)
+        public async Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam inputFilter)
         {
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add("@UserId", userId, DbType.String, ParameterDirection.Input);
-            dynamicParams.Add("@CustomerId", customerId, DbType.Int32, ParameterDirection.Input);
+            var dynamicParams = GetInputParam(inputFilter);
 
             var result = await SqlMapper.QueryAsync<OccCurrent>(
                     DapperConnection,
@@ -76,11 +72,9 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(string userId, int customerId)
+        public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam inputFilter)
         {
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add("@UserId", userId, DbType.String, ParameterDirection.Input);
-            dynamicParams.Add("@CustomerId", customerId, DbType.Int32, ParameterDirection.Input);
+            var dynamicParams = GetInputParam(inputFilter);
 
             var result = await SqlMapper.QueryAsync<AvgMonthlyOccVsDuration>(
                     DapperConnection,
@@ -92,11 +86,9 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(string userId, int customerId)
+        public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter)
         {
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add("@UserId", userId, DbType.String, ParameterDirection.Input);
-            dynamicParams.Add("@CustomerId", customerId, DbType.Int32, ParameterDirection.Input);
+            var dynamicParams = GetInputParam(inputFilter);
 
             var result = await SqlMapper.QueryAsync<YearlyOccupancy>(
                     DapperConnection,

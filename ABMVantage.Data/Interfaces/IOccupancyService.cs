@@ -10,9 +10,9 @@ namespace ABMVantage.Data.Interfaces
     public interface IOccupancyService
     {
         Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam inputFilter);
-        Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(string userId, int CustomerId);
-        Task<IEnumerable<OccCurrent>> GetOccCurrent(string userId, int CustomerId);
-        Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(string userId, int CustomerId);
-        Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(string userId, int CustomerId);
+        Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam inputFilter);
+        Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam inputFilter);
+        Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam inputFilter);
+        Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter);
     }
 }
