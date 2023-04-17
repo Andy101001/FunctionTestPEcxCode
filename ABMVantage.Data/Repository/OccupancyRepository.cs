@@ -104,18 +104,22 @@ namespace ABMVantage.Data.Repository
         #region Private Methods
         private DynamicParameters GetInputParam(FilterParam inputParam)
         {
-            var facilities = inputParam.Facilities != null ? inputParam.Facilities.ToList() : new List<FacilityFilter>();
-            var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
-            var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
+            //var facilities = inputParam.Facilities != null ? inputParam.Facilities.ToList() : new List<FacilityFilter>();
+            //var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
+            //var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
+
+            var productIds = inputParam.Products != null ? string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
+            var parkingLevelIds = inputParam.ParkingLevels != null ? string.Join(",", inputParam.ParkingLevels.Select(x => x.Id)) : "";
+            var facilityIds = inputParam.Facilities != null ? string.Join(",", inputParam.Facilities.Select(x => x.Id)) : "";
 
             var dynamicParams = new DynamicParameters();
             dynamicParams.Add("@UserId", inputParam.UserId, DbType.String, ParameterDirection.Input);
             dynamicParams.Add("@CustomerId", inputParam.CustomerId, DbType.Int32, ParameterDirection.Input);
             dynamicParams.Add("@FromDate", inputParam.FromDate, DbType.DateTime2, ParameterDirection.Input);
             dynamicParams.Add("@ToDate", inputParam.ToDate, DbType.DateTime2, ParameterDirection.Input);
-            dynamicParams.Add("@Facilities", facilities.ToDataTable().AsTableValuedParameter("[BASE].[FACILITY_INPUT]"));
-            dynamicParams.Add("@ParkingLevels", parkingLevels.ToDataTable().AsTableValuedParameter("[BASE].[PARKING_LEVEL_INPUT]"));
-            dynamicParams.Add("@Products", products.ToDataTable().AsTableValuedParameter("[BASE].[PRODUCT_INPUT]"));
+            dynamicParams.Add("@Facilities", facilityIds, DbType.String, ParameterDirection.Input);
+            dynamicParams.Add("@ParkingLevels", parkingLevelIds, DbType.String, ParameterDirection.Input);
+            dynamicParams.Add("@Products", productIds, DbType.String, ParameterDirection.Input);
 
             return dynamicParams;
         }
