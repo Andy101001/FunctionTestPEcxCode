@@ -15,6 +15,11 @@ using Microsoft.OpenApi.Models;
 using AutoFixture;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ABMVantage.Data.Interfaces;
+using ABMVantage.Data.Tools;
+using ABMVantage.Data.Repository;
+using System.Configuration;
+using ABMVantage.Data.Service;
 
 namespace ABMVantage_Outbound_API
 {
@@ -108,7 +113,12 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IRevenueService, RevenueService>();
+                //Dapper
+                s.AddScoped<IDapperConnection>(d => new DapperConnection(s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings>>().Value.ConnectionString));
+                s.AddScoped<IRepository, Repository>();
 
+                //Data Services
+                s.AddScoped<IOccupancyService, OccupancyService>();
 
                 s.AddScoped<IReservationService, ReservationService>();
                 s.AddScoped<ITicketService, TicketService>();
