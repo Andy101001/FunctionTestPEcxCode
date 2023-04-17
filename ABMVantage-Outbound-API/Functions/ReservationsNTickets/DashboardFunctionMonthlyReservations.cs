@@ -18,9 +18,9 @@ namespace ABMVantage_Outbound_API.Functions.ReservationsNTickets
     public class DashboardFunctionMonthlyReservations
     {
         private readonly ILogger _logger;
-        private readonly IReservationService _reservationService;
+        private readonly IReservationNTicketService _reservationService;
 
-        public DashboardFunctionMonthlyReservations(ILoggerFactory loggerFactory, IReservationService reservationService)
+        public DashboardFunctionMonthlyReservations(ILoggerFactory loggerFactory, IReservationNTicketService reservationService)
         {
             ArgumentNullException.ThrowIfNull(reservationService);
             ArgumentNullException.ThrowIfNull(loggerFactory);

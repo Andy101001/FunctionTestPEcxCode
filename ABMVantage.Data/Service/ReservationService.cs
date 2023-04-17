@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Service
 {
-    public class ReservationService : ServiceBase, IReservationService
+    public class ReservationNTicketService : ServiceBase, IReservationNTicketService
     {
         #region Constructor
-        public ReservationService(IRepository repository)
+        public ReservationNTicketService(IRepository repository)
         {
             _repository = repository;
         }
