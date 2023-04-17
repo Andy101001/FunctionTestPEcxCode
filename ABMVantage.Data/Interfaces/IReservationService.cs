@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Interfaces
 {
-    public interface IReservationService
+    public interface IReservationNTicketService
     {
         Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(FilterParam inputFilter);
         Task<IEnumerable<ReservationsByDay>> GetDailyReservations(FilterParam inputFilter);
