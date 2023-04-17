@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Net;
 
-namespace ABMVantage_Outbound_API.Functions
+namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
 {
     public class DashboardFunctionTotalOccupancyRevenue
     {
