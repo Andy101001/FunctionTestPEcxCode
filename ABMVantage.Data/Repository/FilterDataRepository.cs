@@ -41,7 +41,7 @@ namespace ABMVantage.Data.Repository
                 );
 
             result.Facilities = rawData.GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList(); 
-            result.Levels = rawData.Select( l => new LevelData { FacilityId = l.FacilityId, Id = l.LevelId, Level = l.Level} ).ToList();
+            result.Levels = rawData.Select( l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName , Id = l.LevelId, Level = l.Level} ).ToList();
 
             var productsData = await SqlMapper.QueryAsync<ProductData>(
                     DapperConnection,
