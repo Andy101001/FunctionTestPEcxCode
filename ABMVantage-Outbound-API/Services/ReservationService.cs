@@ -1,14 +1,17 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.Configuration;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.EntityModels;
     using ABMVantage_Outbound_API.Models;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     /// <summary>
     /// Service for all things to do with reservations
@@ -41,25 +44,22 @@
             _logger.LogInformation($"Constructing {nameof(ReservationService)}");
         }
 
-        /// <summary>
-        /// The number of reservations for each hour of the day by hour.
-        /// This is calculated as the number of reservations for which the reservation date and time range intersect the hour.
-        /// For example, the reservations for hour 9:00 (9AM to 10AM) is the total number of reservations for which the start date/time is before 10AM,
-        /// or the end date/time is after 9AM.
-        /// </summary>
-        /// <param name="hourlyReservationParameters">Date, facilityId, levelId, and parkingProductId </param>
-        /// <returns>ReservationByHour</returns>
-        public async Task<List<ReservationByHour>> ReservationPerHour(HourlyReservationParameters hourlyReservationParameters)
-        {            
-            _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(ReservationPerHour)}");
-
-            if (hourlyReservationParameters.calculationDate < _settings.MinimumValidCalculationDate)
+        public async Task<DashboardDailyReservationCountByHour> GetHourlyReservationsByProduct(FilterParam filterParameters)
+        {
+            if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
-                throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
+                throw new ArgumentException("Missing or invalid filter parameters.");
             }
-            var reservationByHour = await _dataAccessSqlService.GetReservationByHourCountsAsync(hourlyReservationParameters);
-            
-            return reservationByHour.ToList();
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var queryResults = await _dataAccessSqlService.GetReservationByHourCountsAsync(queryParameters);
+            var results = from ReservationsForProductAndHour res in queryResults
+                          group res by new { res.Year, res.Month, res.Day, res.Hour } into hourlyGroup
+                          select new HourlyReservationCount
+                          {
+                              ReservationTime = hourlyGroup.Key.Hour.ToString() + ":00",
+                              Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product })
+                          };
+            return new DashboardDailyReservationCountByHour { ReservationsByHour = results };
         }
     }
 }

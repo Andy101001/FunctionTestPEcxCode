@@ -49,7 +49,7 @@ namespace ABMVantage_Outbound_API.Services
         /// </summary>
         /// <param name="hourlyReservationParameters">parameters</param>
         /// <returns>IEnumerable<ReservationByHourData></returns>
-        Task<IEnumerable<ReservationByHour>> GetReservationByHourCountsAsync(HourlyReservationParameters hourlyReservationParameters);
+        Task<IEnumerable<ReservationsForProductAndHour>> GetReservationByHourCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
 
         Task<IEnumerable<MonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
