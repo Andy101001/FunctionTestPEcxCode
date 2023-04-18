@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage_Outbound_API.DashboardFunctionModels
 {
-    public class DashboardFuctionDayReservation
+    public class DashboardFunctionDayReservation
     {
         public string? WeekDay { get; set; }
         public int? NoOfReservations { get; set; }

@@ -224,42 +224,33 @@
         }
 
 
-        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
 
-            int dailyCount = 0;
+
             var occupancy = new DashboardDailyAverageOccupancy();
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
 
-                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    
+                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                    string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
-
-                    SqlCommand cmd = new SqlCommand(sql, conn);
-
-                    //var rdr = await cmd.ExecuteScalarAsync();
+                    SqlCommand cmd = new SqlCommand("BASE.DailyAverageOccupancy", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     var rdr = await cmd.ExecuteReaderAsync();
+
                     while (rdr.Read())
                     {
-                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["averageOccupancy"]);
-                        occupancy.AverageDailyOccupancyPercentage = Convert.ToInt32(rdr["averageOccupancyPercentage"]);
+                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["Occupancy"]);
+                        occupancy.AverageDailyOccupancyPercentage = Convert.ToInt32(rdr["Occupancy_Percentage"]);
                     }
-        //    using (var db = _dbSqlContextFactory.CreateDbContext())
-        //    {
-        //        //var dbSet = from pas in db.FactPaymentsTicketAndStageds
-        //        //            join ft in db.FactTickets on pas.TicketId equals ft.TicketId
-        //        //            join f in db.DimFacilities on ft.FacilityId equals f.FacilityId
-        //        //            ;
 
-                    //dailyCount = Convert.ToInt32(rdr);
                 }
             }
             catch (Exception ex)
@@ -270,7 +261,6 @@
 
             return occupancy;
         }
-        //    }
 
 
         public async Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId)
@@ -341,10 +331,10 @@
             return dailyCount;
         }
 
-        public async Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
 
-            var lstRevnue = new List<DashboardFuctionDayRevenue>();
+            var lstRevnue = new List<DashboardFunctionDayRevenue>();
 
             try
             {
@@ -367,7 +357,7 @@
 
                     while (rdr.Read())
                     {
-                        var revenue = new DashboardFuctionDayRevenue
+                        var revenue = new DashboardFunctionDayRevenue
                         {
                             WeekDay = Convert.ToString(rdr["DayName"]),
                             Amount = Convert.ToDecimal(rdr["Revenue"])
@@ -387,10 +377,10 @@
             return lstRevnue;
         }
 
-        public async Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
 
-            var lstRevnue = new List<DashboardFuctionMonthRevenue>();
+            var lstRevnue = new List<DashboardFunctionMonthRevenue>();
 
             try
             {
@@ -414,7 +404,7 @@
 
                     while (rdr.Read())
                     {
-                        var revenue = new DashboardFuctionMonthRevenue
+                        var revenue = new DashboardFunctionMonthRevenue
                         {
                             Month = Convert.ToString(rdr["MonthName"]),
                             Amount = Convert.ToDecimal(rdr["Revenue"])
@@ -433,11 +423,11 @@
             return lstRevnue;
         }
 
-        public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             int dailyCount = 0;
 
-            var lstDaysRervation = new List<DashboardFuctionDayReservation>();
+            var lstDaysRervation = new List<DashboardFunctionDayReservation>();
 
             try
             {
@@ -462,13 +452,13 @@
 
                 ///TODO: this will change when SP is ready.
 
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
 
                 return lstDaysRervation;
             }

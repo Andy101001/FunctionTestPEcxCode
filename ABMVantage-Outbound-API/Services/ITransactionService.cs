@@ -12,7 +12,7 @@ namespace ABMVantage_Outbound_API.Services
     {
         Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
         Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters);
-        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam filterParameters);
         Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(FilterParam filterParameters);
         Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string parkingProductId);
     }
