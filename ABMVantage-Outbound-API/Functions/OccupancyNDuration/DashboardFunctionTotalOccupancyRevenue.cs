@@ -31,7 +31,7 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
 
         [Function("ABM Dashboard - Get Total Occupancy Revenue")]
         [OpenApiOperation(operationId: "GetTotalOccupancyRevenue", tags: new[] { "ABM Dashboard" }, Summary = "Get Total Occupancy Revenue", Description = "")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardDailyAverageOccupancy), Summary = "Total Occupancy Revenue", Description = "")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionTotalOccupancyRevenue), Summary = "Total Occupancy Revenue", Description = "")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "totaloccupancyrevenue")] HttpRequestData req)

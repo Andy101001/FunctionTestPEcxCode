@@ -18,14 +18,14 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
     public class DashboardFunctionCurrentTransaction
     {
         private readonly ILogger _logger;
-        private readonly IOccupancyService _occupancyService;
+        private readonly ITransaction_NewService _transactionService;
 
-        public DashboardFunctionCurrentTransaction(ILoggerFactory loggerFactory, IOccupancyService occupancyService)
+        public DashboardFunctionCurrentTransaction(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
         {
-            ArgumentNullException.ThrowIfNull(occupancyService);
+            ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionCurrentTransaction>();
-            _occupancyService = occupancyService;
+            _transactionService = transactionService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionCurrentTransaction)}");
         }
 
@@ -42,7 +42,7 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _occupancyService.GetYearlyOccupancy(inputFilter);
+            var result = await _transactionService.GetTranacionByHours(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionCurrentTransaction)}");
 
             //Just to make out json as required to UI

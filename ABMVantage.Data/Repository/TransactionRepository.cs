@@ -27,7 +27,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<BudgetVariance>(
                     DapperConnection,
-                    Utils.StoredProcs.GetBudgetVariance,
+                    Utils.StoredProcs.GetBudgetVsActualVriance,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -43,7 +43,7 @@ namespace ABMVantage.Data.Repository
 
                 var result = await SqlMapper.QueryAsync<RevenueByDay>(
                         DapperConnection,
-                        Utils.StoredProcs.GetDailyReservations,
+                        Utils.StoredProcs.GetRevenueByDay,
                         param: dynamicParams,
                         commandType: CommandType.StoredProcedure
                     );
@@ -65,7 +65,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<MonthlyRevenue>(
                     DapperConnection,
-                    Utils.StoredProcs.GetMonthlyReservations,
+                    Utils.StoredProcs.GetRevenueByMonth,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -79,7 +79,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<RevenueByProduct>(
                     DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
+                    Utils.StoredProcs.GetRevenueByProductByDays,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -93,7 +93,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<RevenueBudget>(
                     DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
+                    Utils.StoredProcs.GetRevenueVsBduget,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -107,7 +107,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<CurrentTransaction>(
                     DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
+                    Utils.StoredProcs.GetTranacionByHours,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -121,7 +121,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<DailyTransaction>(
                     DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
+                    Utils.StoredProcs.GetTransactonByDays,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -135,7 +135,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<MonthlyTransaction>(
                     DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
+                    Utils.StoredProcs.GetTransactonMonths,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );

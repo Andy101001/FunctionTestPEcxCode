@@ -125,6 +125,8 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IReservationService, ReservationService>();
                 s.AddScoped<ITicketService, TicketService>();
 
+                s.AddScoped<ITransaction_NewService, Transaction_NewService>();
+
                 s.AddOptions();
 
                 s.AddSingleton<Fixture>(new Fixture())
