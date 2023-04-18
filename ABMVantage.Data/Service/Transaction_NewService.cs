@@ -21,6 +21,7 @@ namespace ABMVantage.Data.Service
 
         public Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
         {
+           // => _repository.TransactionRepository.GetRevenueByDays(inputFilter);
             throw new NotImplementedException();
         }
 

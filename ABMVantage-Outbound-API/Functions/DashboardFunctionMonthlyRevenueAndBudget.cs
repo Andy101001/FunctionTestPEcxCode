@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Net;
 using ABMVantage_Outbound_API.Services;
+using ABMVantage_Outbound_API.Functions.RevenueNTransaction;
 
 namespace ABMVantage_Outbound_API.Functions
 {

@@ -27,7 +27,7 @@ namespace ABMVantage.Data.Repository
 
             var result = await SqlMapper.QueryAsync<BudgetVariance>(
                     DapperConnection,
-                    Utils.StoredProcs.GetHourlyReservations,
+                    Utils.StoredProcs.GetBudgetVariance,
                     param: dynamicParams,
                     commandType: CommandType.StoredProcedure
                 );
@@ -37,16 +37,26 @@ namespace ABMVantage.Data.Repository
 
         public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
         {
-            var dynamicParams = GetInputParam(inputFilter);
+            try
+            {
+                var dynamicParams = GetInputParam(inputFilter);
 
-            var result = await SqlMapper.QueryAsync<RevenueByDay>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetDailyReservations,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
+                var result = await SqlMapper.QueryAsync<RevenueByDay>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetDailyReservations,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
 
-            return result;
+                return result;
+            }
+            catch (Exception ex) 
+            { 
+            }
+
+           
+            return null;
+
         }
 
         public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter)

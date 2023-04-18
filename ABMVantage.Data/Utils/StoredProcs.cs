@@ -21,5 +21,10 @@ namespace ABMVantage.Data.Utils
         public const string GetDailyReservations = "[BASE].[GET_RESERVATIONS_DAILY]";
         public const string GetMonthlyReservations = "[BASE].[GET_RESERVATIONS_MONTHLY]";
         public const string GetReservationsAvgTkt = "[BASE].[GET_RESERVATIONS_AVGTKT]";
+
+        //Transaction
+
+        public const string GetBudgetVariance = "[BASE].[GET_BUDGET_VARIANNCE]";
+
     }
 }
