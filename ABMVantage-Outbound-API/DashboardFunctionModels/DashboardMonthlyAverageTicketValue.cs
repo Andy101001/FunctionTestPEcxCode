@@ -2,25 +2,20 @@
 {
     public class DashboardMonthlyAverageTicketValue
     {
-        public string Month { get; set; }
-        public IEnumerable<AverageTicketValueForMonth> MonthlyAverageTicketValue { get; set; }
+        public IEnumerable<AverageTicketValueForMonth> Response { get; set; }
     }
 
     public class AverageTicketValueForMonth
     {
-        public string Product { get; set; }
-        public int AverageTicketValue { get; set; }
+        public string Month { get; set; }
+        public IEnumerable<TicketValueAverage> Data { get; set; }
+
     }
 
-    /// <summary>
-    /// Input Parameters for ticket averages
-    /// </summary>
-    public class TicketPerYearParameters
+    public class TicketValueAverage
     {
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate{ get; set; }
-        public string FacilityId { get; set; }
-        public string LevelId { get; set; }
-        public string ParkingProductId { get; set; }
-    }
+        public string ParkingProduct { get; set; }
+        public decimal AverageTicketValue { get; set; }
+    }   
+
 }
