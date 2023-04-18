@@ -46,7 +46,7 @@ namespace ABMVantage_Outbound_API.Functions.ReservationsNTickets
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionHourlyReservations)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new { hourlyReservations = result });
+            return new OkObjectResult(new { response = result });
         }
     }
 }

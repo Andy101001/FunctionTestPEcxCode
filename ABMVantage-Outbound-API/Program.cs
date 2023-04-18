@@ -119,6 +119,8 @@ namespace ABMVantage_Outbound_API
 
                 //Data Services
                 s.AddScoped<IOccupancyService, OccupancyService>();
+                s.AddScoped<IReservationNTicketService, ReservationNTicketService>();
+                s.AddScoped<IFilterDataService, FilterDataService>();
 
                 s.AddScoped<IReservationService, ReservationService>();
                 s.AddScoped<ITicketService, TicketService>();

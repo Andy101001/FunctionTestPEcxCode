@@ -8,6 +8,10 @@ namespace ABMVantage.Data.Utils
 {
     public class StoredProcs
     {
+        //Filter
+        public const string GetFiltersData = "[BASE].[GET_FILTERS_BY_BUS]";
+        public const string GetProductsData = "[BASE].[GET_PRODUCTS]";
+
         //Occupancy
         public const string GetTotalOccRevenue = "[BASE].[GET_TOTAL_OCCUPANCY_BY_REVENUE]";
         public const string GetWeeklyOccByDuration = "[BASE].[GET_WEEKLY_OCCUPANCY_BY_DURATION]";

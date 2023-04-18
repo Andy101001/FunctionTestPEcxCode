@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
@@ -8,6 +9,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System.Data;
+    using System.Data.Common;
+
     public class DataAccessSqlService : IDataAccessSqlService
     {
         /// <summary>
@@ -125,77 +128,39 @@
                 throw;
             }
         }
-        public async Task<IEnumerable<DashboardMonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(TicketPerYearParameters ticketValuesPerYear)
+        public async Task<IEnumerable<MonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             _logger.LogInformation($"Getting average ticket values per year {nameof(GetAverageTicketValuePerYearAsync)}");
-            //var results = new List<DashboardMonthlyAverageTicketValue>();
+            var results = new List<MonthlyAverageTicketValue>();
             try
             {
-                //********************************* TODO: Need to create this stored proc *****************************************
-                //using (var db = _dbSqlContextFactory.CreateDbContext())
-                //{
-                //    var conn = db.Database.GetDbConnection();
-                //    var cmd = conn.CreateCommand();
-                //    cmd.CommandText = $"BASE.AverageTicketValuePerYear '{ticketValuesPerYear.facilityId}', '{ticketValuesPerYear.levelId}', '{ticketValuesPerYear.parkingProductId}', '{ticketValuesPerYear.calculationDate}'";
-                //    cmd.CommandType = CommandType.Text;
-                //    db.Database.OpenConnection();
-
-                //    using (var reader = cmd.ExecuteReader())
-                //    {
-                //        while (reader.Read())
-                //        {
-                //            var transaction = new DashboardMonthlyAverageTicketValue();
-                //            //transaction.ReservationTime = int.Parse(reader["YEAR"].ToString() ?? "0000");
-                //            //transaction.Month = int.Parse(reader["MONTH"].ToString() ?? "0000");
-                //            //transaction.TransactionCount = Convert.ToInt32(reader["TRANSACTION_COUNT"]);
-                //            //transaction.ParkingProduct = reader["PRODUCT_NAME"].ToString();
-                //            results.Add(transaction);
-                //        }
-                //    }
-                //    return results;
-                //}
-                //********************************* TODO: Need to create this stored proc *****************************************
-
-                List<DashboardMonthlyAverageTicketValue> ticket = new List<DashboardMonthlyAverageTicketValue>
+                using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
+                    var conn = db.Database.GetDbConnection();
+                    var cmd = conn.CreateCommand();
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                    cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct";
 
-                    new DashboardMonthlyAverageTicketValue
+
+                    //cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct '{queryParameters.FromDate}', '{queryParameters.ToDate}','{queryParameters.FacilityId}', '{queryParameters.LevelId}', '{queryParameters.ParkingProductId}'";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    db.Database.OpenConnection();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Month = "May",
-                        MonthlyAverageTicketValue = new List<AverageTicketValueForMonth>
-                            {
-                                new AverageTicketValueForMonth {Product = "EV",
-                                    AverageTicketValue = 65 },
-                                new AverageTicketValueForMonth {Product = "Valet",
-                                    AverageTicketValue = 11 },
-                                new AverageTicketValueForMonth {Product = "Premium",
-                                    AverageTicketValue = 22 },
-                                new AverageTicketValueForMonth {Product = "General",
-                                    AverageTicketValue = 33 },
-                                new AverageTicketValueForMonth {Product = "Monthly",
-                                    AverageTicketValue = 44 }
-                            }
-                        },
-                    new DashboardMonthlyAverageTicketValue
-                    {
-                        Month = "June",
-                        MonthlyAverageTicketValue = new List<AverageTicketValueForMonth>
-                            {
-                                new AverageTicketValueForMonth {Product = "EV",
-                                    AverageTicketValue = 1 },
-                                new AverageTicketValueForMonth {Product = "Valet",
-                                    AverageTicketValue = 3 },
-                                new AverageTicketValueForMonth {Product = "Premium",
-                                    AverageTicketValue = 6 },
-                                new AverageTicketValueForMonth {Product = "General",
-                                    AverageTicketValue = 7 },
-                                new AverageTicketValueForMonth {Product = "Monthly",
-                                    AverageTicketValue = 8 }
-                            }
+                        while (reader.Read())
+                        {
+                            var averageTicketValue = new MonthlyAverageTicketValue();
+                            averageTicketValue.Year = int.Parse(reader["YEAR"].ToString() ?? "0000");
+                            averageTicketValue.Month = int.Parse(reader["MONTH"].ToString() ?? "0000");
+                            averageTicketValue.AverageTicketValue = Convert.ToDecimal(reader["AVERAGE_TICKET_VALUE"]);
+                            averageTicketValue.ParkingProduct = reader["PRODUCT_NAME"].ToString();
+                            results.Add(averageTicketValue);
+                        }
                     }
-                };
+                    return results;
+                }
 
-                return ticket;
             }
             catch (Exception ex)
             {
@@ -204,16 +169,16 @@
             }
         }
 
-
-        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             var results = new List<TransactionsByMonthAndProduct>();
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                cmd.CommandType = CommandType.Text;
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct";
+                cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -231,14 +196,15 @@
             }
         }
 
-        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = $"BASE.OccupancyByMonth '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                cmd.CommandType = CommandType.Text;
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = "BASE.OccupancyByMonth";
+                cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -343,7 +309,7 @@
             return dailyCount;
         }
 
-        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<decimal> GetDailyTotalRevenueAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             decimal dailyCount = 0;
 
@@ -351,20 +317,14 @@
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
-                    ///This is to change with calculate date
-                    ///
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
-
-                    string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
-
+                    string storedProcName = "BASE.DailyTotalRevenue";
                     //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
-
-                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    SqlCommand cmd = new SqlCommand(storedProcName, conn);
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     var rdr = await cmd.ExecuteScalarAsync();
 
@@ -579,6 +539,19 @@
             }
 
             return lstRevnue;
+        }
+
+        private static void AddDefaultQUeryParametersToCommand(DashboardFunctionDefaultDataAccessQueryParameters queryParameters, DbCommand cmd)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+             {
+                        new SqlParameter("@StartDate", queryParameters.FromDate),
+                        new SqlParameter("@EndDate", queryParameters.ToDate),
+                        new SqlParameter("@FacilityIds", queryParameters.FacilityIdsAsCommaDelimitedString),
+                        new SqlParameter("@LevelIds", queryParameters.LevelsIdsAsCommaDelimitedString),
+                        new SqlParameter("@ParkingProductIds", queryParameters.ParkingProductIdsAsCommaDelimitedString)
+             };
+            cmd.Parameters.AddRange(parameters);
         }
     }
 }
