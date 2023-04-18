@@ -196,7 +196,7 @@
             }
         }
 
-        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
+        public async Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
@@ -218,7 +218,7 @@
                         occupancy.OccupancyPercentage = Convert.ToDecimal(reader["OCCUPANCY_PERCENTAGE"]);
                         results.Add(occupancy);
                     }
-                    return Task.FromResult<IEnumerable<OccupancyByMonth>>(results);
+                    return results;
                 }
             }
         }
@@ -470,65 +470,35 @@
 
 
 
-        public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IEnumerable<RevenueAndBudgetForMonth>> GetMonthlyRevenueAndBudget(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
-
-            var lstRevnue = new List<RevenueAndBudget>();
-
-            try
+            var result = new List<RevenueAndBudgetForMonth>();
+            using (var db = _dbSqlContextFactory.CreateDbContext())
             {
-                using (var db = _dbSqlContextFactory.CreateDbContext())
+                var conn = db.Database.GetDbConnection();
+                var cmd = conn.CreateCommand();
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = "BASE.RevenueAndBudgetByMonth";
+                cmd.CommandType = CommandType.StoredProcedure;
+                db.Database.OpenConnection();
+                using (var reader = cmd.ExecuteReader())
                 {
-                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
-                    ///This is to change with calculate date
-                    ///
-                    //string endDate = "2023-04-20 00:00:00.000";
-                    //string startDate = "2023-04-10 00:00:00.000";
 
-                    var conn = new SqlConnection(db.Database.GetConnectionString());
-                    conn.Open();
-
-                    //string sql = $"EXEC BASE.RevenueAndBudget '{parkingProductId}','{facilityId}','{levelId}','{startDate}','{endDate}'";
-
-                    //SqlCommand cmd = new SqlCommand(sql, conn);
-
-                    //var rdr = await cmd.ExecuteReaderAsync();
-
-                    //while (rdr.Read())
-                    //{
-                    //    var revenue = new RevenueAndBudget
-                    //    {
-                    //        Month = Convert.ToString(rdr["MonthName"]),
-                    //        Revenue = Convert.ToInt32(rdr["Revenue"]),
-                    //        BudgetedRevenue= Convert.ToInt32(rdr["BudgetedRevenue"])
-                    //    };
-
-                    //    lstRevnue.Add(revenue);
-                    //}
-
-                    lstRevnue.Add(new RevenueAndBudget { 
-                    
-                        BudgetedRevenue=5000,
-                        Month="Jan",
-                        Revenue=4000
-                    });
-                    lstRevnue.Add(new RevenueAndBudget
+                    while (reader.Read())
                     {
+                        var revenueAndBudget = new RevenueAndBudgetForMonth();
+                        revenueAndBudget.Year = int.Parse(reader["YEAR"].ToString() ?? "0");
+                        revenueAndBudget.Month = int.Parse(reader["MONTH"].ToString() ?? "0");
+                        revenueAndBudget.Revenue = Convert.ToInt32(reader["REVENUE"]);
+                        revenueAndBudget.BudgetedRevenue = Convert.ToInt32(reader["BUDGETED_REVENUE"]);
+                        result.Add(revenueAndBudget);
 
-                        BudgetedRevenue = 6000,
-                        Month = "Feb",
-                        Revenue = 5000
-                    });
+                    }
 
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
-                throw;
-            }
 
-            return lstRevnue;
+            return result;
         }
 
         private static void AddDefaultQUeryParametersToCommand(DashboardFunctionDefaultDataAccessQueryParameters queryParameters, DbCommand cmd)

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Net;
 using ABMVantage_Outbound_API.Services;
+using ABMVantage.Data.Models;
+using Newtonsoft.Json;
 
 namespace ABMVantage_Outbound_API.Functions
 {
@@ -24,29 +26,30 @@ namespace ABMVantage_Outbound_API.Functions
 
         [Function("ABM Dashboard - Get Monthly Revenue and Budget")]
         [OpenApiOperation(operationId: "GetMonthlyRevenueAndBudget", tags: new[] { "ABM Dashboard" }, Summary = "Get Monthly Revenue and Budgeted revenue", Description = "Gets the total revenue for each month and the budgeted for total revenue for each month, potentially filtered by facility, level and product.")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyRevenueAndBudget), Summary = "Get Monthly Revenue and Budgeted revenue", Description = "Gets the total revenue for each month and the budgeted for total revenue for each month, potentially filtered by facility, level and product.")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyAverageTicketValue), Summary = "Get Monthly Average Ticket Value", Description = "Gets the monthly average ticket value, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
-        [OpenApiParameter(name: "startDate", In = ParameterLocation.Query, Required = true, Type = typeof(DateTime), Summary = "The start date for which monthly revenue and budget totals are returned.", Description = "The start date for which monthly revenue and budget totals are returned.")]
-        [OpenApiParameter(name: "endDate", In = ParameterLocation.Query, Required = true, Type = typeof(DateTime), Summary = "The end date for which monthly revenue and budget totals are returned.", Description = "The end date for which monthly revenue and budget totals are returned.")]
-        [OpenApiParameter(name: "facilityId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional facilityId for filtering.", Description = "When a facilityId is provided, only revenue from that facility are included in the total. If the facilityId is \"all\" or \"ALL\", or empty, or null, then the revenue is not filtered by facility.")]
-        [OpenApiParameter(name: "levelId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional levelId for filtering", Description = "When a levelId is provided, then the transactions used for calculating revenue are filtered by level. If the levelId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by level.")]
-        [OpenApiParameter(name: "parkingProductId", In = ParameterLocation.Query, Required = true, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, then the transactions used for calculating revenue are filtered by parking product. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by parking product.")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "monthlyrevenueandbudget")] HttpRequestData reg, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "monthlyrevenueandbudget")] HttpRequestData req)
         {
-            _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");
 
-            if (string.IsNullOrEmpty(parkingProductId))
+
+            try
             {
-                _logger.LogError($"{nameof(DashboardFunctionRevenueByDay)} Query string  parametr customerId is EMPTY OR not supplied!");
-                throw new ArgumentNullException("parkingProductId");
+
+                _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");
+                var content = await new StreamReader(req.Body).ReadToEndAsync();
+                FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
+                var result = await _transactionService.GetMonthlyRevenueAndBudget(filterParameters);
+                _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueByDay)}");
+
+                //Just to make out json as required to UI
+                return new OkObjectResult(result);
             }
-
-            var result = await _transactionService.GetMonthlyRevenueAndBudget(startDate, endDate, facilityId, levelId, parkingProductId);
-            _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueByDay)}");
-
-            //Just to make out json as required to UI
-            return new OkObjectResult(result);
+            catch (ArgumentException)
+            {
+                return new BadRequestResult();
+            }
         }
     }
 }
