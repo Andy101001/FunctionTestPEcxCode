@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Models;
     /// <summary>
@@ -12,6 +13,6 @@
         /// </summary>
         /// <param name="hourlyReservationParameters">params</param>
         /// <returns>ReservationDetails</returns>
-        Task<List<ReservationByHour>> ReservationPerHour(HourlyReservationParameters hourlyReservationParameters);
+        Task<DashboardDailyReservationCountByHour> GetHourlyReservationsByProduct(FilterParam filterParameters);
     }
 }

@@ -67,9 +67,10 @@ namespace ABMVantage_Outbound_API.Services
             return result;
         }
 
-        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam filterParameters)
         {
-            var result = await _dataAccessSqlService.GetDailyAverageOccupancy(tranactionDate, facilityId, levelId, parkingProductId);
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var result = await _dataAccessSqlService.GetDailyAverageOccupancy(queryParameters);
 
             return result;
         }
@@ -98,11 +99,24 @@ namespace ABMVantage_Outbound_API.Services
 
         }
 
-        public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string parkingProductId)
+        public async Task<DashboardMonthlyRevenueAndBudget> GetMonthlyRevenueAndBudget(FilterParam filterParameters)
         {
-            var result = await _dataAccessSqlService.GetMonthlyRevenueAndBudget(startDate, endDate, facilityId, levelId, parkingProductId);
+            _logger.LogInformation($"Getting Dashboard Monthly Revenue and Budgeted Revenue {nameof(GetMonthlyRevenueAndBudget)}");
+            if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
+            {
+                throw new ArgumentException($"Missing or Invalid parameters.");
+            }
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var queryResults = await _dataAccessSqlService.GetMonthlyRevenueAndBudget(queryParameters);
+            var results = from RevenueAndBudgetForMonth rnb in queryResults
+                          select new RevenueAndBudget
+                          {
+                              Month = rnb.Year.ToString() + rnb.Month.ToString().PadLeft(2, '0'),
+                              Revenue = rnb.Revenue,
+                              BudgetedRevenue = rnb.BudgetedRevenue
+                          };
 
-            return result;
+            return new DashboardMonthlyRevenueAndBudget { MonthlyRevenueAndBudget = results };
         }
     }
 

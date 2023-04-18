@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage_Outbound_API.DashboardFunctionModels
 {
-    public class DashboardFuctionDayRevenue
+    public class DashboardFunctionDayRevenue
     {
         public string? WeekDay { get; set; }
         public decimal? Amount { get; set; }

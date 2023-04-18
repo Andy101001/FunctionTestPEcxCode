@@ -86,35 +86,33 @@
             return lstLevel;
         }
 
-        public async Task<IEnumerable<ReservationByHour>> GetReservationByHourCountsAsync(HourlyReservationParameters hourlyReservationParameters)
+        public async Task<IEnumerable<ReservationsForProductAndHour>> GetReservationByHourCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(GetReservationByHourCountsAsync)}");
-            var results = new List<ReservationByHour>();
+            var results = new List<ReservationsForProductAndHour>();
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.ReservationCountByHour '{hourlyReservationParameters.facilityId}', '{hourlyReservationParameters.levelId}', '{hourlyReservationParameters.parkingProductId}', '{hourlyReservationParameters.calculationDate}'";
-                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = $"BASE.ReservationCountByHour";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     db.Database.OpenConnection();
 
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var reservationByHour = new ReservationByHour();
-                            string time = reader["HourName"].ToString() ?? "00:00";
-                            reservationByHour.ReservationTime = $"{time}:00";
-                            reservationByHour.Data = new List<ReservationByHourData> 
-                            { 
-                                new ReservationByHourData
-                                {
-                                    NoOfReservations = int.Parse(reader["ReservationCount"].ToString() ?? "000" ),
-                                    Product = reader["PRODUCT"].ToString() ?? "N/A"
-                                }
-                            };
+                            var reservationByHour = new ReservationsForProductAndHour();
+                            reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
+                            reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
+                            reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
+                            reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            reservationByHour.Product = reader["PRODUCT_NAME"].ToString();
+                            reservationByHour.ReservationCount = Convert.ToInt32(reader["RESERVATION_COUNT"]);  
+                            
 
                             results.Add(reservationByHour);
                         }
@@ -196,7 +194,7 @@
             }
         }
 
-        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
+        public async Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
@@ -218,48 +216,39 @@
                         occupancy.OccupancyPercentage = Convert.ToDecimal(reader["OCCUPANCY_PERCENTAGE"]);
                         results.Add(occupancy);
                     }
-                    return Task.FromResult<IEnumerable<OccupancyByMonth>>(results);
+                    return results;
                 }
             }
         }
 
 
-        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
 
-            int dailyCount = 0;
+
             var occupancy = new DashboardDailyAverageOccupancy();
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
 
-                    //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    
+                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                    string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
-
-                    SqlCommand cmd = new SqlCommand(sql, conn);
-
-                    //var rdr = await cmd.ExecuteScalarAsync();
+                    SqlCommand cmd = new SqlCommand("BASE.DailyAverageOccupancy", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     var rdr = await cmd.ExecuteReaderAsync();
+
                     while (rdr.Read())
                     {
-                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["averageOccupancy"]);
-                        occupancy.AverageDailyOccupancyPercentage = Convert.ToInt32(rdr["averageOccupancyPercentage"]);
+                        occupancy.AverageDailyOccupancyInteger = Convert.ToInt32(rdr["Occupancy"]);
+                        occupancy.AverageDailyOccupancyPercentage = Convert.ToInt32(rdr["Occupancy_Percentage"]);
                     }
-        //    using (var db = _dbSqlContextFactory.CreateDbContext())
-        //    {
-        //        //var dbSet = from pas in db.FactPaymentsTicketAndStageds
-        //        //            join ft in db.FactTickets on pas.TicketId equals ft.TicketId
-        //        //            join f in db.DimFacilities on ft.FacilityId equals f.FacilityId
-        //        //            ;
 
-                    //dailyCount = Convert.ToInt32(rdr);
                 }
             }
             catch (Exception ex)
@@ -270,7 +259,6 @@
 
             return occupancy;
         }
-        //    }
 
 
         public async Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId)
@@ -341,10 +329,10 @@
             return dailyCount;
         }
 
-        public async Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
 
-            var lstRevnue = new List<DashboardFuctionDayRevenue>();
+            var lstRevnue = new List<DashboardFunctionDayRevenue>();
 
             try
             {
@@ -367,7 +355,7 @@
 
                     while (rdr.Read())
                     {
-                        var revenue = new DashboardFuctionDayRevenue
+                        var revenue = new DashboardFunctionDayRevenue
                         {
                             WeekDay = Convert.ToString(rdr["DayName"]),
                             Amount = Convert.ToDecimal(rdr["Revenue"])
@@ -387,10 +375,10 @@
             return lstRevnue;
         }
 
-        public async Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
 
-            var lstRevnue = new List<DashboardFuctionMonthRevenue>();
+            var lstRevnue = new List<DashboardFunctionMonthRevenue>();
 
             try
             {
@@ -414,7 +402,7 @@
 
                     while (rdr.Read())
                     {
-                        var revenue = new DashboardFuctionMonthRevenue
+                        var revenue = new DashboardFunctionMonthRevenue
                         {
                             Month = Convert.ToString(rdr["MonthName"]),
                             Amount = Convert.ToDecimal(rdr["Revenue"])
@@ -433,11 +421,11 @@
             return lstRevnue;
         }
 
-        public async Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             int dailyCount = 0;
 
-            var lstDaysRervation = new List<DashboardFuctionDayReservation>();
+            var lstDaysRervation = new List<DashboardFunctionDayReservation>();
 
             try
             {
@@ -462,13 +450,13 @@
 
                 ///TODO: this will change when SP is ready.
 
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
-                lstDaysRervation.Add(new DashboardFuctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Mon" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Tue" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Wed" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Thu" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Fri" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Sat" });
+                lstDaysRervation.Add(new DashboardFunctionDayReservation { NoOfReservations = 100, WeekDay = "Sun" });
 
                 return lstDaysRervation;
             }
@@ -480,65 +468,35 @@
 
 
 
-        public async Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IEnumerable<RevenueAndBudgetForMonth>> GetMonthlyRevenueAndBudget(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
-
-            var lstRevnue = new List<RevenueAndBudget>();
-
-            try
+            var result = new List<RevenueAndBudgetForMonth>();
+            using (var db = _dbSqlContextFactory.CreateDbContext())
             {
-                using (var db = _dbSqlContextFactory.CreateDbContext())
+                var conn = db.Database.GetDbConnection();
+                var cmd = conn.CreateCommand();
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = "BASE.RevenueAndBudgetByMonth";
+                cmd.CommandType = CommandType.StoredProcedure;
+                db.Database.OpenConnection();
+                using (var reader = cmd.ExecuteReader())
                 {
-                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
-                    ///This is to change with calculate date
-                    ///
-                    //string endDate = "2023-04-20 00:00:00.000";
-                    //string startDate = "2023-04-10 00:00:00.000";
 
-                    var conn = new SqlConnection(db.Database.GetConnectionString());
-                    conn.Open();
-
-                    //string sql = $"EXEC BASE.RevenueAndBudget '{parkingProductId}','{facilityId}','{levelId}','{startDate}','{endDate}'";
-
-                    //SqlCommand cmd = new SqlCommand(sql, conn);
-
-                    //var rdr = await cmd.ExecuteReaderAsync();
-
-                    //while (rdr.Read())
-                    //{
-                    //    var revenue = new RevenueAndBudget
-                    //    {
-                    //        Month = Convert.ToString(rdr["MonthName"]),
-                    //        Revenue = Convert.ToInt32(rdr["Revenue"]),
-                    //        BudgetedRevenue= Convert.ToInt32(rdr["BudgetedRevenue"])
-                    //    };
-
-                    //    lstRevnue.Add(revenue);
-                    //}
-
-                    lstRevnue.Add(new RevenueAndBudget { 
-                    
-                        BudgetedRevenue=5000,
-                        Month="Jan",
-                        Revenue=4000
-                    });
-                    lstRevnue.Add(new RevenueAndBudget
+                    while (reader.Read())
                     {
+                        var revenueAndBudget = new RevenueAndBudgetForMonth();
+                        revenueAndBudget.Year = int.Parse(reader["YEAR"].ToString() ?? "0");
+                        revenueAndBudget.Month = int.Parse(reader["MONTH"].ToString() ?? "0");
+                        revenueAndBudget.Revenue = Convert.ToInt32(reader["REVENUE"]);
+                        revenueAndBudget.BudgetedRevenue = Convert.ToInt32(reader["BUDGETED_REVENUE"]);
+                        result.Add(revenueAndBudget);
 
-                        BudgetedRevenue = 6000,
-                        Month = "Feb",
-                        Revenue = 5000
-                    });
+                    }
 
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(DataAccessSqlService)} {ex.Message}");
-                throw;
-            }
 
-            return lstRevnue;
+            return result;
         }
 
         private static void AddDefaultQUeryParametersToCommand(DashboardFunctionDefaultDataAccessQueryParameters queryParameters, DbCommand cmd)
