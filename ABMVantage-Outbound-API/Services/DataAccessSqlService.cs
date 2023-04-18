@@ -86,35 +86,33 @@
             return lstLevel;
         }
 
-        public async Task<IEnumerable<ReservationByHour>> GetReservationByHourCountsAsync(HourlyReservationParameters hourlyReservationParameters)
+        public async Task<IEnumerable<ReservationsForProductAndHour>> GetReservationByHourCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(GetReservationByHourCountsAsync)}");
-            var results = new List<ReservationByHour>();
+            var results = new List<ReservationsForProductAndHour>();
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.ReservationCountByHour '{hourlyReservationParameters.facilityId}', '{hourlyReservationParameters.levelId}', '{hourlyReservationParameters.parkingProductId}', '{hourlyReservationParameters.calculationDate}'";
-                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = $"BASE.ReservationCountByHour";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     db.Database.OpenConnection();
 
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            var reservationByHour = new ReservationByHour();
-                            string time = reader["HourName"].ToString() ?? "00:00";
-                            reservationByHour.ReservationTime = $"{time}:00";
-                            reservationByHour.Data = new List<ReservationByHourData> 
-                            { 
-                                new ReservationByHourData
-                                {
-                                    NoOfReservations = int.Parse(reader["ReservationCount"].ToString() ?? "000" ),
-                                    Product = reader["PRODUCT"].ToString() ?? "N/A"
-                                }
-                            };
+                            var reservationByHour = new ReservationsForProductAndHour();
+                            reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
+                            reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
+                            reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
+                            reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            reservationByHour.Product = reader["PRODUCT_NAME"].ToString();
+                            reservationByHour.ReservationCount = Convert.ToInt32(reader["RESERVATION_COUNT"]);  
+                            
 
                             results.Add(reservationByHour);
                         }
