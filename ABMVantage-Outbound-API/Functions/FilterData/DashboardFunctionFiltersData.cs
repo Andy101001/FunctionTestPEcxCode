@@ -2,7 +2,6 @@
 using ABMVantage.Data.Models;
 using ABMVantage.Data.Service;
 using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Functions.OccupancyNDuration;
 using ABMVantage_Outbound_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

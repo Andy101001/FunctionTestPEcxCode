@@ -40,7 +40,7 @@ namespace ABMVantage.Data.Repository
                     commandType: CommandType.StoredProcedure
                 );
 
-            result.Facilities = rawData.Select(f => new FacilityData { Id = f.FacilityId, Name = f.FacilityName }).Distinct().ToList(); 
+            result.Facilities = rawData.GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList(); 
             result.Levels = rawData.Select( l => new LevelData { FacilityId = l.FacilityId, Id = l.LevelId, Level = l.Level} ).ToList();
 
             var productsData = await SqlMapper.QueryAsync<ProductData>(
