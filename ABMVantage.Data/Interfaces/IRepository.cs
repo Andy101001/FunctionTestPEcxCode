@@ -12,5 +12,7 @@ namespace ABMVantage.Data.Interfaces
     {
         OccupancyRepository<OccRevenueByProduct> OccupancyRepository { get; }
         ReservationsRepository<ReservationsByHour> ReservationsRepository { get; }
+        FilterDataRepository<FilterData> FilterDataRepository { get; }
+
     }
 }
