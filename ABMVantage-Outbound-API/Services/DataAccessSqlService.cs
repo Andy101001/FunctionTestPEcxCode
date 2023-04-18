@@ -169,15 +169,16 @@
             }
         }
 
-        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             var results = new List<TransactionsByMonthAndProduct>();
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                cmd.CommandType = CommandType.Text;
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct";
+                cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
                 {
