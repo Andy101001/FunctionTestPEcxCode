@@ -1,6 +1,8 @@
-﻿using ABMVantage_Outbound_API.Configuration;
+﻿using ABMVantage.Data.Models;
+using ABMVantage_Outbound_API.Configuration;
 using ABMVantage_Outbound_API.DashboardFunctionModels;
 using ABMVantage_Outbound_API.EntityModels;
+using ABMVantage_Outbound_API.Functions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -41,14 +43,26 @@ namespace ABMVantage_Outbound_API.Services
 
         public async Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
+           /* if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
+            {
+                _logger.LogError($"{nameof(DashboardFunctionDailyAverageOccupancy)} Query string  parametr customerId is EMPTY OR not supplied!");
+                throw new ArgumentNullException("parkingProductId");
+            }*/
+
             var result = await _dataAccessSqlService.GetDailyTransactionCountAsync(tranactionDate, facilityId, levelId, parkingProductId);
 
             return result;
         }
 
-        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters)
         {
-            var result = await _dataAccessSqlService.GetDailyTotalRevenueAsync(tranactionDate, facilityId, levelId, parkingProductId);
+            if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
+            {
+                _logger.LogError($"{nameof(GetDailyTotalRevenueAsync)} Parameter Object or to or from date missing!");
+                throw new ArgumentException();
+            }
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var result = await _dataAccessSqlService.GetDailyTotalRevenueAsync(queryParameters);
 
             return result;
         }

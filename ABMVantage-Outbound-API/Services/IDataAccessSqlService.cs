@@ -54,7 +54,7 @@ namespace ABMVantage_Outbound_API.Services
         Task<IEnumerable<MonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
 
-        Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<decimal> GetDailyTotalRevenueAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
         Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
 
