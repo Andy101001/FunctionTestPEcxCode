@@ -46,7 +46,7 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionTotalOccupancyRevenue)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new{ totalOccupancyRevenue=result });
+            return new OkObjectResult(new{ response = result });
         }
     }
 }
