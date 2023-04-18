@@ -64,7 +64,7 @@ namespace ABMVantage_Outbound_API.Services
         Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 
-        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate,DateTime endDate,string? facilityId,string? levelId,string? parkingProductId);
+        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
         Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 

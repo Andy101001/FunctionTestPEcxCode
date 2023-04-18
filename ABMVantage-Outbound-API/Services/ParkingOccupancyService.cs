@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.Configuration;
+﻿using ABMVantage.Data.Models;
+using ABMVantage_Outbound_API.Configuration;
 using ABMVantage_Outbound_API.DashboardFunctionModels;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
@@ -17,19 +18,21 @@ namespace ABMVantage_Outbound_API.Services
             _dataAccessService = dataAccessSqlService;
             _settings = settings;
         }
-        public async Task<DashboardMonthlyParkingOccupancy> GetMonthlyParkingOccupancyAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardMonthlyParkingOccupancy> GetMonthlyParkingOccupancyAsync(FilterParam filterParameters)
         {
             _logger.LogInformation($"Getting Dashboard Monthly Paring Occupancy{nameof(GetMonthlyParkingOccupancyAsync)})");
-            if (calculationDate < _settings.MinimumValidCalculationDate)
+            if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation data must be greater than {_settings.MinimumValidCalculationDate})");
             }
-            var startDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
-            var endDate = startDate.AddMonths(_settings.MonthlyParkingOccupancyInterval).AddDays(-1);
-            var currentYearOccupanciesByMonth = await _dataAccessService.GetMonthlyParkingOccupanciesAsync(startDate, endDate, facilityId, levelId, parkingProductId);
-            var priorYearOccupanciesByMonth = await _dataAccessService.GetMonthlyParkingOccupanciesAsync(startDate.AddYears(-1), endDate.AddYears(-1), facilityId, levelId, parkingProductId);
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var currentYearOccupanciesByMonth = await _dataAccessService.GetMonthlyParkingOccupanciesAsync(queryParameters);
+            var priorYearQueryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            priorYearQueryParameters.FromDate = queryParameters.FromDate.AddYears(-1);
+            priorYearQueryParameters.ToDate = queryParameters.ToDate.AddYears(-1);
+            var priorYearOccupanciesByMonth = await _dataAccessService.GetMonthlyParkingOccupanciesAsync(queryParameters);
             var monthlyParkingOccupancyData = new List<ParkingOccupancy>();
-            for (DateTime monthStart = startDate; monthStart < endDate; monthStart = monthStart.AddMonths(1))
+            for (DateTime monthStart = filterParameters.FromDate; monthStart < filterParameters.ToDate; monthStart = monthStart.AddMonths(1))
             {
                 var currentYearOccupancyByMonth = currentYearOccupanciesByMonth.Where(x => x.Year == monthStart.Year && x.Month == monthStart.Month).FirstOrDefault();
                 var priorYearOccupancyByMonth = priorYearOccupanciesByMonth.Where(x => x.Year == monthStart.Year - 1 && x.Month == monthStart.Month).FirstOrDefault();

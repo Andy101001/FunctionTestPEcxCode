@@ -50,9 +50,9 @@
         /// <returns>DashboardMonthlyAverageTicketValue</returns>
         public async Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(FilterParam filterParameters)
         {
-            _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(AverageTicketValuePerYear)}");
+            _logger.LogInformation($"Getting Dashboard Average Ticket Value {nameof(AverageTicketValuePerYear)}");
 
-            if(filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
+            if(filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
             }
