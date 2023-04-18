@@ -135,8 +135,20 @@
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct '{queryParameters.StartDate}', '{queryParameters.EndDate}','{queryParameters.FacilityId}', '{queryParameters.LevelId}', '{queryParameters.ParkingProductId}'";
-                    cmd.CommandType = CommandType.Text;
+                    SqlParameter[] parameters = new SqlParameter[]
+                     {
+                        new SqlParameter("@StartDate", queryParameters.FromDate),
+                        new SqlParameter("@EndDate", queryParameters.ToDate),
+                        new SqlParameter("@FacilityIds", queryParameters.FacilityIdsAsCommaDelimitedString),
+                        new SqlParameter("@LevelIds", queryParameters.LevelsIdsAsCommaDelimitedString),
+                        new SqlParameter("@ParkingProductIds", queryParameters.ParkingProductIdsAsCommaDelimitedString)
+                     };
+                    cmd.Parameters.AddRange(parameters);
+                    cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct";
+
+
+                    //cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct '{queryParameters.FromDate}', '{queryParameters.ToDate}','{queryParameters.FacilityId}', '{queryParameters.LevelId}', '{queryParameters.ParkingProductId}'";
+                    cmd.CommandType = CommandType.StoredProcedure;
                     db.Database.OpenConnection();
 
                     using (var reader = cmd.ExecuteReader())

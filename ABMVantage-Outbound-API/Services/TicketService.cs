@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.Configuration;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.EntityModels;
@@ -47,23 +48,15 @@
         /// </summary>
         /// <param name="hourlyReservationParameters">Date, facilityId, levelId, and parkingProductId </param>
         /// <returns>DashboardMonthlyAverageTicketValue</returns>
-        public async Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(FilterParam filterParameters)
         {
             _logger.LogInformation($"Getting Dashboard Hourly Reservation Count {nameof(AverageTicketValuePerYear)}");
 
-            if (calculationDate < _settings.MinimumValidCalculationDate)
+            if(filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
             }
-            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters();
-
-            queryParameters.StartDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
-            queryParameters.EndDate = queryParameters.StartDate.AddMonths(_settings.MonthlyAverageTicketValueInterval);
-            queryParameters.FacilityId = queryParameters.FacilityId;
-            queryParameters.LevelId = queryParameters.LevelId;
-            queryParameters.ParkingProductId = queryParameters.ParkingProductId;
-
-
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
 
             var monthlyAverageTicketValues = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(queryParameters);
 
