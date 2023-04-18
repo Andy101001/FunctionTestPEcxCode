@@ -50,12 +50,8 @@ namespace ABMVantage_Outbound_API.Services
         /// <returns>IEnumerable<ReservationByHourData></returns>
         Task<IEnumerable<ReservationByHour>> GetReservationByHourCountsAsync(HourlyReservationParameters hourlyReservationParameters);
 
-        /// <summary>
-        /// Gets the average ticket value per year, potentially filtered by facility, level and product.
-        /// </summary>
-        /// <param name="hourlyReservationParameters">ticketValuesPerYear</param>
-        /// <returns>IEnumerable<ReservationByHourData></returns>
-        Task<IEnumerable<DashboardMonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(TicketPerYearParameters ticketValuesPerYear);
+
+        Task<IEnumerable<MonthlyAverageTicketValue>> GetAverageTicketValuePerYearAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
 
         Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
@@ -68,7 +64,7 @@ namespace ABMVantage_Outbound_API.Services
         Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 
-        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate,DateTime endDate,string? facilityId,string? levelId,string? parkingProductId);
+        Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
         Task<IList<RevenueAndBudget>> GetMonthlyRevenueAndBudget(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 
