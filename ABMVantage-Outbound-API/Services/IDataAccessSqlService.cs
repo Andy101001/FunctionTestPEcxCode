@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+﻿using ABMVantage.Data.Models;
+using ABMVantage_Outbound_API.DashboardFunctionModels;
 using ABMVantage_Outbound_API.EntityModels;
 using ABMVantage_Outbound_API.Models;
 using System;
@@ -41,7 +42,7 @@ namespace ABMVantage_Outbound_API.Services
         /// <param name="levelId"></param>
         /// <param name="parkingProductId"></param>
         /// <returns></returns>
-        Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
         /// <summary>
         /// Gets the reservation count per hour, potentially filtered by facility, level and product.

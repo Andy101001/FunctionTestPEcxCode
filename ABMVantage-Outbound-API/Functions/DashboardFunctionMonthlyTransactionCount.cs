@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ABMVantage_Outbound_API.Services;
 using System.ComponentModel.DataAnnotations;
+using ABMVantage.Data.Models;
 
 namespace ABMVantage_Outbound_API.Functions
 {
@@ -34,19 +35,18 @@ namespace ABMVantage_Outbound_API.Functions
 
         [Function("ABM Dashboard - Get Monthly Transaction Count")]
         [OpenApiOperation(operationId: "GetMonthlyTransactionCount", tags: new[] { "ABM Dashboard" }, Summary = "Get Transaction Count", Description = "Gets the total number of transactions for each month, potentially filtered by facility, level and product.")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyTransactionCount), Summary = "Get Monthly Transaction Count", Description = "Gets the total number of transactions for each month, potentially filtered by facility, level and product.")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyParkingOccupancy), Summary = "Get Monthly Parking Occupancy", Description = "Gets the average parking occupancy and previous year's occupancy, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
-        [OpenApiParameter(name: "calculationDate", In = ParameterLocation.Query, Required = true, Type = typeof(DateTime), Summary = "The start date from which monthly transaction counts are returned.", Description = "The start date for which monthly transaction counts are returned.")]
-        [OpenApiParameter(name: "facilityId", In = ParameterLocation.Query, Required = false, Type = typeof(string), Summary = "An optional facilityId for filtering.", Description = "When a facilityId is provided, only transactions from that facility are included in the total. If the facilityId is \"all\" or \"ALL\", or empty, or null, then the revenue is not filtered by facility.")]
-        [OpenApiParameter(name: "levelId", In = ParameterLocation.Query, Required = false, Type = typeof(string), Summary = "An optional levelId for filtering", Description = "When a levelId is provided, then the transactions are filtered by level. If the levelId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by level.")]
-        [OpenApiParameter(name: "parkingProductId", In = ParameterLocation.Query, Required = false, Type = typeof(string), Summary = "An optional parkingProductId for filtering", Description = "When a parkingProductId is provided, then the transactions are filtered by parking product. If the parkingProductId is \"all\" or \"ALL\", or empty, or null, then there is no filtering by parking product.")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "monthlytransactioncount")] HttpRequestData reg, [FromQuery] DateTime calculationDate, string? facilityId, [FromQuery] string? levelId, [FromQuery] string? parkingProductId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "monthlytransactioncount")] HttpRequestData req)
         {
             try
             {
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyTransactionCount)}");
-                var result = await _transactionService.GetMonthlyTransactionCountAsync(calculationDate, facilityId, levelId, parkingProductId);
+                var content = await new StreamReader(req.Body).ReadToEndAsync();
+                FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
+                var result = await _transactionService.GetMonthlyTransactionCountAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 return new OkObjectResult(result);
             }

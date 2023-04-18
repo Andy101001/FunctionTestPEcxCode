@@ -74,16 +74,16 @@ namespace ABMVantage_Outbound_API.Services
             return result;
         }
 
-        public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(FilterParam filterParameters)
         {
             _logger.LogInformation($"Getting Dashboard Monthly Transaction Count {nameof(GetMonthlyTransactionCountAsync)}");
-            if (calculationDate < _settings.MinimumValidCalculationDate)
+            if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
-                throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
+                throw new ArgumentException($"Missing or Invalid parameters.");
             }
-            var startDate = new DateTime(calculationDate.Year, calculationDate.Month, 1);
-            var endDate = startDate.AddMonths(_settings.MonthlyTransactionCountInterval).AddDays(-1);
-            var monthlyTransactionCounts = await _dataAccessSqlService.GetMonthlyTransactionCountsAsync(startDate, endDate, facilityId, levelId, parkingProductId);
+
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var monthlyTransactionCounts = await _dataAccessSqlService.GetMonthlyTransactionCountsAsync(queryParameters);
             var results = from TransactionsByMonthAndProduct cnt in monthlyTransactionCounts
                           group cnt by new { cnt.Year, cnt.Month } into monthlyGroup
                           select new TransactionCountForMonth
