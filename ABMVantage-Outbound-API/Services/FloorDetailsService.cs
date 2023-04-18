@@ -66,7 +66,7 @@ namespace ABMVantage_Outbound_API.Services
             return floor;
         }
 
-
+        /*
         public async Task<decimal> GetDailyTotalRevenueAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             decimal totalCount = 0;
@@ -90,6 +90,7 @@ namespace ABMVantage_Outbound_API.Services
 
             return totalCount;
         }
+        */
 
     }
 }

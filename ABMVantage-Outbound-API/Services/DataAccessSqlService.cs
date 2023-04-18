@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
@@ -201,7 +202,7 @@
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
                 AddDefaultQUeryParametersToCommand(queryParameters, cmd);
-                cmd.CommandText = $"BASE.OccupancyByMonth";
+                cmd.CommandText = "BASE.OccupancyByMonth";
                 cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
@@ -307,7 +308,7 @@
             return dailyCount;
         }
 
-        public async Task<decimal> GetDailyTotalRevenueAsync(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<decimal> GetDailyTotalRevenueAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             decimal dailyCount = 0;
 
@@ -315,20 +316,14 @@
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
-                    ///This is to change with calculate date
-                    ///
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
-
-                    string sql = $"EXEC BASE.DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
-
+                    string storedProcName = "BASE.DailyTotalRevenue";
                     //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
-
-                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    SqlCommand cmd = new SqlCommand(storedProcName, conn);
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     var rdr = await cmd.ExecuteScalarAsync();
 
