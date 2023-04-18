@@ -59,10 +59,10 @@ namespace ABMVantage_Outbound_API.Services
 
         Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
 
-        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
-        Task<IList<DashboardFuctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
-        Task<IList<DashboardFuctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
-        Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
+        Task<IList<DashboardFunctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IList<DashboardFunctionDayRevenue>> GetRevnueByDay(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<IList<DashboardFunctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId);
 
 
         Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage_Outbound_API.DashboardFunctionModels
 {
-    public class DashboardFuctionMonthRevenue
+    public class DashboardFunctionMonthRevenue
     {
         public string? Month { get; set; }
         public decimal? Amount { get; set; }

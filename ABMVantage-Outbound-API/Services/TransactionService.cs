@@ -67,9 +67,10 @@ namespace ABMVantage_Outbound_API.Services
             return result;
         }
 
-        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam filterParameters)
         {
-            var result = await _dataAccessSqlService.GetDailyAverageOccupancy(tranactionDate, facilityId, levelId, parkingProductId);
+            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var result = await _dataAccessSqlService.GetDailyAverageOccupancy(queryParameters);
 
             return result;
         }

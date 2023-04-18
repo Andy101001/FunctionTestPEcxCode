@@ -23,14 +23,14 @@ namespace ABMVantage_Outbound_API.Services
 
             _logger.LogInformation($"Constructing {nameof(RevenueService)}");
         }
-        public async Task<IList<DashboardFuctionDayRevenue>> GetRevenueByDay(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionDayRevenue>> GetRevenueByDay(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var revenues = await _dataAccessSqlService.GetRevnueByDay(tranactionDate, facilityId, levelId, parkingProductId);
 
             return revenues;
         }
 
-        public async Task<IList<DashboardFuctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<IList<DashboardFunctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var revenues = await _dataAccessSqlService.GetRevnueByMonth(startDate, endDate, facilityId, levelId, parkingProductId);
 
