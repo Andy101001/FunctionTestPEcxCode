@@ -1,4 +1,5 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
+﻿using ABMVantage.Data.Models;
+using ABMVantage_Outbound_API.DashboardFunctionModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace ABMVantage_Outbound_API.Services
 {
     public interface IParkingOccupancyService
     {
-        Task<DashboardMonthlyParkingOccupancy> GetMonthlyParkingOccupancyAsync(DateTime calculationDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<DashboardMonthlyParkingOccupancy> GetMonthlyParkingOccupancyAsync(FilterParam filterParameters);
     }
 }

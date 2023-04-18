@@ -8,6 +8,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System.Data;
+    using System.Data.Common;
+
     public class DataAccessSqlService : IDataAccessSqlService
     {
         /// <summary>
@@ -135,15 +137,7 @@
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    SqlParameter[] parameters = new SqlParameter[]
-                     {
-                        new SqlParameter("@StartDate", queryParameters.FromDate),
-                        new SqlParameter("@EndDate", queryParameters.ToDate),
-                        new SqlParameter("@FacilityIds", queryParameters.FacilityIdsAsCommaDelimitedString),
-                        new SqlParameter("@LevelIds", queryParameters.LevelsIdsAsCommaDelimitedString),
-                        new SqlParameter("@ParkingProductIds", queryParameters.ParkingProductIdsAsCommaDelimitedString)
-                     };
-                    cmd.Parameters.AddRange(parameters);
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct";
 
 
@@ -174,7 +168,6 @@
             }
         }
 
-
         public async Task<IEnumerable<TransactionsByMonthAndProduct>> GetMonthlyTransactionCountsAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
             var results = new List<TransactionsByMonthAndProduct>();
@@ -201,14 +194,15 @@
             }
         }
 
-        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DateTime startDate, DateTime endDate, string? facilityId, string? levelId, string? parkingProductId)
+        public Task<IEnumerable<OccupancyByMonth>> GetMonthlyParkingOccupanciesAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             using (var db = _dbSqlContextFactory.CreateDbContext())
             {
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = $"BASE.OccupancyByMonth '{facilityId}', '{levelId}', '{parkingProductId}', '{startDate}', '{endDate}'";
-                cmd.CommandType = CommandType.Text;
+                AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                cmd.CommandText = $"BASE.OccupancyByMonth";
+                cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -549,6 +543,19 @@
             }
 
             return lstRevnue;
+        }
+
+        private static void AddDefaultQUeryParametersToCommand(DashboardFunctionDefaultDataAccessQueryParameters queryParameters, DbCommand cmd)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+             {
+                        new SqlParameter("@StartDate", queryParameters.FromDate),
+                        new SqlParameter("@EndDate", queryParameters.ToDate),
+                        new SqlParameter("@FacilityIds", queryParameters.FacilityIdsAsCommaDelimitedString),
+                        new SqlParameter("@LevelIds", queryParameters.LevelsIdsAsCommaDelimitedString),
+                        new SqlParameter("@ParkingProductIds", queryParameters.ParkingProductIdsAsCommaDelimitedString)
+             };
+            cmd.Parameters.AddRange(parameters);
         }
     }
 }
