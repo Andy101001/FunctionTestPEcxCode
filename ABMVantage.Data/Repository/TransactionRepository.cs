@@ -101,7 +101,7 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
+        public async Task<IEnumerable<CurrentTransaction>> GetTranactionByHours(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
 
@@ -115,7 +115,7 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        public async Task<IEnumerable<DailyTransaction>> GetTransactionByDays(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
 
@@ -129,7 +129,7 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<MonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
+        public async Task<IEnumerable<MonthlyTransaction>> GetTransactionMonths(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
 

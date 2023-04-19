@@ -16,7 +16,7 @@ namespace ABMVantage.Data.Interfaces
         Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter);
         Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter);
         Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter);
-        Task<IEnumerable<MonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter);
+        Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter);
 
 
 

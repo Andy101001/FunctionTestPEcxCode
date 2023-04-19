@@ -39,6 +39,30 @@ namespace ABMVantage.Data.Models
 
     public class MonthlyTransaction
     {
+        public int Year { get; set; }
+        public string? Month
+        {
+            get 
+            {
+                if (MonthAsInt <1 || MonthAsInt > 12)
+                {
+                    return null;
+                }
+                //Get month as a string
+                var date = new DateTime(2023, MonthAsInt, 1);
+                return date.ToString("MMM");
+            }
+        }
+
+        public int MonthAsInt { get; set; }
+
+                
+        public int NoOfTransactions { get; set; }
+
+    }
+
+    public class CurrentAndPreviousYearMonthlyTransaction
+    {
         public string? Month { get; set; }
         public int NoOfTransactions { get; set; }
         public int PreviousYearNoOfTransactions { get; set; }

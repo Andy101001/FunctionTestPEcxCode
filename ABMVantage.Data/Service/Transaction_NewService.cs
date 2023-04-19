@@ -31,13 +31,40 @@ namespace ABMVantage.Data.Service
             => _repository.TransactionRepository.GetRevenueVsBduget(inputFilter);
 
         public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
-             => _repository.TransactionRepository.GetTranacionByHours(inputFilter);
+             => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
 
         public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-            => _repository.TransactionRepository.GetTransactonByDays(inputFilter);
+            => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
 
-        public Task<IEnumerable<MonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
-            => _repository.TransactionRepository.GetTransactonMonths(inputFilter);
+        public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
+        {
+            var currentYearFilter = inputFilter;
+            var previousyearFilter = new FilterParam
+            {
+                CustomerId = inputFilter.CustomerId,
+                UserId = inputFilter.UserId,
+                Facilities = inputFilter.Facilities,
+                FromDate = inputFilter.FromDate.AddYears(-1),
+                ToDate = inputFilter.ToDate.AddYears(-1),
+                ParkingLevels = inputFilter.ParkingLevels,
+                Products = inputFilter.Products
+            };
+
+            var currentYearResults = await _repository.TransactionRepository.GetTransactionMonths(currentYearFilter);
+            var previousYearResults = await _repository.TransactionRepository.GetTransactionMonths(previousyearFilter);
+            var result = new List<CurrentAndPreviousYearMonthlyTransaction>();
+            for (DateTime monthStart = inputFilter.FromDate; monthStart <= inputFilter.ToDate; monthStart = monthStart.AddMonths(1))
+            {
+                var data = new CurrentAndPreviousYearMonthlyTransaction();
+                data.Month = monthStart.ToString("MMM");
+                var currentYearResult = currentYearResults.FirstOrDefault(x => x.Year == monthStart.Year &&  x.MonthAsInt == monthStart.Month);
+                var previousYearResult = previousYearResults.FirstOrDefault(x => x.Year == monthStart.Year - 1 && x.MonthAsInt == monthStart.Month);
+                data.NoOfTransactions = currentYearResult?.NoOfTransactions ?? 0;
+                data.PreviousYearNoOfTransactions = previousYearResult?.NoOfTransactions ?? 0;
+                result.Add(data);
+            }
+            return result;
+        }
 
         #endregion
     }
