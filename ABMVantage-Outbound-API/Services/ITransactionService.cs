@@ -11,7 +11,7 @@ namespace ABMVantage_Outbound_API.Services
 {
     public interface ITransactionService
     {
-        Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<int> GetDailyTransactiontCountAsync(FilterParam filterParameters);
         Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters);
         Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam filterParameters);
         Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(FilterParam filterParameters);
