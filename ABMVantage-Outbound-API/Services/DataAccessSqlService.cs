@@ -261,30 +261,25 @@
         }
 
 
-        public async Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<int> GetDailyTransactionCountAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters)
         {
             int dailyCount = 0;
             try
             {
                 using (var db = _dbSqlContextFactory.CreateDbContext())
                 {
-                    ///TOO: Synapse DB does not have properdata so hardcoding date parameters
-                    ///This is to change with calculate date
-                    string endDate = "2022-12-09 23:59:59.000";
-                    string startDate = "2022-07-08 05:00:00.000";
+
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
 
                     //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
-                    string sql = $"EXEC BASE.DailyAverageOccupancy '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
+                    string storedProcName= $"EXEC BASE.DailyAverageOccupancy";
 
-                    //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
-
-                    SqlCommand cmd = new SqlCommand(sql, conn);
-
+                    SqlCommand cmd = new SqlCommand(storedProcName, conn);
+                    AddDefaultQUeryParametersToCommand(queryParameters, cmd);
+                    cmd.CommandType = CommandType.StoredProcedure;
                     var rdr = await cmd.ExecuteScalarAsync();
-
                     dailyCount = Convert.ToInt32(rdr);
                 }
             }

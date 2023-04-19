@@ -41,15 +41,16 @@ namespace ABMVantage_Outbound_API.Services
 
 
 
-        public async Task<int> GetDailyTransactiontCountAsync(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
+        public async Task<int> GetDailyTransactiontCountAsync(FilterParam filterParameters)
         {
-           /* if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
+           if (filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
-                _logger.LogError($"{nameof(DashboardFunctionDailyAverageOccupancy)} Query string  parametr customerId is EMPTY OR not supplied!");
-                throw new ArgumentNullException("parkingProductId");
-            }*/
+                _logger.LogError($"{nameof(GetDailyTransactiontCountAsync)} Invalid or missing parameters");
+                throw new ArgumentNullException("Invalid or missing parameters.");
+            }
 
-            var result = await _dataAccessSqlService.GetDailyTransactionCountAsync(tranactionDate, facilityId, levelId, parkingProductId);
+           var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
+            var result = await _dataAccessSqlService.GetDailyTransactionCountAsync(queryParameters);
 
             return result;
         }

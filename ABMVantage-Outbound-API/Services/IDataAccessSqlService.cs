@@ -57,7 +57,7 @@ namespace ABMVantage_Outbound_API.Services
 
         Task<decimal> GetDailyTotalRevenueAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
-        Task<int> GetDailyTransactionCountAsync(DateTime? transactionDate, string? facilityId, string? levelId, string? parkingProductId);
+        Task<int> GetDailyTransactionCountAsync(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
 
         Task<DashboardDailyAverageOccupancy> GetDailyAverageOccupancy(DashboardFunctionDefaultDataAccessQueryParameters queryParameters);
         Task<IList<DashboardFunctionDayReservation>> GetDaysReservations(DateTime? calculationDate, string? facilityId, string? levelId, string? parkingProductId);
