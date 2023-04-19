@@ -274,7 +274,7 @@
                     conn.Open();
 
                     //string sql = $"EXEC DailyTotalRevenue '{parkingProductId}','{facilityId}','{startDate}','{endDate}','{levelId}'";
-                    string storedProcName= $"EXEC BASE.DailyAverageOccupancy";
+                    string storedProcName= $"BASE.DailyTransaction";
 
                     SqlCommand cmd = new SqlCommand(storedProcName, conn);
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
