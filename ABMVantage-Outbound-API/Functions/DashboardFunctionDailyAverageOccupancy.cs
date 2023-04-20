@@ -26,8 +26,7 @@ namespace ABMVantage_Outbound_API.Functions
         }
 
         [Function("ABM Dashboard - Get Daily Average Occupancy")]
-        [OpenApiOperation(operationId: "GetDailyAverageOccupancy", tags: new[] { "ABM Dashboard" }, Summary = "Get Average Daily Occupancy", Description = "Gets the average parking occupancy for the given day, potentially filtered by facility, level and product.")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardDailyAverageOccupancy), Summary = "Average Daily Occupancy", Description = "The average parking occupancy for the given day, potentially filtered by facility, level and product.")]
+        [OpenApiOperation(operationId: "GetDailyAverageOccupancy", tags: new[] { "ABM Dashboard" }, Summary = "Get Average Daily Occupancy", Description = "Gets the average parking occupancy for the given day, potentially filtered by facility, level and product.")]        
         [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyParkingOccupancy), Summary = "Get Monthly Parking Occupancy", Description = "Gets the average parking occupancy and previous year's occupancy, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
