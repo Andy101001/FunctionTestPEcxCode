@@ -28,17 +28,17 @@ namespace ABMVantage.Data.Utils
 
         //Transaction
 
-        public const string GetBudgetVariance = "[BASE].[GET_BUDGET_VARIANNCE]"; //dupliate
+        //public const string GetBudgetVariance = "[BASE].[GET_BUDGET_VARIANNCE]"; //dupliate
         public const string GetBudgetVsActualVriance = "[BASE].[GET_BUDGET_VARIANNCE]"; //done
         public const string GetRevenueByProductByDays = "[BASE].[GET_REVENUE_BY_PRODUCT]"; //done
-        public const string GetRevenueVsBduget = "[BASE].[GET_BUDGET_VARIANNCE]";
-        public const string GetTranacionByHours = "[BASE].[GET_TRANSACTION_BY_HOURS]";
+        public const string GetRevenueVsBduget = "[BASE].[GET_REVENUE_VS_BUDGET]"; //done
+        public const string GetTranacionByHours = "[BASE].[GET_TRANSACTION_BY_HOURS]"; //done
         public const string GetTransactonByDays = "[BASE].[GET_TRANSACTION_BY_DAYS]"; //done
         public const string GetTransactonMonths = "[BASE].[GET_TRANSACTION_MONTHS]"; //done
 
 
         public const string GetRevenueByDay = "[BASE].[RevenueByDay]";//done
-        public const string GetRevenueByMonth = "[BASE].[RevenueByMonth]";//done u
+        public const string GetRevenueByMonth = "[BASE].[RevenueByMonth]";//done 
 
     }
 }
