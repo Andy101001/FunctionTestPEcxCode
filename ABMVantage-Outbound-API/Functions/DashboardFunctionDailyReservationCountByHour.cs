@@ -26,8 +26,7 @@ namespace ABMVantage_Outbound_API.Functions
 
         [Function("ABM Dashboard - Get Reservation count by hour")]
         [OpenApiOperation(operationId: "GetDailyReservationCountByHour", tags: new[] { "ABM Dashboard" }, Summary = "Get Reservation count by hour", Description = "Gets the number of reservations for each hour, potentially filtered by facility, level and product.")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardDailyReservationCountByHour), Summary = "Reservation count by hour", Description = "The number of reservations for each hour, potentially filtered by facility, level and product.")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyParkingOccupancy), Summary = "Get Monthly Parking Occupancy", Description = "Gets the average parking occupancy and previous year's occupancy, potentially filtered by facility, level and product.")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardDailyReservationCountByHour), Summary = "Reservation count by hour", Description = "The number of reservations for each hour, potentially filtered by facility, level and product.")]        
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "reservationscountbyhour")] HttpRequestData req)
