@@ -31,6 +31,7 @@ namespace ABMVantage_Outbound_API.Functions.ReservationsNTickets
 
         [Function("ABM Dashboard - Get Reservations AvgTkt")]
         [OpenApiOperation(operationId: "GetReservationsAvgTkt", tags: new[] { "ABM Dashboard" }, Summary = "Get Reservations AvgTkt", Description = "")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionReservationsAvgTkt), Summary = "Reservations AvgTkt", Description = "")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]

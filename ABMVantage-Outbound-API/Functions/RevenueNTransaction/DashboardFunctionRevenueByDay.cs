@@ -29,6 +29,7 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
 
         [Function("ABM Dashboard - GetRevenueByDay")]
         [OpenApiOperation(operationId: "GetRevenueByDay", tags: new[] { "ABM Dashboard" }, Summary = "Get Get Revenue By Day", Description = "Gets the Revenue By Day, potentially filtered by facility, level and product.")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionRevenueByDay), Summary = "Average Daily Occupancy", Description = "Gets the Revenue By Day, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]

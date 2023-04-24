@@ -27,6 +27,7 @@ namespace ABMVantage_Outbound_API.Functions
 
         [Function("ABM Dashboard - Get Monthly Revenue and Budget")]
         [OpenApiOperation(operationId: "GetMonthlyRevenueAndBudget", tags: new[] { "ABM Dashboard" }, Summary = "Get Monthly Revenue and Budgeted revenue", Description = "Gets the total revenue for each month and the budgeted for total revenue for each month, potentially filtered by facility, level and product.")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyRevenueAndBudget), Summary = "Get Monthly Revenue and Budgeted revenue", Description = "Gets the total revenue for each month and the budgeted for total revenue for each month, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
