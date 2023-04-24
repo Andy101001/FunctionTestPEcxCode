@@ -26,6 +26,7 @@ namespace ABMVantage_Outbound_API.Functions
 
         [Function("ABM Dashboard - Get Reservation count by hour")]
         [OpenApiOperation(operationId: "GetDailyReservationCountByHour", tags: new[] { "ABM Dashboard" }, Summary = "Get Reservation count by hour", Description = "Gets the number of reservations for each hour, potentially filtered by facility, level and product.")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardDailyReservationCountByHour), Summary = "Reservation count by hour", Description = "The number of reservations for each hour, potentially filtered by facility, level and product.")]        
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]

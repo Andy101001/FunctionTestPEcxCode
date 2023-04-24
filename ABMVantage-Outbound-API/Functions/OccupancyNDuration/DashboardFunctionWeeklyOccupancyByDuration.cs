@@ -31,6 +31,7 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
 
         [Function("ABM Dashboard - Get Weekly Occupancy By Duration")]
         [OpenApiOperation(operationId: "GetWeeklyOccupancyByDuration", tags: new[] { "ABM Dashboard" }, Summary = "Get Weekly Occupancy By Duration", Description = "")]
+        [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionWeeklyOccupancyByDuration), Summary = "Weekly Occupancy By Duration", Description = "")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
