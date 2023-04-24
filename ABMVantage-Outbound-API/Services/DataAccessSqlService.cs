@@ -1,6 +1,7 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Utils;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
@@ -236,9 +237,8 @@
                     conn.Open();
 
                     
-                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                    SqlCommand cmd = new SqlCommand("BASE.DailyAverageOccupancy", conn);
+                    SqlCommand cmd = new SqlCommand(StoredProcs.GetDailyAverageOccupancy, conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     var rdr = await cmd.ExecuteReaderAsync();
