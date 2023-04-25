@@ -53,12 +53,22 @@
             var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
             var queryResults = await _dataAccessSqlService.GetReservationByHourCountsAsync(queryParameters);
             var results = from ReservationsForProductAndHour res in queryResults
+                          group res by res.Hour into hourlyGroup
+                          select new HourlyReservationCount
+                          {
+                              ReservationTime = hourlyGroup.Key,
+                              Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product })
+                          };
+
+
+
+            /*var results = from ReservationsForProductAndHour res in queryResults
                           group res by new { res.Year, res.Month, res.Day, res.Hour } into hourlyGroup
                           select new HourlyReservationCount
                           {
                               ReservationTime = hourlyGroup.Key.Hour.ToString() + ":00",
                               Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product })
-                          };
+                          };*/
             return new DashboardDailyReservationCountByHour { ReservationsByHour = results };
         }
     }

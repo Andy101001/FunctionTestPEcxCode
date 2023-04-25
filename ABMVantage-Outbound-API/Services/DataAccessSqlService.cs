@@ -1,6 +1,7 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Utils;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.DataAccess;
     using ABMVantage_Outbound_API.EntityModels;
@@ -96,7 +97,7 @@
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.ReservationCountByHour";
+                    cmd.CommandText = StoredProcs.GetReservationsByHour;
                     cmd.CommandType = CommandType.StoredProcedure;
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     db.Database.OpenConnection();
@@ -106,10 +107,11 @@
                         while (reader.Read())
                         {
                             var reservationByHour = new ReservationsForProductAndHour();
-                            reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
-                            reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
-                            reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
-                            reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            //reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
+                            //reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
+                            //reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
+                            // reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            reservationByHour.Hour = reader["TIME"]?.ToString() ?? string.Empty;
                             reservationByHour.Product = reader["PRODUCT_NAME"].ToString();
                             reservationByHour.ReservationCount = Convert.ToInt32(reader["RESERVATION_COUNT"]);  
                             
@@ -236,9 +238,8 @@
                     conn.Open();
 
                     
-                    //string sql = "EXEC BASE.DailyAverageOccupancy '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
 
-                    SqlCommand cmd = new SqlCommand("BASE.DailyAverageOccupancy", conn);
+                    SqlCommand cmd = new SqlCommand(StoredProcs.GetDailyAverageOccupancy, conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     var rdr = await cmd.ExecuteReaderAsync();
