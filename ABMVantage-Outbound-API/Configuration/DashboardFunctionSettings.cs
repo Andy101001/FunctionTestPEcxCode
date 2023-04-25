@@ -14,10 +14,12 @@ namespace ABMVantage_Outbound_API.Configuration
             MonthlyTransactionCountInterval = 13;
             MonthlyParkingOccupancyInterval = 6;
             MonthlyAverageTicketValueInterval = 13;
+            DailyReservationCountByHourInteral = 1;
         }
         public int MonthlyTransactionCountInterval { get; set; }
         public DateTime MinimumValidCalculationDate { get; set; }
-        public int MonthlyParkingOccupancyInterval { get; internal set; }
-        public int MonthlyAverageTicketValueInterval { get; internal set; }
+        public int MonthlyParkingOccupancyInterval { get; set; }
+        public int MonthlyAverageTicketValueInterval { get; set; }
+        public int DailyReservationCountByHourInteral { get; set; }
     }
 }
