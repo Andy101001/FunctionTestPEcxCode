@@ -97,7 +97,7 @@
                 {
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"BASE.ReservationCountByHour";
+                    cmd.CommandText = StoredProcs.GetReservationsByHour;
                     cmd.CommandType = CommandType.StoredProcedure;
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
                     db.Database.OpenConnection();
@@ -107,10 +107,11 @@
                         while (reader.Read())
                         {
                             var reservationByHour = new ReservationsForProductAndHour();
-                            reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
-                            reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
-                            reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
-                            reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            //reservationByHour.Year = Convert.ToInt32(reader["YEAR"]);
+                            //reservationByHour.Month = Convert.ToInt32(reader["MONTH"]);
+                            //reservationByHour.Day = Convert.ToInt32(reader["DAY"]);
+                            // reservationByHour.Hour = Convert.ToInt32(reader["HOUR"]);
+                            reservationByHour.Hour = reader["TIME"]?.ToString() ?? string.Empty;
                             reservationByHour.Product = reader["PRODUCT_NAME"].ToString();
                             reservationByHour.ReservationCount = Convert.ToInt32(reader["RESERVATION_COUNT"]);  
                             

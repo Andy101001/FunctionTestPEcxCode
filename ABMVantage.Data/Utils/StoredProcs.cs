@@ -12,9 +12,10 @@ namespace ABMVantage.Data.Utils
         public const string GetFiltersData = "[BASE].[GET_FILTERS_BY_BUS]";
         public const string GetProductsData = "[BASE].[GET_PRODUCTS]";
 
+        //Insights
         public const string GetDailyAverageOccupancy = "[DBO].[GET_OCCUPANCY_AVERAGE_FOR_DAY]";
-
-
+        public const string GetReservationsByHour = "[DBO].[GET_RESERVATIONS_BY_HOUR]";
+       
 
         //Occupancy
         public const string GetTotalOccRevenue = "[BASE].[GET_TOTAL_OCCUPANCY_BY_REVENUE]";
