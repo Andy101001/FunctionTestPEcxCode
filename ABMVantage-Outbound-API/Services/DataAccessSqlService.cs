@@ -177,7 +177,7 @@
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
                 AddDefaultQUeryParametersToCommand(queryParameters, cmd);
-                cmd.CommandText = $"BASE.TransactionsByMonthAndProduct";
+                cmd.CommandText = StoredProcs.GetMonthlyTransactions;
                 cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
