@@ -26,7 +26,7 @@ namespace ABMVantage.Data.Models
     public class LevelFilter
     {
         public string Id { get; set; }
-        public int Level { get; set; }
+        public string Level { get; set; }
     }
 
     public class ProductFilter
@@ -53,7 +53,7 @@ namespace ABMVantage.Data.Models
         public string FacilityId { get; set; }
         public string FacilityName { get; set; }
         public string Id { get; set; }
-        public int Level { get; set; }
+        public string Level { get; set; }
     }
 
     public class ProductData
@@ -61,7 +61,7 @@ namespace ABMVantage.Data.Models
         public string FacilityId { get; set; }
         public string FacilityName { get; set; }
         public string LevelId { get; set; }
-        public int Level { get; set; }
+        public string Level { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
     }
@@ -83,6 +83,6 @@ namespace ABMVantage.Data.Models
         public string FacilityId { get; set; }
         public string FacilityName { get; set; }
         public string LevelId { get; set; }
-        public int Level { get; set; }
+        public string Level { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace ABMVantage.Data.Models
     }
     public class ResAvgTicketValue
     {
-        public int NoOfTransactions { get; set; }
+        public decimal NoOfTransactions { get; set; }
         public string Time { get; set; }
     }
 }
