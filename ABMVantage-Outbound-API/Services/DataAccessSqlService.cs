@@ -139,7 +139,7 @@
                     var conn = db.Database.GetDbConnection();
                     var cmd = conn.CreateCommand();
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
-                    cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct";
+                    cmd.CommandText = StoredProcs.GetMonthlyAverageTicketValue;
 
 
                     //cmd.CommandText = $"BASE.AverageTicketValueByMonthAndProduct '{queryParameters.FromDate}', '{queryParameters.ToDate}','{queryParameters.FacilityId}', '{queryParameters.LevelId}', '{queryParameters.ParkingProductId}'";
@@ -203,7 +203,7 @@
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
                 AddDefaultQUeryParametersToCommand(queryParameters, cmd);
-                cmd.CommandText = "BASE.OccupancyByMonth";
+                cmd.CommandText = StoredProcs.GetMonthlyOccupancy;
                 cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())

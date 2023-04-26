@@ -15,7 +15,9 @@ namespace ABMVantage.Data.Utils
         //Insights
         public const string GetDailyAverageOccupancy = "[DBO].[GET_OCCUPANCY_AVERAGE_FOR_DAY]";
         public const string GetReservationsByHour = "[DBO].[GET_RESERVATIONS_BY_HOUR]";
-       
+        public const string GetMonthlyOccupancy = "[DBO].[GET_OCCUPANCY_BY_MONTH]";
+        public const string GetMonthlyAverageTicketValue = "[DBO].[GET_TICKET_AVERAGE_VALUE_BY_MONTH_AND_PRODUCT]";
+
 
         //Occupancy
         public const string GetTotalOccRevenue = "[BASE].[GET_TOTAL_OCCUPANCY_BY_REVENUE]";
