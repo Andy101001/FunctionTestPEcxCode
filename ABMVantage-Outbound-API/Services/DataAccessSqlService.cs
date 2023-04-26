@@ -304,7 +304,7 @@
 
                     var conn = new SqlConnection(db.Database.GetConnectionString());
                     conn.Open();
-                    string storedProcName = "BASE.DailyTotalRevenue";
+                    string storedProcName = StoredProcs.GetDailyTotalRevenue;
                     //string sql = "EXEC BASE.DailyTransaction '2545','LAX3576BLDG01','2022-07-08 05:00:00.000','2022-12-09 23:59:59.000','AGPK01_05'";
                     SqlCommand cmd = new SqlCommand(storedProcName, conn);
                     AddDefaultQUeryParametersToCommand(queryParameters, cmd);
