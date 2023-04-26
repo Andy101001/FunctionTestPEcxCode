@@ -18,6 +18,10 @@ namespace ABMVantage.Data.Utils
         public const string GetMonthlyOccupancy = "[DBO].[GET_OCCUPANCY_BY_MONTH]";
         public const string GetMonthlyAverageTicketValue = "[DBO].[GET_TICKET_AVERAGE_VALUE_BY_MONTH_AND_PRODUCT]";
         public const string GetDailyTransactionCount = "[DBO].[GET_TRANSACTIONS_FOR_DAY]";
+        public const string GetMonthlyRevenueAndBudget = "[DBO].[GET_REVENUE_AND_BUDGET_BY_MONTH]";
+        public const string GetDailyTotalRevenue = "[DBO].[GET_REVENUE_FOR_DAY]";
+        public const string GetMonthlyTransactions = "[DBO].[GET_TRANSACTIONS_BY_MONTH_AND_PRODUCT]";
+
 
 
         //Occupancy
