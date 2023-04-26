@@ -472,7 +472,7 @@
                 var conn = db.Database.GetDbConnection();
                 var cmd = conn.CreateCommand();
                 AddDefaultQUeryParametersToCommand(queryParameters, cmd);
-                cmd.CommandText = "BASE.RevenueAndBudgetByMonth";
+                cmd.CommandText = StoredProcs.GetMonthlyRevenueAndBudget;
                 cmd.CommandType = CommandType.StoredProcedure;
                 db.Database.OpenConnection();
                 using (var reader = cmd.ExecuteReader())
