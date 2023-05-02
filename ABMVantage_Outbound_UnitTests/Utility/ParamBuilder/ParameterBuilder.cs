@@ -22,7 +22,7 @@
                     new LevelFilter
                     {
                         Id = "AGPK01_05",
-                        Level = 5,
+                        Level = "5",
                     }
                 },
                 UserId = "UT",
