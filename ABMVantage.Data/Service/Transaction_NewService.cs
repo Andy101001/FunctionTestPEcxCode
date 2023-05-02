@@ -16,8 +16,8 @@ namespace ABMVantage.Data.Service
         }
 
         #region Public Methods
-        public Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVriance(FilterParam inputFilter)
-            => _repository.TransactionRepository.GetBudgetVsActualVriance(inputFilter);
+        public Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
+            => _repository.TransactionRepository.GetBudgetVsActualVariance(inputFilter);
 
         public Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
             => _repository.TransactionRepository.GetRevenueByDays(inputFilter);
@@ -27,8 +27,8 @@ namespace ABMVantage.Data.Service
 
         public Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter)
             => _repository.TransactionRepository.GetRevenueByProductByDays(inputFilter);
-        public Task<IEnumerable<RevenueBudget>> GetRevenueVsBduget(FilterParam inputFilter)
-            => _repository.TransactionRepository.GetRevenueVsBduget(inputFilter);
+        public Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
+            => _repository.TransactionRepository.GetRevenueVsBudget(inputFilter);
 
         public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
              => _repository.TransactionRepository.GetTranactionByHours(inputFilter);

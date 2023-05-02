@@ -60,7 +60,7 @@ namespace ABMVantage.Data.Repository
             }
         }
 
-        public TransactionRepository<BudgetVariance> TransactionRepository
+        public ITransactionRepository TransactionRepository
         {
             get
             {

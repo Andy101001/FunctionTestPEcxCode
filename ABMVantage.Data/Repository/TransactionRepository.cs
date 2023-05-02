@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Repository
 {
-    public class TransactionRepository<T> : GenericRepository<T> where T : class
+
+    public class TransactionRepository<T> : GenericRepository<T>, ITransactionRepository where T : class
     {
         #region Constructor
         public TransactionRepository(IDapperConnection context) : base(context)
@@ -21,7 +22,7 @@ namespace ABMVantage.Data.Repository
         #endregion
 
         #region Public Methods
-        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVriance(FilterParam inputFilter)
+        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
 
@@ -50,11 +51,11 @@ namespace ABMVantage.Data.Repository
 
                 return result;
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
             }
 
-           
+
             return null;
 
         }
@@ -87,7 +88,7 @@ namespace ABMVantage.Data.Repository
             return result;
         }
 
-        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBduget(FilterParam inputFilter)
+        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
 
@@ -152,7 +153,7 @@ namespace ABMVantage.Data.Repository
             //var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
             //var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
 
-            var productIds = inputParam.Products != null ?  string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
+            var productIds = inputParam.Products != null ? string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
             var parkingLevelIds = inputParam.ParkingLevels != null ? string.Join(",", inputParam.ParkingLevels.Select(x => x.Id)) : "";
             var facilityIds = inputParam.Facilities != null ? string.Join(",", inputParam.Facilities.Select(x => x.Id)) : "";
 

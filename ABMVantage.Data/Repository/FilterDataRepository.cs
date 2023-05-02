@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Repository
 {
-    public class FilterDataRepository<T> : GenericRepository<T> where T : class
+    public class FilterDataRepository<T> : GenericRepository<T>, IFilterDataRepository where T : class
     {
         #region Constructor
         public FilterDataRepository(IDapperConnection context) : base(context)
@@ -40,8 +40,8 @@ namespace ABMVantage.Data.Repository
                     commandType: CommandType.StoredProcedure
                 );
 
-            result.Facilities = rawData.GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList(); 
-            result.Levels = rawData.Select( l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName , Id = l.LevelId, Level = l.Level} ).ToList();
+            result.Facilities = rawData.GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList();
+            result.Levels = rawData.Select(l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, Id = l.LevelId, Level = l.Level }).ToList();
 
             var productsData = await SqlMapper.QueryAsync<ProductData>(
                     DapperConnection,

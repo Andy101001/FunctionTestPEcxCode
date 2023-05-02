@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Repository
 {
-    public class ReservationsRepository<T> : GenericRepository<T> where T : class
+    public class ReservationsRepository<T> : GenericRepository<T>, IReservationsRepository where T : class
     {
         #region Constructor
         public ReservationsRepository(IDapperConnection context) : base(context)
@@ -85,7 +85,7 @@ namespace ABMVantage.Data.Repository
             //var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
             //var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
 
-            var productIds = inputParam.Products != null ?  string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
+            var productIds = inputParam.Products != null ? string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
             var parkingLevelIds = inputParam.ParkingLevels != null ? string.Join(",", inputParam.ParkingLevels.Select(x => x.Id)) : "";
             var facilityIds = inputParam.Facilities != null ? string.Join(",", inputParam.Facilities.Select(x => x.Id)) : "";
 

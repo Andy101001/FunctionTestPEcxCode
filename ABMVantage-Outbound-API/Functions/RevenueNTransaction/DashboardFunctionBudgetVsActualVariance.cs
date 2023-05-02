@@ -43,7 +43,7 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _transactionService.GetBudgetVsActualVriance(inputFilter);
+            var result = await _transactionService.GetBudgetVsActualVariance(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionBudgetVsActualVariance)}");
 
             //Just to make out json as required to UI

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Repository
 {
-    public class OccupancyRepository<T> : GenericRepository<T> where T : class
+    public class OccupancyRepository<T> : GenericRepository<T>, IOccupancyRepository where T : class
     {
         #region Constructor
         public OccupancyRepository(IDapperConnection context) : base(context)
@@ -38,7 +38,7 @@ namespace ABMVantage.Data.Repository
 
                 return totalOccRevenue;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
             }
             return null;
