@@ -12,6 +12,18 @@ namespace ABMVantage.Data.Utils
         public const string GetFiltersData = "[BASE].[GET_FILTERS_BY_BUS]";
         public const string GetProductsData = "[BASE].[GET_PRODUCTS]";
 
+        //Insights
+        public const string GetDailyAverageOccupancy = "[DBO].[GET_OCCUPANCY_AVERAGE_FOR_DAY]";
+        public const string GetReservationsByHour = "[DBO].[GET_RESERVATIONS_BY_HOUR]";
+        public const string GetMonthlyOccupancy = "[DBO].[GET_OCCUPANCY_BY_MONTH]";
+        public const string GetMonthlyAverageTicketValue = "[DBO].[GET_TICKET_AVERAGE_VALUE_BY_MONTH_AND_PRODUCT]";
+        public const string GetDailyTransactionCount = "[DBO].[GET_TRANSACTIONS_FOR_DAY]";
+        public const string GetMonthlyRevenueAndBudget = "[DBO].[GET_REVENUE_AND_BUDGET_BY_MONTH]";
+        public const string GetDailyTotalRevenue = "[DBO].[GET_REVENUE_FOR_DAY]";
+        public const string GetMonthlyTransactions = "[DBO].[GET_TRANSACTIONS_BY_MONTH_AND_PRODUCT]";
+
+
+
         //Occupancy
         public const string GetTotalOccRevenue = "[BASE].[GET_TOTAL_OCCUPANCY_BY_REVENUE]";
         public const string GetWeeklyOccByDuration = "[BASE].[GET_WEEKLY_OCCUPANCY_BY_DURATION]";
@@ -28,17 +40,17 @@ namespace ABMVantage.Data.Utils
 
         //Transaction
 
-        //public const string GetBudgetVariance = "[BASE].[GET_BUDGET_VARIANNCE]"; //dupliate
-        public const string GetBudgetVsActualVriance = "[BASE].[GET_BUDGET_VARIANNCE]"; //done
-        public const string GetRevenueByProductByDays = "[BASE].[GET_REVENUE_BY_PRODUCT]"; //done
-        public const string GetRevenueVsBduget = "[BASE].[GET_REVENUE_VS_BUDGET]"; //done
-        public const string GetTranacionByHours = "[BASE].[GET_TRANSACTION_BY_HOURS]"; //done
-        public const string GetTransactonByDays = "[BASE].[GET_TRANSACTION_BY_DAYS]"; //done
-        public const string GetTransactonMonths = "[BASE].[GET_TRANSACTION_MONTHS]"; //done
+       
+        public const string GetBudgetVsActualVriance = "[dbo].[GET_BUDGET_VARIANNCE]";
+        public const string GetRevenueByProductByDays = "[dbo].[RevenueByProduct]";
+        public const string GetRevenueVsBduget = "[dbo].[RevenueAndBudgetByMonth]";
+        public const string GetTranacionByHours = "[dbo].[GET_TRANSACTION_BY_HOURS]";
+        public const string GetTransactonByDays = "[dbo].[GET_TRANSACTION_BY_DAYS]";
+        public const string GetTransactonMonths = "[dbo].[GET_TRANSACTION_MONTHS]";
 
 
-        public const string GetRevenueByDay = "[BASE].[RevenueByDay]";//done
-        public const string GetRevenueByMonth = "[BASE].[RevenueByMonth]";//done 
+        public const string GetRevenueByDay = "[dbo].[RevenueByDay]";
+        public const string GetRevenueByMonth = "[dbo].[RevenueByMonth]";
 
     }
 }
