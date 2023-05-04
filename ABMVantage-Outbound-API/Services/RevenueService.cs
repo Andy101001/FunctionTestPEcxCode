@@ -25,16 +25,30 @@ namespace ABMVantage_Outbound_API.Services
         }
         public async Task<IList<DashboardFunctionDayRevenue>> GetRevenueByDay(DateTime? tranactionDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var revenues = await _dataAccessSqlService.GetRevnueByDay(tranactionDate, facilityId, levelId, parkingProductId);
-
-            return revenues;
+            try
+            {
+                var revenues = await _dataAccessSqlService.GetRevnueByDay(tranactionDate, facilityId, levelId, parkingProductId);
+                return revenues;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"{nameof(DashboardFunctionDayRevenue)} has an error! : {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<IList<DashboardFunctionMonthRevenue>> GetRevnueByMonth(DateTime? startDate, DateTime? endDate, string? facilityId, string? levelId, string? parkingProductId)
         {
-            var revenues = await _dataAccessSqlService.GetRevnueByMonth(startDate, endDate, facilityId, levelId, parkingProductId);
-
-            return revenues;
+            try
+            {
+                var revenues = await _dataAccessSqlService.GetRevnueByMonth(startDate, endDate, facilityId, levelId, parkingProductId);
+                return revenues;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DashboardFunctionMonthRevenue)} has an error! : {ex.Message}");
+                throw;
+            }
         }
     }
 }
