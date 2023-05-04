@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Services
 {
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.EntityModels;
     using Microsoft.Extensions.Logging;
 
@@ -35,9 +36,19 @@
         {
             _logger.LogInformation("Getting all PGS occupancies");
 
-            var occupancies = await _dataAccessService.GetPgsTicketOccupanciesAsync().ConfigureAwait(false);
+            try
+            {
+                var occupancies = await _dataAccessService.GetPgsTicketOccupanciesAsync().ConfigureAwait(false);
+                return occupancies;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(PgsOccupancy)} has an error! : {ex.Message}");
+                throw;
+            }
+            
 
-            return occupancies;
+            
         }
     }
 }
