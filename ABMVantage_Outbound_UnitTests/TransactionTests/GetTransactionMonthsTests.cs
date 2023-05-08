@@ -42,7 +42,7 @@ namespace ABMVantage_Outbound_UnitTests.TransactionTests
             _mockTransactionRepository.Setup(x => x.GetRevenueVsBudget(filterParam)).ReturnsAsync(TestDataBuilder.GetRevenueBudgetTestData());
             _mockRepository.SetupGet(x => x.TransactionRepository).Returns(_mockTransactionRepository.Object);
 
-            _transactionService = new Transaction_NewService(_mockRepository.Object);
+            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object);
 
             List<RevenueBudget> result = new List<RevenueBudget>(await _transactionService.GetRevenueVsBudget(filterParam));
 
@@ -68,7 +68,7 @@ namespace ABMVantage_Outbound_UnitTests.TransactionTests
             _mockTransactionRepository.Setup(x => x.GetRevenueVsBudget(new FilterParam())).ReturnsAsync(TestDataBuilder.GetRevenueBudgetTestData());
             _mockRepository.SetupGet(x => x.TransactionRepository).Returns(_mockTransactionRepository.Object);
 
-            _transactionService = new Transaction_NewService(_mockRepository.Object);
+            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object);
 
             List<RevenueBudget> result = new List<RevenueBudget>(await _transactionService.GetRevenueVsBudget(filterParam));
 

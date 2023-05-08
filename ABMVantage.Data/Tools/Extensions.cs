@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Tools
+﻿namespace ABMVantage.Data.Tools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Threading.Tasks;
+
     public static class DataTableExtensions
     {
         public static DataTable ToDataTable<T>(this IEnumerable<T> iList)
@@ -22,7 +20,6 @@ namespace ABMVantage.Data.Tools
 
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                     type = Nullable.GetUnderlyingType(type);
-
 
                 dataTable.Columns.Add(propertyDescriptor.Name, type);
             }

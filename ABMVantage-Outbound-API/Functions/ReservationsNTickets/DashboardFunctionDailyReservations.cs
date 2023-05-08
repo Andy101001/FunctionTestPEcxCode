@@ -1,20 +1,16 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Service;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions.ReservationsNTickets
+﻿namespace ABMVantage_Outbound_API.Functions.ReservationsNTickets
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionDailyReservations
     {
         private readonly ILogger _logger;

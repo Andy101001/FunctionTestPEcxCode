@@ -1,23 +1,22 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
+﻿namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionRevenueByMonth
     {
         private readonly ILogger _logger;
         private readonly ITransaction_NewService _transactionService;
+
         public DashboardFunctionRevenueByMonth(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
@@ -39,7 +38,6 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
 
             var content = await new StreamReader(req.Body).ReadToEndAsync();
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
-
 
             if (string.IsNullOrEmpty(content))
             {

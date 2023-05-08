@@ -1,20 +1,16 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Service;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
+﻿namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionDailyRevenueByProduct
     {
         private readonly ILogger _logger;
@@ -29,7 +25,7 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyRevenueByProduct)}");
         }
 
-        [Function("ABM Dashboard - Get DailyRevenueByProduct")] 
+        [Function("ABM Dashboard - Get DailyRevenueByProduct")]
         [OpenApiOperation(operationId: "GetDailyRevenueByProduct", tags: new[] { "ABM Dashboard" }, Summary = "Get Daily Revenue By Product", Description = "")]
         [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionDailyRevenueByProduct), Summary = "Daily Revenue By Product\"", Description = "")]

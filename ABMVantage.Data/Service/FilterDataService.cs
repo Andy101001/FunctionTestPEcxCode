@@ -13,6 +13,7 @@ namespace ABMVantage.Data.Service
         #region Constructor
         public FilterDataService(IRepository repository)
         {
+            ArgumentNullException.ThrowIfNull(repository);
             _repository = repository;
         }
         #endregion

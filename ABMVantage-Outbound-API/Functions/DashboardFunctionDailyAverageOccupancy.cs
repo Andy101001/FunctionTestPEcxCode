@@ -1,21 +1,22 @@
-﻿using ABMVantage.Data.Models;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionDailyAverageOccupancy
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _dailyTransactionCountService;
+
         public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService)
         {
             ArgumentNullException.ThrowIfNull(dailyTransactionCountService);
@@ -26,7 +27,7 @@ namespace ABMVantage_Outbound_API.Functions
         }
 
         [Function("ABM Dashboard - Get Daily Average Occupancy")]
-        [OpenApiOperation(operationId: "GetDailyAverageOccupancy", tags: new[] { "ABM Dashboard" }, Summary = "Get Average Daily Occupancy", Description = "Gets the average parking occupancy for the given day, potentially filtered by facility, level and product.")]        
+        [OpenApiOperation(operationId: "GetDailyAverageOccupancy", tags: new[] { "ABM Dashboard" }, Summary = "Get Average Daily Occupancy", Description = "Gets the average parking occupancy for the given day, potentially filtered by facility, level and product.")]
         [OpenApiRequestBody(contentType: "json", bodyType: typeof(FilterParam), Description = "Parameters")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardMonthlyParkingOccupancy), Summary = "Get Monthly Parking Occupancy", Description = "Gets the average parking occupancy and previous year's occupancy, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
@@ -42,14 +43,11 @@ namespace ABMVantage_Outbound_API.Functions
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyAverageOccupancy)}");
                 return new OkObjectResult(new { averageDailyOccupancyInteger = result.AverageDailyOccupancyInteger, averageDailyOccupancyPercentage = result.AverageDailyOccupancyPercentage });
             }
-
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                _logger.LogError($"{nameof(DashboardFunctionDailyAverageOccupancy)} Missing query parameters");
+                _logger.LogError($"{nameof(DashboardFunctionDailyAverageOccupancy)} Missing query parameters {ae.Message}");
                 return new BadRequestObjectResult("Missing or invalid query parameters.");
             }
-
         }
-            
     }
 }

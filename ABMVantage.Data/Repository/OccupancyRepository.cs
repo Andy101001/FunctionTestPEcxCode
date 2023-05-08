@@ -1,59 +1,71 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Tools;
-using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Repository
+﻿namespace ABMVantage.Data.Repository
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Dapper;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class OccupancyRepository<T> : GenericRepository<T>, IOccupancyRepository where T : class
     {
-        #region Constructor
-        public OccupancyRepository(IDapperConnection context) : base(context)
-        {
+        private readonly ILogger<OccupancyRepository<T>> _logger;
 
+        #region Constructor
+
+        public OccupancyRepository(ILoggerFactory loggerFactory, IDapperConnection context) : base(loggerFactory, context)
+        {
+            _logger = loggerFactory.CreateLogger<OccupancyRepository<T>>();
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Public Methods
+
         public async Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam inputFilter)
         {
+            IEnumerable<OccRevenueByProduct>? totalOccRevenue = null;
             try
             {
                 var dynamicParams = GetInputParam(inputFilter);
                 //dynamicParams.Add("@UserId", userId, DbType.String, ParameterDirection.Input);
                 //dynamicParams.Add("@CustomerId", customerId, DbType.Int32, ParameterDirection.Input);
 
-                var totalOccRevenue = await SqlMapper.QueryAsync<OccRevenueByProduct>(
+                totalOccRevenue = await SqlMapper.QueryAsync<OccRevenueByProduct>(
                         DapperConnection,
                         Utils.StoredProcs.GetTotalOccRevenue,
                         param: dynamicParams,
                         commandType: CommandType.StoredProcedure
                     );
-
-                return totalOccRevenue;
             }
             catch (Exception ex)
             {
+                _logger.LogError($"{nameof(GetTotalOccRevenue)} has an error! : {ex.Message}");
             }
-            return null;
+
+            return totalOccRevenue;
         }
 
         public async Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<OccWeeklyOccByDuration>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetWeeklyOccByDuration,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
+            IEnumerable<OccWeeklyOccByDuration>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<OccWeeklyOccByDuration>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetWeeklyOccByDuration,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetWeeklyOccByDuration)} has an error! : {ex.Message}");
+            }
 
             return result;
         }
@@ -61,13 +73,20 @@ namespace ABMVantage.Data.Repository
         public async Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<OccCurrent>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetOccCurrent,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
+            IEnumerable<OccCurrent>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<OccCurrent>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetOccCurrent,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetOccCurrent)} has an error! : {ex.Message}");
+            }
 
             return result;
         }
@@ -75,13 +94,20 @@ namespace ABMVantage.Data.Repository
         public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<AvgMonthlyOccVsDuration>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetAvgMonthlyOccVsDuration,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
+            IEnumerable<AvgMonthlyOccVsDuration>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<AvgMonthlyOccVsDuration>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetAvgMonthlyOccVsDuration,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetAvgMonthlyOccVsDuration)} has an error! : {ex.Message}");
+            }
 
             return result;
         }
@@ -89,19 +115,27 @@ namespace ABMVantage.Data.Repository
         public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<YearlyOccupancy>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetYearlyOccupancy,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<YearlyOccupancy>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<YearlyOccupancy>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetYearlyOccupancy,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetYearlyOccupancy)} has an error! : {ex.Message}");
+            }
             return result;
         }
-        #endregion
+
+        #endregion Public Methods
 
         #region Private Methods
+
         private DynamicParameters GetInputParam(FilterParam inputParam)
         {
             //var facilities = inputParam.Facilities != null ? inputParam.Facilities.ToList() : new List<FacilityFilter>();
@@ -123,7 +157,7 @@ namespace ABMVantage.Data.Repository
 
             return dynamicParams;
         }
-        #endregion
 
+        #endregion Private Methods
     }
 }

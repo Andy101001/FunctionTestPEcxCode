@@ -1,20 +1,19 @@
-﻿using ABMVantage.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Service
+﻿namespace ABMVantage.Data.Service
 {
+    using ABMVantage.Data.Interfaces;
+    using System;
+
     public class ServiceBase : IDisposable
     {
         #region Variables
-        protected IRepository _repository;
-        bool disposed;
-        #endregion
+
+        protected IRepository? _repository;
+        private bool disposed;
+
+        #endregion Variables
 
         #region Public Methods
+
         protected virtual void Dispose(bool dispose)
         {
             if (!disposed)
@@ -23,11 +22,13 @@ namespace ABMVantage.Data.Service
 
             disposed = true;
         }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+
+        #endregion Public Methods
     }
 }

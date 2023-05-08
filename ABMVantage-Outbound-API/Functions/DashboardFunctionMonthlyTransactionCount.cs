@@ -1,29 +1,23 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using ABMVantage_Outbound_API.Services;
-using System.ComponentModel.DataAnnotations;
-using ABMVantage.Data.Models;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+
     public class DashboardFunctionMonthlyTransactionCount
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
-
 
         public DashboardFunctionMonthlyTransactionCount(ILoggerFactory loggerFactory, ITransactionService transactionService)
         {
@@ -50,9 +44,11 @@ namespace ABMVantage_Outbound_API.Functions
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 return new OkObjectResult(result);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                return new BadRequestResult();
+                _logger.LogError($"{nameof(DashboardFunctionMonthlyTransactionCount)} Missing query parameters {ae.Message}");
+
+                return new BadRequestObjectResult("Missing or invalid query parameters.");
             }
         }
     }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Models
+﻿namespace ABMVantage.Data.Models
 {
+    using System;
+    using System.Collections.Generic;
+
     public class FilterParam
     {
         public string UserId { get; set; }
@@ -20,7 +17,7 @@ namespace ABMVantage.Data.Models
     public class FacilityFilter
     {
         public string Id { get; set; }
-        public string Name { get; set;}
+        public string Name { get; set; }
     }
 
     public class LevelFilter
@@ -74,7 +71,7 @@ namespace ABMVantage.Data.Models
     }
 
     public class CustumerBus
-    {        
+    {
         public string Bu { get; set; }
     }
 
