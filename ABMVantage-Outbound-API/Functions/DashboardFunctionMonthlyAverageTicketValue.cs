@@ -1,30 +1,27 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.Azure.Cosmos.Core;
-using ABMVantage.Data.Models;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionMonthlyAverageTicketValue
     {
         private readonly ILogger _logger;
         private readonly ITicketService _ticketService;
+
         public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService)
         {
+            ArgumentNullException.ThrowIfNull(ticketService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyAverageTicketValue>();
             _ticketService = ticketService;
         }
@@ -37,28 +34,21 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "monthlyaverageticketvalue")] HttpRequestData req)
         {
-
             var content = await new StreamReader(req.Body).ReadToEndAsync();
             FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
             _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyReservationCountByHour)}");
             try
             {
-
                 var result = await _ticketService.AverageTicketValuePerYear(filterParameters);
 
                 return new OkObjectResult(result);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                return new BadRequestResult();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in function {functionName}", nameof(DashboardFunctionMonthlyAverageTicketValue));
-                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-            }
-            
+                _logger.LogError($"{nameof(DashboardFunctionMonthlyAverageTicketValue)} Missing query parameters {ae.Message}");
 
+                return new BadRequestObjectResult("Missing or invalid query parameters.");
+            }
         }
     }
 }

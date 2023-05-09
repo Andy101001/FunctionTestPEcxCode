@@ -1,25 +1,21 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Service;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
+﻿namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionTotalOccupancyRevenue
     {
         private readonly ILogger _logger;
         private readonly IOccupancyService _occupancyService;
-        
+
         public DashboardFunctionTotalOccupancyRevenue(ILoggerFactory loggerFactory, IOccupancyService occupancyService)
         {
             ArgumentNullException.ThrowIfNull(occupancyService);
@@ -38,7 +34,7 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "totaloccupancyrevenue")] HttpRequestData req)
         {
             _logger.LogInformation($"Executing function {nameof(DashboardFunctionTotalOccupancyRevenue)}");
-            
+
             var content = await new StreamReader(req.Body).ReadToEndAsync();
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
@@ -47,7 +43,7 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionTotalOccupancyRevenue)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new{ response = result });
+            return new OkObjectResult(new { response = result });
         }
     }
 }

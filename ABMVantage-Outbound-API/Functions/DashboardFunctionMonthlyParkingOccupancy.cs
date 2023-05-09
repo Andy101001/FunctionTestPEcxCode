@@ -1,22 +1,17 @@
-﻿using ABMVantage.Data.Models;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionMonthlyParkingOccupancy
     {
         private readonly ILogger _logger;
@@ -24,6 +19,9 @@ namespace ABMVantage_Outbound_API.Functions
 
         public DashboardFunctionMonthlyParkingOccupancy(ILoggerFactory loggerFactory, IParkingOccupancyService parkingOccupancyService)
         {
+            ArgumentNullException.ThrowIfNull(parkingOccupancyService);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyParkingOccupancy>();
             _parkingOccupancyService = parkingOccupancyService;
         }
@@ -36,7 +34,6 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "monthlyoccupancy")] HttpRequestData req)
         {
-
             try
             {
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyParkingOccupancy)}");
@@ -46,12 +43,12 @@ namespace ABMVantage_Outbound_API.Functions
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyParkingOccupancy)}");
                 return new OkObjectResult(result);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                return new BadRequestResult();
+                _logger.LogError($"{nameof(DashboardFunctionMonthlyParkingOccupancy)} Missing query parameters {ae.Message}");
+
+                return new BadRequestObjectResult("Missing or invalid query parameters.");
             }
-
         }
-
     }
 }

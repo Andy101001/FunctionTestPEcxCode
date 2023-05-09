@@ -1,47 +1,58 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Tools;
-using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Repository
+﻿namespace ABMVantage.Data.Repository
 {
-    public class TransactionRepository<T> : GenericRepository<T> where T : class
-    {
-        #region Constructor
-        public TransactionRepository(IDapperConnection context) : base(context)
-        {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Dapper;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
 
+    public class TransactionRepository<T> : GenericRepository<T>, ITransactionRepository where T : class
+    {
+        private readonly ILogger<TransactionRepository<T>> _logger;
+
+        #region Constructor
+
+        public TransactionRepository(ILoggerFactory loggerFactory, IDapperConnection context) : base(loggerFactory, context)
+        {
+            _logger = loggerFactory.CreateLogger<TransactionRepository<T>>();
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Public Methods
-        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVriance(FilterParam inputFilter)
+
+        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<BudgetVariance>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetBudgetVsActualVriance,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<BudgetVariance>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<BudgetVariance>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetBudgetVsActualVriance,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetBudgetVsActualVariance)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
         {
+            IEnumerable<RevenueByDay>? result = null;
             try
             {
                 var dynamicParams = GetInputParam(inputFilter);
 
-                var result = await SqlMapper.QueryAsync<RevenueByDay>(
+                result = await SqlMapper.QueryAsync<RevenueByDay>(
                         DapperConnection,
                         Utils.StoredProcs.GetRevenueByDay,
                         param: dynamicParams,
@@ -50,109 +61,144 @@ namespace ABMVantage.Data.Repository
 
                 return result;
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetRevenueByDays)} has an error! : {ex.Message}");
             }
-
-           
-            return null;
-
+            return result;
         }
 
         public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<MonthlyRevenue>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetRevenueByMonth,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<MonthlyRevenue>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<MonthlyRevenue>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetRevenueByMonth,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetRevenueByMonths)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<RevenueByProduct>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetRevenueByProductByDays,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<RevenueByProduct>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<RevenueByProduct>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetRevenueByProductByDays,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetRevenueByProductByDays)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
-        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBduget(FilterParam inputFilter)
+        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<RevenueBudget>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetRevenueVsBduget,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<RevenueBudget>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<RevenueBudget>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetRevenueVsBduget,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetRevenueVsBudget)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<CurrentTransaction>> GetTranactionByHours(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<CurrentTransaction>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetTranacionByHours,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<CurrentTransaction>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<CurrentTransaction>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetTranacionByHours,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetTranactionByHours)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<DailyTransaction>> GetTransactionByDays(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<DailyTransaction>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetTransactonByDays,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<DailyTransaction>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<DailyTransaction>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetTransactonByDays,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetTransactionByDays)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<MonthlyTransaction>> GetTransactionMonths(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<MonthlyTransaction>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetTransactonMonths,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<MonthlyTransaction>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<MonthlyTransaction>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetTransactonMonths,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetTransactionMonths)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Private Methods
+
         private DynamicParameters GetInputParam(FilterParam inputParam)
         {
             //var facilities = inputParam.Facilities != null ? inputParam.Facilities.ToList() : new List<FacilityFilter>();
             //var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
             //var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
 
-            var productIds = inputParam.Products != null ?  string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
+            var productIds = inputParam.Products != null ? string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
             var parkingLevelIds = inputParam.ParkingLevels != null ? string.Join(",", inputParam.ParkingLevels.Select(x => x.Id)) : "";
             var facilityIds = inputParam.Facilities != null ? string.Join(",", inputParam.Facilities.Select(x => x.Id)) : "";
 
@@ -172,6 +218,7 @@ namespace ABMVantage.Data.Repository
         {
             throw new NotImplementedException();
         }
-        #endregion
+
+        #endregion Private Methods
     }
 }

@@ -1,23 +1,22 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Service;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
+﻿namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
 {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionRevenueByDay
     {
         private readonly ILogger _logger;
         private readonly ITransaction_NewService _transactionService;
+
         public DashboardFunctionRevenueByDay(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
@@ -33,7 +32,6 @@ namespace ABMVantage_Outbound_API.Functions.RevenueNTransaction
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(DashboardFunctionRevenueByDay), Summary = "Average Daily Occupancy", Description = "Gets the Revenue By Day, potentially filtered by facility, level and product.")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid Filter Parameters", Description = "Invalid FilterParameters")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
-       
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "revenuebyday")] HttpRequestData req)
         {
             _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");

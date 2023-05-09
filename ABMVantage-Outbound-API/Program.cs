@@ -100,14 +100,7 @@ namespace ABMVantage_Outbound_API
 #endif
             }).ConfigureServices(s =>
             {
-                s.AddScoped<IObsReservationService, ObsReservationService>();
-                s.AddScoped<IDataAccessService, DataAccessService>();
                 s.AddScoped<IDataAccessSqlService, DataAccessSqlService>();
-                s.AddScoped<IActiveClosedEvChargingService, ActiveClosedEvChargingService>();
-                s.AddScoped<IOBSReservationTransactionsService, OBSReservationTransactionsService>();
-                s.AddScoped<ITicketOccupanciesService, TicketOccupanciesService>();
-                s.AddScoped<IPgsTicketOccupanciesService, PgsTicketOccupanciesService>();
-                s.AddScoped<IParcsTicketTransactionsService, ParcsTicketTransactionsService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IParkingOccupancyService, ParkingOccupancyService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();

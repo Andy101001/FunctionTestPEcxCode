@@ -1,4 +1,5 @@
 ﻿using ABMVantage.Data.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,10 +12,12 @@ namespace ABMVantage.Data.Repository
     public class GenericRepository<T> where T : class
     {
         internal IDapperConnection dapperContext;
+        private readonly ILogger<GenericRepository<T>> _logger;
 
         #region Constructor
-        public GenericRepository(IDapperConnection context)
+        public GenericRepository(ILoggerFactory loggerFactory, IDapperConnection context)
         {
+            _logger = loggerFactory.CreateLogger<GenericRepository<T>>();
             dapperContext = context;
         }
         #endregion
@@ -22,7 +25,11 @@ namespace ABMVantage.Data.Repository
         #region Public Methods
         public IDbConnection DapperConnection
         {
-            get { return dapperContext.GetConnection(); }
+            get 
+            { 
+                _logger.LogInformation($"{nameof(DapperConnection)} Created");
+                return dapperContext.GetConnection(); 
+            }
         }
         #endregion
 

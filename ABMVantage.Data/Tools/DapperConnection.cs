@@ -1,31 +1,32 @@
-﻿using ABMVantage.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Tools
+﻿namespace ABMVantage.Data.Tools
 {
+    using ABMVantage.Data.Interfaces;
+    using System;
+    using System.Data;
+    using System.Data.Common;
+    using System.Data.SqlClient;
+
     public class DapperConnection : IDapperConnection
     {
         #region Properties
+
         private DbConnection conn;
-        bool disposed = false;
-        #endregion
+        private bool disposed = false;
+
+        #endregion Properties
 
         #region Constructor
+
         public DapperConnection(string connString)
         {
             if (!string.IsNullOrEmpty(connString))
                 conn = new SqlConnection(connString);
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Public Methods
+
         public IDbConnection GetConnection()
         {
             return conn;
@@ -45,6 +46,7 @@ namespace ABMVantage.Data.Tools
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+
+        #endregion Public Methods
     }
 }

@@ -1,22 +1,23 @@
-﻿using ABMVantage_Outbound_API.DashboardFunctionModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using System.Net;
-using ABMVantage_Outbound_API.Services;
-using ABMVantage_Outbound_API.Functions.RevenueNTransaction;
-using ABMVantage.Data.Models;
-using Newtonsoft.Json;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Functions.RevenueNTransaction;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionMonthlyRevenueAndBudget
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
+
         public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService)
         {
             ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
@@ -33,11 +34,8 @@ namespace ABMVantage_Outbound_API.Functions
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.MethodNotAllowed, Summary = "Validation exception", Description = "Validation exception")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "monthlyrevenueandbudget")] HttpRequestData req)
         {
-
-
             try
             {
-
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
@@ -47,9 +45,11 @@ namespace ABMVantage_Outbound_API.Functions
                 //Just to make out json as required to UI
                 return new OkObjectResult(result);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                return new BadRequestResult();
+                _logger.LogError($"{nameof(DashboardFunctionMonthlyRevenueAndBudget)} Missing query parameters {ae.Message}");
+
+                return new BadRequestObjectResult("Missing or invalid query parameters.");
             }
         }
     }

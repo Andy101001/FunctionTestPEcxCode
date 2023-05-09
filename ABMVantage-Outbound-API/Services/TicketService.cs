@@ -16,8 +16,7 @@
     public class TicketService : ITicketService
     {
         private readonly ILogger<ReservationService> _logger;
-        private readonly IDataAccessSqlService _dataAccessSqlService;
-        private readonly IDataAccessService _dataAccessService;
+        private readonly IDataAccessSqlService _dataAccessSqlService;        
         private readonly IConfiguration _configuration;
         private readonly bool IsSqlDbConnectionOn;
         private DashboardFunctionSettings _settings;
@@ -29,10 +28,9 @@
         /// <param name="dataAccessSqlService">sql</param>
         /// <param name="dataAccessService">cosmo</param>
         /// <param name="configuration">configuration</param>
-        public TicketService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IDataAccessService dataAccessService, IConfiguration configuration, DashboardFunctionSettings settings)
+        public TicketService(ILoggerFactory loggerFactory, IDataAccessSqlService dataAccessSqlService, IConfiguration configuration, DashboardFunctionSettings settings)
         {
             _logger = loggerFactory.CreateLogger<ReservationService>();
-            _dataAccessService = dataAccessService;
             _configuration = configuration;
             IsSqlDbConnectionOn = Convert.ToBoolean(_configuration.GetSection("SqlSettings")["IsSqlDbConnectionOn"]);
             _settings = settings;
@@ -51,25 +49,33 @@
         public async Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(FilterParam filterParameters)
         {
             _logger.LogInformation($"Getting Dashboard Average Ticket Value {nameof(AverageTicketValuePerYear)}");
-
+            IEnumerable<AverageTicketValueForMonth>? result = null;
             if(filterParameters == null || filterParameters.FromDate < _settings.MinimumValidCalculationDate || filterParameters.ToDate < _settings.MinimumValidCalculationDate)
             {
                 throw new ArgumentException($"Calculation date must be greater than {_settings.MinimumValidCalculationDate}");
             }
-            var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
 
-            var monthlyAverageTicketValues = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(queryParameters);
+            try
+            {
+                var queryParameters = new DashboardFunctionDefaultDataAccessQueryParameters(filterParameters);
 
-            var result = from MonthlyAverageTicketValue data in monthlyAverageTicketValues
-                         group data by new { data.Year, data.Month } into monthlyGroup
-                         select new AverageTicketValueForMonth
-                         {
-                             Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
-                             Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ParkingProduct, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
-                         };
+                var monthlyAverageTicketValues = await _dataAccessSqlService.GetAverageTicketValuePerYearAsync(queryParameters);
+
+                result = from MonthlyAverageTicketValue data in monthlyAverageTicketValues
+                             group data by new { data.Year, data.Month } into monthlyGroup
+                             select new AverageTicketValueForMonth
+                             {
+                                 Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
+                                 Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ParkingProduct, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
+                             };
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(AverageTicketValuePerYear)} has an error! : {ex.Message}");                
+            }
 
             return new DashboardMonthlyAverageTicketValue { Response = result };
-
         }
     }
 }

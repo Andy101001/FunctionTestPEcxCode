@@ -1,23 +1,23 @@
-﻿using ABMVantage.Data.Models;
-using ABMVantage_Outbound_API.DashboardFunctionModels;
-using ABMVantage_Outbound_API.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using System.Net;
-
-namespace ABMVantage_Outbound_API.Functions
+﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Models;
+    using ABMVantage_Outbound_API.DashboardFunctionModels;
+    using ABMVantage_Outbound_API.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Azure.Functions.Worker;
+    using Microsoft.Azure.Functions.Worker.Http;
+    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
+    using Newtonsoft.Json;
+    using System.Net;
+
     public class DashboardFunctionDailyTotalRevenue
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
-        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory, ITransactionService transactionService) 
+
+        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory, ITransactionService transactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -25,7 +25,6 @@ namespace ABMVantage_Outbound_API.Functions
             _transactionService = transactionService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyTotalRevenue)}");
         }
-
 
         [Function("ABM Dashboard - Get Daily Total Revenue")]
         [OpenApiOperation(operationId: "GetDailyTotalRevenue", tags: new[] { "ABM Dashboard" }, Summary = "Get Daily Total Revenue", Description = "Gets the total revenue for all transactions occuring on the given day, potentially filtered by facility, level and product.")]
@@ -44,12 +43,12 @@ namespace ABMVantage_Outbound_API.Functions
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTotalRevenue)}");
                 return new OkObjectResult(new { totalRevenue = result });
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
-                return new BadRequestResult();
-            }
+                _logger.LogError($"{nameof(DashboardFunctionDailyTotalRevenue)} Missing query parameters {ae.Message}");
 
-            
+                return new BadRequestObjectResult("Missing or invalid query parameters.");
+            }
         }
     }
 }

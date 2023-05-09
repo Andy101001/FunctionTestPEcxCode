@@ -1,36 +1,47 @@
-﻿using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Models;
-using ABMVantage.Data.Tools;
-using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ABMVantage.Data.Repository
+﻿namespace ABMVantage.Data.Repository
 {
-    public class ReservationsRepository<T> : GenericRepository<T> where T : class
-    {
-        #region Constructor
-        public ReservationsRepository(IDapperConnection context) : base(context)
-        {
+    using ABMVantage.Data.Interfaces;
+    using ABMVantage.Data.Models;
+    using Dapper;
+    using Microsoft.Extensions.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
 
+    public class ReservationsRepository<T> : GenericRepository<T>, IReservationsRepository where T : class
+    {
+        private readonly ILogger<ReservationsRepository<T>> _logger;
+
+        #region Constructor
+
+        public ReservationsRepository(ILoggerFactory loggerFactory, IDapperConnection context) : base(loggerFactory, context)
+        {
+            _logger = loggerFactory.CreateLogger<ReservationsRepository<T>>();
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Public Methods
+
         public async Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<ReservationsByHour>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetHourlyReservations,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
+            IEnumerable<ReservationsByHour>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<ReservationsByHour>(
+                       DapperConnection,
+                       Utils.StoredProcs.GetHourlyReservations,
+                       param: dynamicParams,
+                       commandType: CommandType.StoredProcedure
+                   );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetHourlyReservations)} has an error! : {ex.Message}");
+            }
 
             return result;
         }
@@ -38,54 +49,74 @@ namespace ABMVantage.Data.Repository
         public async Task<IEnumerable<ReservationsByDay>> GetDailyReservations(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<ReservationsByDay>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetDailyReservations,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<ReservationsByDay>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<ReservationsByDay>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetDailyReservations,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetDailyReservations)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-
-            var result = await SqlMapper.QueryAsync<ReservationsByMonth>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetMonthlyReservations,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            IEnumerable<ReservationsByMonth>? result = null;
+            try
+            {
+                result = await SqlMapper.QueryAsync<ReservationsByMonth>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetMonthlyReservations,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure
+                    );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetMonthlyReservations)} has an error! : {ex.Message}");
+            }
             return result;
         }
 
         public async Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
+            IEnumerable<ResAvgTicketValue>? result = null;
 
-            var result = await SqlMapper.QueryAsync<ResAvgTicketValue>(
-                    DapperConnection,
-                    Utils.StoredProcs.GetReservationsAvgTkt,
-                    param: dynamicParams,
-                    commandType: CommandType.StoredProcedure
-                );
-
+            try
+            {
+                result = await SqlMapper.QueryAsync<ResAvgTicketValue>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetReservationsAvgTkt,
+                        param: dynamicParams,
+                        commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetReservationsAvgTkt)} has an error! : {ex.Message}");
+            }
             return result;
         }
-        #endregion
+
+        #endregion Public Methods
 
         #region Private Methods
+
         private DynamicParameters GetInputParam(FilterParam inputParam)
         {
             //var facilities = inputParam.Facilities != null ? inputParam.Facilities.ToList() : new List<FacilityFilter>();
             //var parkingLevels = inputParam.ParkingLevels != null ? inputParam.ParkingLevels.ToList() : new List<LevelFilter>();
             //var products = inputParam.Products != null ? inputParam.Products.ToList() : new List<ProductFilter>();
 
-            var productIds = inputParam.Products != null ?  string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
+            var productIds = inputParam.Products != null ? string.Join(",", inputParam.Products.Select(x => x.Id)) : "";
             var parkingLevelIds = inputParam.ParkingLevels != null ? string.Join(",", inputParam.ParkingLevels.Select(x => x.Id)) : "";
             var facilityIds = inputParam.Facilities != null ? string.Join(",", inputParam.Facilities.Select(x => x.Id)) : "";
 
@@ -100,6 +131,7 @@ namespace ABMVantage.Data.Repository
 
             return dynamicParams;
         }
-        #endregion
+
+        #endregion Private Methods
     }
 }

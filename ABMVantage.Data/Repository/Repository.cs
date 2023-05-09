@@ -1,5 +1,6 @@
 ﻿using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,16 @@ namespace ABMVantage.Data.Repository
         private ReservationsRepository<ReservationsByHour> _reservationRepository;
         private FilterDataRepository<FilterData> _filterDataRepository;
         private TransactionRepository<BudgetVariance> _transactionRepository;
-       
+        private readonly ILogger<Repository> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+
         #endregion
 
         #region Constructor
-        public Repository(IDapperConnection context)
+        public Repository(ILoggerFactory loggerFactory,IDapperConnection context)
         {
             dapperContext = context;
+            _loggerFactory = loggerFactory;
         }
         #endregion
 
@@ -33,7 +37,7 @@ namespace ABMVantage.Data.Repository
             get
             {
                 if (_occupancyRepository == null)
-                    _occupancyRepository = new OccupancyRepository<OccRevenueByProduct>(dapperContext);
+                    _occupancyRepository = new OccupancyRepository<OccRevenueByProduct>(_loggerFactory, dapperContext);
 
                 return _occupancyRepository;
             }
@@ -44,7 +48,7 @@ namespace ABMVantage.Data.Repository
             get
             {
                 if (_reservationRepository == null)
-                    _reservationRepository = new ReservationsRepository<ReservationsByHour>(dapperContext);
+                    _reservationRepository = new ReservationsRepository<ReservationsByHour>(_loggerFactory, dapperContext);
 
                 return _reservationRepository;
             }
@@ -54,18 +58,18 @@ namespace ABMVantage.Data.Repository
             get
             {
                 if (_filterDataRepository == null)
-                    _filterDataRepository = new FilterDataRepository<FilterData>(dapperContext);
+                    _filterDataRepository = new FilterDataRepository<FilterData>(_loggerFactory, dapperContext);
 
                 return _filterDataRepository;
             }
         }
 
-        public TransactionRepository<BudgetVariance> TransactionRepository
+        public ITransactionRepository TransactionRepository
         {
             get
             {
                 if (_transactionRepository == null)
-                    _transactionRepository = new TransactionRepository<BudgetVariance>(dapperContext);
+                    _transactionRepository = new TransactionRepository<BudgetVariance>(_loggerFactory, dapperContext);
 
                 return _transactionRepository;
             }
