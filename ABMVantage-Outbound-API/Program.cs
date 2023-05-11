@@ -20,6 +20,7 @@ using ABMVantage.Data.Tools;
 using ABMVantage.Data.Repository;
 using System.Configuration;
 using ABMVantage.Data.Service;
+using ABMVantage.Data.DataAccess;
 
 namespace ABMVantage_Outbound_API
 {
@@ -101,6 +102,7 @@ namespace ABMVantage_Outbound_API
             }).ConfigureServices(s =>
             {
                 s.AddScoped<IDataAccessSqlService, DataAccessSqlService>();
+                s.AddScoped<IDataAccessService, DataAccessService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IParkingOccupancyService, ParkingOccupancyService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
