@@ -9,6 +9,7 @@
     using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
+    using DataAccess;
 
     public class OccupancyRepository<T> : GenericRepository<T>, IOccupancyRepository where T : class
     {
@@ -156,6 +157,11 @@
             dynamicParams.Add("@Products", productIds, DbType.String, ParameterDirection.Input);
 
             return dynamicParams;
+        }
+
+        public Task<DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Private Methods
