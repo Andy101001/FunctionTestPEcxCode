@@ -5,6 +5,9 @@
         //Filter
         public const string GetFiltersData = "[BASE].[GET_FILTERS_BY_BUS]";
         public const string GetProductsData = "[BASE].[GET_PRODUCTS]";
+        public const string GetStgFilterData = "[DBO].[GET_FILTER_DATA]";
+
+        
 
         //Insights
         public const string GetDailyAverageOccupancy = "[DBO].[GET_OCCUPANCY_AVERAGE_FOR_DAY]";

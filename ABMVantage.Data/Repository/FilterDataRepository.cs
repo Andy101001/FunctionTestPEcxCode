@@ -5,6 +5,7 @@
     using Dapper;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
@@ -58,6 +59,29 @@
             catch (Exception ex)
             {
                 _logger.LogError($"{nameof(GetFiltersData)} has an error! : {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public async Task<IList<StgFilterData>> GetStsFiltersData()
+        {
+            var result = new List<StgFilterData>();
+
+            try
+            {
+                var data = await SqlMapper.QueryAsync<StgFilterData>(
+                        DapperConnection,
+                        Utils.StoredProcs.GetStgFilterData,
+                        commandType: CommandType.StoredProcedure
+                    );
+                result = data.ToList();
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetStsFiltersData)} has an error! : {ex.Message}");
             }
 
             return result;

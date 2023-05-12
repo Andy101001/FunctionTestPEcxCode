@@ -20,6 +20,8 @@ using ABMVantage.Data.Tools;
 using ABMVantage.Data.Repository;
 using System.Configuration;
 using ABMVantage.Data.Service;
+using StackExchange.Redis;
+using ABMVantage.Data.Configuration;
 
 namespace ABMVantage_Outbound_API
 {
@@ -70,6 +72,12 @@ namespace ABMVantage_Outbound_API
                     configuration.GetSection("CosmosSettings").Bind(settings);
                 });
 
+                //Read Redis settings from configuration or local settings
+                builder.Services.AddOptions<RedisSettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("RedisSettings").Bind(settings);
+                });
+
                 //Read Sql settings from configuration or local settings
                 builder.Services.AddOptions<SqlSettings>().Configure<IConfiguration>((settings, configuration) =>
                 {
@@ -114,11 +122,19 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IOccupancyService, OccupancyService>();
                 s.AddScoped<IReservationNTicketService, ReservationNTicketService>();
                 s.AddScoped<IFilterDataService, FilterDataService>();
+                s.AddScoped<IRepository, Repository>();
 
                 s.AddScoped<IReservationService, ReservationService>();
                 s.AddScoped<ITicketService, TicketService>();
 
                 s.AddScoped<ITransaction_NewService, Transaction_NewService>();
+                s.AddScoped<IRedisCachingService, RedisCachingService>();
+
+                //Redis Cache Configuration
+                var redisSettings = s.BuildServiceProvider().GetRequiredService<IOptions<RedisSettings>>().Value;
+                //string redisConnection = Configuration["RedisCacheOptions:Configuration"]; ;
+                var multiplexer = ConnectionMultiplexer.Connect(redisSettings.ConntecitonString);
+                s.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
                 s.AddOptions();
 
