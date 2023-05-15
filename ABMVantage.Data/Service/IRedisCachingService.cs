@@ -11,5 +11,6 @@ namespace ABMVantage.Data.Service
     public interface IRedisCachingService
     {
         Task<IList<StgFilterData>> GetStgFilterData();
+        Task<IEnumerable<DailyTransaction>> GetStgTransactonByDays(FilterParam inputFilter);
     }
 }

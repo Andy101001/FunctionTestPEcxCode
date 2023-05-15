@@ -148,16 +148,35 @@
             return result;
         }
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactionByDays(FilterParam inputFilter)
+        //public async Task<IEnumerable<DailyTransaction>> GetTransactionByDays(FilterParam inputFilter)
+        //{
+        //    var dynamicParams = GetInputParam(inputFilter);
+        //    IEnumerable<DailyTransaction>? result = null;
+        //    try
+        //    {
+        //        result = await SqlMapper.QueryAsync<DailyTransaction>(
+        //               DapperConnection,
+        //               Utils.StoredProcs.GetTransactonByDays,
+        //               param: dynamicParams,
+        //               commandType: CommandType.StoredProcedure
+        //           );
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"{nameof(GetTransactionByDays)} has an error! : {ex.Message}");
+        //    }
+        //    return result;
+        //}
+
+        public async Task<IEnumerable<StgDailyTransaction>> GetTransactionByDays(FilterParam inputFilter)
         {
             var dynamicParams = GetInputParam(inputFilter);
-            IEnumerable<DailyTransaction>? result = null;
+            IEnumerable<StgDailyTransaction>? result = null;
             try
             {
-                result = await SqlMapper.QueryAsync<DailyTransaction>(
+                result = await SqlMapper.QueryAsync<StgDailyTransaction>(
                        DapperConnection,
-                       Utils.StoredProcs.GetTransactonByDays,
-                       param: dynamicParams,
+                       Utils.StoredProcs.GetCacheTransactonByDays,
                        commandType: CommandType.StoredProcedure
                    );
             }
@@ -167,6 +186,7 @@
             }
             return result;
         }
+
 
         public async Task<IEnumerable<MonthlyTransaction>> GetTransactionMonths(FilterParam inputFilter)
         {

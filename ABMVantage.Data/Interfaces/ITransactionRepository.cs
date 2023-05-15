@@ -9,7 +9,7 @@
         Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter);
         Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter);
         Task<IEnumerable<CurrentTransaction>> GetTranactionByHours(FilterParam inputFilter);
-        Task<IEnumerable<DailyTransaction>> GetTransactionByDays(FilterParam inputFilter);
+        Task<IEnumerable<StgDailyTransaction>> GetTransactionByDays(FilterParam inputFilter);
         Task<IEnumerable<MonthlyTransaction>> GetTransactionMonths(FilterParam inputFilter);
     }
 }

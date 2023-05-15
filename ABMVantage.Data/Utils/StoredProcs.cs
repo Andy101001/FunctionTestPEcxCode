@@ -45,6 +45,10 @@
         public const string GetTransactonByDays = "[dbo].[GET_TRANSACTION_BY_DAYS]";
         public const string GetTransactonMonths = "[dbo].[GET_TRANSACTION_MONTHS]";
 
+        //Cache
+        
+        public const string GetCacheTransactonByDays = "[DBO].[CACHE_GET_TRANSACTION_BY_DAYS]";
+
 
         public const string GetRevenueByDay = "[dbo].[RevenueByDay]";
         public const string GetRevenueByMonth = "[dbo].[RevenueByMonth]";

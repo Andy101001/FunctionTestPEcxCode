@@ -23,6 +23,16 @@
         public string? WeekDay { get; set; }
         public decimal NoOfTransactions { get; set; }
     }
+    public class StgDailyTransaction
+    {
+        public string? WeekDay { get; set; }
+        public decimal NoOfTransactions { get; set; }
+        public string? LevelId { get; set; }
+        public string? FacilityId { get; set; }
+        public string? ProductId { get; set; }
+        public string? ExitDateTimeUtc { get; set; }
+        
+    }
 
     public class MonthlyRevenue
     {
