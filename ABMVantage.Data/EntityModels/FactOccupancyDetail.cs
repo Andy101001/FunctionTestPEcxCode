@@ -22,7 +22,7 @@
         public DateTime BeginningOfHour { get; set; }
 
         [JsonProperty("OccupancyForHour")]
-        public string? OccupancyForHour { get; set; }
+        public int OccupancyForHour { get; set; }
 
     }
 }
