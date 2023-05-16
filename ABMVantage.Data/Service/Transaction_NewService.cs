@@ -46,28 +46,28 @@
 
         //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
-        
+
         //TODO: DO NOT DELTE BELOW CODE
 
-        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        //{
-        //    var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
 
-        //    return result;
-        //}
-         
+            return result;
+        }
+
         //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
 
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        {
-            IEnumerable<DailyTransaction>? result = null;
-            result = await _cache.GetStgTransactonByDays(inputFilter);
+        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //{
+        //    IEnumerable<DailyTransaction>? result = null;
+        //    result = await _cache.GetStgTransactonByDays(inputFilter);
 
-            return result;
-        }
-          
+        //    return result;
+        //}
+
 
 
 

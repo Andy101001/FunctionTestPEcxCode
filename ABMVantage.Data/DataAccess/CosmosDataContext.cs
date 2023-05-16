@@ -13,7 +13,7 @@
 
    
         private const string FactOccupancyDetail = nameof(FactOccupancyDetail);
-        private const string StgRevenue = nameof(StgRevenue);
+        private const string StgRevenue = "Stg_revenue"; //nameof(StgRevenue);
         private const string DimParkingSpaceCount = nameof(DimParkingSpaceCount);
 
 

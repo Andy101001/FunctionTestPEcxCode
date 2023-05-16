@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ABMVantage.Data.Service
 {
@@ -27,17 +28,32 @@ namespace ABMVantage.Data.Service
 
         public async Task<IList<DailyTransaction>> GetTransactonByDays(FilterParam parameters)
         {
-            using var context = _factory.CreateDbContext();
+           IList<DailyTransaction> dailyTransactions=null;
 
-            var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
-            var facilities = parameters.Facilities.Select(x => x.Id).ToList();
-            var products = parameters.Products.Select(x => x.Id).ToList();
 
-            var result =  context.StgRevenues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == null) && facilities.Contains(x.FacilityId) && products.Contains(Convert.ToInt32(x.ProductId)));
+            try
+            {
 
-            var data = from d in result select new DailyTransaction {NoOfTransactions=d.NoOfTransactions,WeekDay=d.Weekday };
+                using var context = _factory.CreateDbContext();
 
-            return data.ToList();
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+
+                var result = context.StgRevenues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.Weekday };
+                 dailyTransactions= data.ToList();
+
+            }
+            catch (Exception ex) 
+            {
+                string error=ex.Message;
+            }
+
+           
+
+            return dailyTransactions;
         }
     }
 }

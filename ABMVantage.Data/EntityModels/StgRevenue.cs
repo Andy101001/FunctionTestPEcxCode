@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
+   
+    //[JsonProperty(" Stg_revenue")]
     public class StgRevenue
     {
         [Key]
@@ -21,7 +23,7 @@ namespace ABMVantage.Data.EntityModels
         public string? LevelId { get; set; }
 
         [JsonProperty("ProductId")]
-        public string? ProductId { get; set; }
+        public int ProductId { get; set; }
 
         [JsonProperty("NoOfTransactions")]
         public decimal NoOfTransactions { get; set; }
