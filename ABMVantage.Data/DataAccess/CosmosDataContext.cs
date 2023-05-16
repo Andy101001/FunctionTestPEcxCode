@@ -13,6 +13,7 @@
 
    
         private const string FactOccupancyDetail = nameof(FactOccupancyDetail);
+        private const string StgRevenue = nameof(StgRevenue);
 
 
         /// <summary>
@@ -33,8 +34,12 @@
                     .HasNoDiscriminator()
                     .ToContainer(FactOccupancyDetail)
                     .HasPartitionKey(da => da.FactOccupancyDetailId);
+            modelBuilder.Entity<StgRevenue>()
+                   .HasNoDiscriminator()
+                   .ToContainer(StgRevenue)
+                   .HasPartitionKey(da => da.id);
 
-    
+
 
 
 
@@ -83,8 +88,11 @@
         }
 
         public DbSet<FactOccupancyDetail> FactOccupancyDetails { get; set; }
+        public DbSet<StgRevenue> StgRevenues { get; set; }
 
         public DbSet<dynamic> Facilities { get; set; }
+      
+
 
 
 

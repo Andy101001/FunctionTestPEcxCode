@@ -137,6 +137,9 @@ namespace ABMVantage_Outbound_API
                 //string redisConnection = Configuration["RedisCacheOptions:Configuration"]; ;
                 var multiplexer = ConnectionMultiplexer.Connect(redisSettings.ConntecitonString);
                 s.AddSingleton<IConnectionMultiplexer>(multiplexer);
+                s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
+
+                
 
                 s.AddOptions();
 

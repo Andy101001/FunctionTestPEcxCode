@@ -12,6 +12,7 @@
     {
         private readonly ILogger<Transaction_NewService> _logger;
         private readonly IRedisCachingService _cache;
+        private readonly IDataCosmosAccessService _cosmosAccessService;
 
         public Transaction_NewService(ILoggerFactory loggerFactory, IRepository repository, IRedisCachingService cache)
         {
@@ -19,6 +20,7 @@
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<Transaction_NewService>();
             _repository = repository;
+            _cosmosAccessService = cosmosAccessService;
             _cache = cache;
         }
 
@@ -42,6 +44,16 @@
         public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
              => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
 
+        //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
+
+        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+
+            return result;
+        }
+         
         //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
 
