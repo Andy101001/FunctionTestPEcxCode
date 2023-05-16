@@ -43,6 +43,10 @@
                    .HasNoDiscriminator()
                    .ToContainer(StgRevenue)
                    .HasPartitionKey(da => da.id);
+            modelBuilder.Entity<DimParkingSpaceCount>()
+                    .HasNoDiscriminator()
+                    .ToContainer(DimParkingSpaceCount)
+                    .HasPartitionKey(da => da.id);
 
 
 
