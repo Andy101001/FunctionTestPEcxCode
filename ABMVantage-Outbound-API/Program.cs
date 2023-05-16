@@ -121,6 +121,9 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<ITicketService, TicketService>();
 
                 s.AddScoped<ITransaction_NewService, Transaction_NewService>();
+                s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
+
+                
 
                 s.AddOptions();
 

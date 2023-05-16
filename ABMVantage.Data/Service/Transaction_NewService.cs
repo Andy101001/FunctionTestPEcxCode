@@ -11,13 +11,15 @@
     public class Transaction_NewService : ServiceBase, ITransaction_NewService
     {
         private readonly ILogger<Transaction_NewService> _logger;
+        private readonly IDataCosmosAccessService _cosmosAccessService;
 
-        public Transaction_NewService(ILoggerFactory loggerFactory, IRepository repository)
+        public Transaction_NewService(ILoggerFactory loggerFactory, IRepository repository, IDataCosmosAccessService cosmosAccessService)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<Transaction_NewService>();
             _repository = repository;
+            _cosmosAccessService = cosmosAccessService;
         }
 
         #region Public Methods
@@ -40,8 +42,16 @@
         public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
              => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
 
-        public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-            => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
+        //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
+
+        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+
+            return result;
+        }
+         
 
         public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
         {
