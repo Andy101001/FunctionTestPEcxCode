@@ -15,8 +15,10 @@
         private const string FactOccupancyDetail = nameof(FactOccupancyDetail);
         private const string StgRevenue = "Stg_revenue"; //nameof(StgRevenue);
         private const string DimParkingSpaceCount = nameof(DimParkingSpaceCount);
+        private const string TransactionByHours = nameof(TransactionByHours);
+        
 
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
@@ -46,6 +48,11 @@
             modelBuilder.Entity<DimParkingSpaceCount>()
                     .HasNoDiscriminator()
                     .ToContainer(DimParkingSpaceCount)
+                    .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<TransactionByHours>()
+                    .HasNoDiscriminator()
+                    .ToContainer(TransactionByHours)
                     .HasPartitionKey(da => da.id);
 
 
@@ -100,6 +107,8 @@
         public DbSet<StgRevenue> StgRevenues { get; set; }
 
         public DbSet<DimParkingSpaceCount> DimParkingSpaceCounts { get; set; }
+
+        public DbSet<TransactionByHours> TransactionByHourss { get; set; }
 
 
 

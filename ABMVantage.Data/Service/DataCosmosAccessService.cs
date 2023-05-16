@@ -51,9 +51,35 @@ namespace ABMVantage.Data.Service
                 string error=ex.Message;
             }
 
-           
-
             return dailyTransactions;
+        }
+
+        public async Task<IList<CurrentTransaction>> GetTransactonByHours(FilterParam parameters)
+        {
+            IList<CurrentTransaction> transactionsByHours = null;
+
+            try
+            {
+
+                using var context = _factory.CreateDbContext();
+
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+                //var result2 = context.TransactionByHourss.ToList();
+
+                var result = context.TransactionByHourss.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new CurrentTransaction { NoOfTransactions = d.NoOfTransactions, Time = d.Time };
+                transactionsByHours = data.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+            return transactionsByHours;
         }
     }
 }

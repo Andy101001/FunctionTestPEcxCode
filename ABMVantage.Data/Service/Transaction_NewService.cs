@@ -41,8 +41,17 @@
         public Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
             => _repository.TransactionRepository.GetRevenueVsBudget(inputFilter);
 
-        public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
-             => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
+        //public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
+        //     => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
+
+        public async Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByHours(inputFilter);
+
+            return result;
+        }
+           
+
 
         //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);

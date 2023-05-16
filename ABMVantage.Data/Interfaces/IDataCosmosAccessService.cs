@@ -11,5 +11,6 @@ namespace ABMVantage.Data.Interfaces
     public interface  IDataCosmosAccessService
     {
         Task<IList<DailyTransaction>> GetTransactonByDays(FilterParam parameters);
+        Task<IList<CurrentTransaction>> GetTransactonByHours(FilterParam parameters);
     }
 }
