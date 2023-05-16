@@ -33,45 +33,41 @@
         {
 
             int availableParkingSpaces = await GetAvailableParkingSpaces(parameters);
-            /*using var context = _factory.CreateDbContext();
-            from detail in context.FactOccupancyDetails
-            group detail by new { detail.FacilityId, detail.LevelId, detail.ProductId, detail.ParkingSpaceCount, detail.BeginningOfHour.Year, detail.BeginningOfHour.Month, detail.BeginningOfHour.Day } into g
-            where detail.BeginningOfHour >= parameters.FromDate && detail.BeginningOfHour <= parameters.ToDate*/
-            
 
 
-            throw new NotImplementedException();
-            /*
-            select	f.FACILITY_ID
-		,f.LEVEL_ID
-		,f.PARKING_PRODUCT_ID
-		,f.PARKING_SPACE_COUNT
-		, DATEFROMPARTS(YEAR(BEGINNING_OF_HOUR), MONTH(BEGINNING_OF_HOUR), DAY(BEGINNING_OF_HOUR)) [DAY]
-		, SUM(OCCUPANCY_FOR_HOUR) TOTAL_OCCUPIED_PARKING_SPOT_HOURS_FOR_DAY
-          INTO STG_OCCUPANCY_AVERAGE_FOR_DAY
-        from STG_FACILITY_LEVEL_PRODUCT f
-        inner join STG_OCCUPANCY_DETAIL o
-        on f.FACILITY_ID = o.FACILITY_ID and (f.LEVEL_ID = o.LEVEL_ID or (f.LEVEL_ID is null and o.LEVEL_ID is null)) and f.PARKING_PRODUCT_ID = o.PRODUCT_ID
-        WHERE BEGINNING_OF_HOUR between @FromDate and @ToDate
-        GROUP BY f.FACILITY_ID,f.LEVEL_ID,f.PARKING_PRODUCT_ID, PARKING_SPACE_COUNT,YEAR(BEGINNING_OF_HOUR), MONTH(BEGINNING_OF_HOUR), DAY(BEGINNING_OF_HOUR)            
+            using var context = _factory.CreateDbContext();
 
 
-            */
+
+ 
+            int totalOccupiedParkingSpotHours = (from detail in context.FactOccupancyDetails
+            where (parameters.Facilities.Select(x => x.Id).Contains(detail.FacilityId) || parameters.Facilities.Count() == 0)
+            && (parameters.ParkingLevels.Select(x => x.Id).Contains(detail.LevelId) || parameters.ParkingLevels.Count() == 0)
+            && (parameters.Products.Select(x => x.Id.ToString()).Contains(detail.ProductId) || parameters.Products.Count() == 0)
+            select detail.OccupancyForHour).ToList().Sum();
+
+
+            var averageOccupancyInteger = (float) totalOccupiedParkingSpotHours / ((float) availableParkingSpaces * 24) * (float) availableParkingSpaces;
+            var averageOccupancycPercentage = (float) totalOccupiedParkingSpotHours / ((float) availableParkingSpaces * 24) * 100;
+
+            return new DailyAverageOccupancy
+            {
+                AverageDailyOccupancyInteger = Convert.ToInt32(averageOccupancyInteger),
+            AverageDailyOccupancyPercentage = Convert.ToInt32(averageOccupancycPercentage)
+            };
+
         }
 
         private async Task<int> GetAvailableParkingSpaces(FilterParam parameters)
         {
-            try
-            {
-                using var context = _factory.CreateDbContext();
-                var container = context.Database.GetCosmosClient().GetContainer(context.Database.GetCosmosDatabaseId(), "DimFacility");
-                var facilitiesResponse = await container.ReadItemAsync<dynamic>("DimFacility", new Microsoft.Azure.Cosmos.PartitionKey("FacilityId"));
-                return 1;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            using var context = _factory.CreateDbContext();
+
+            var totalSpaces = (from item in context.DimParkingSpaceCounts
+            where (parameters.Facilities == null || parameters.Facilities.Select(x => x.Id).Contains(item.FacilityId) || parameters.Facilities.Count() == 0)
+            && (parameters.ParkingLevels  == null || parameters.ParkingLevels.Select(x => x.Id).Contains(item.LevelId) || parameters.ParkingLevels.Count() == 0)
+            && (parameters.Products == null || parameters.Products.Select(x => x.Id).Contains(item.ParkingProductId) || parameters.Products.Count() == 0)
+            select item.ParkingSpaceCount).Sum();
+            return totalSpaces;
         }
     }
 }

@@ -39,9 +39,7 @@
 
         public Task<DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters)
         {
-            //return _repository.OccupancyRepository.GetDailyAverageOccupancy(filterParameters);
-            _dataAccessService.GetDailyAverageOccupancy(filterParameters);
-            return null;
+            return _dataAccessService.GetDailyAverageOccupancy(filterParameters);
             
         }
 

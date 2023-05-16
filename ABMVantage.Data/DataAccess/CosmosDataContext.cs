@@ -13,6 +13,7 @@
 
    
         private const string FactOccupancyDetail = nameof(FactOccupancyDetail);
+        private const string DimParkingSpaceCount = nameof(DimParkingSpaceCount);
 
 
         /// <summary>
@@ -33,6 +34,10 @@
                     .HasNoDiscriminator()
                     .ToContainer(FactOccupancyDetail)
                     .HasPartitionKey(da => da.FactOccupancyDetailId);
+            modelBuilder.Entity<DimParkingSpaceCount>()
+                    .HasNoDiscriminator()
+                    .ToContainer(DimParkingSpaceCount)
+                    .HasPartitionKey(da => da.id);
 
     
 
@@ -84,7 +89,8 @@
 
         public DbSet<FactOccupancyDetail> FactOccupancyDetails { get; set; }
 
-        public DbSet<dynamic> Facilities { get; set; }
+        public DbSet<DimParkingSpaceCount> DimParkingSpaceCounts { get; set; }
+
 
 
 
