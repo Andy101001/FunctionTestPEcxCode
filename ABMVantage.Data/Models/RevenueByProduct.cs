@@ -3,13 +3,13 @@
     public class RevenueByProduct
     {
         public string? Product { get; set; }
-        public decimal Revenue { get; set; }
+        public decimal? Revenue { get; set; }
     }
 
     public class BudgetVariance
     {
         public string? Month { get; set; }
-        public decimal BgtVariance { get; set; }
+        public decimal? BgtVariance { get; set; }
     }
 
     public class CurrentTransaction
@@ -37,8 +37,8 @@
     public class MonthlyRevenue
     {
         public string? Month { get; set; }
-        public decimal Revenue { get; set; }
-        public decimal PreviousYearRevenue { get; set; }
+        public decimal? Revenue { get; set; }
+        public decimal? PreviousYearRevenue { get; set; }
     }
 
     public class MonthlyTransaction
@@ -76,12 +76,12 @@
     {
         public string? Month { get; set; }
         public decimal Revenue { get; set; }
-        public decimal BudgetedRevenue { get; set; }
+        public decimal? BudgetedRevenue { get; set; }
     }
     public class RevenueByDay
     {
         public string? WeekDay { get; set; }
-        public decimal Revenue { get; set; }
+        public decimal? Revenue { get; set; }
        
     }
 

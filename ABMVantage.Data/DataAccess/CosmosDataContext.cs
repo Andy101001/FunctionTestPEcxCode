@@ -16,9 +16,14 @@
         private const string StgRevenue = "Stg_revenue"; //nameof(StgRevenue);
         private const string DimParkingSpaceCount = nameof(DimParkingSpaceCount);
         private const string TransactionByHours = nameof(TransactionByHours);
+        private const string TransactionByMonth = nameof(TransactionByMonth);
+        private const string RevenueVsBudget = nameof(RevenueVsBudget);
+        private const string RevenueByProductByDay = nameof(RevenueByProductByDay);
+        private const string BudgetVsActualVariance = nameof(BudgetVsActualVariance);
+        private const string RevenueStgByDay = "RevenueByDay";
+        private const string RevenueByMonth = nameof(RevenueByMonth);
         
 
-        
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
@@ -55,8 +60,35 @@
                     .ToContainer(TransactionByHours)
                     .HasPartitionKey(da => da.id);
 
+            modelBuilder.Entity<TransactionByMonth>()
+                    .HasNoDiscriminator()
+                    .ToContainer(TransactionByMonth)
+                    .HasPartitionKey(da => da.id);
 
+            modelBuilder.Entity<RevenueVsBudget>()
+                   .HasNoDiscriminator()
+                   .ToContainer(RevenueVsBudget)
+                   .HasPartitionKey(da => da.id);
 
+            modelBuilder.Entity<RevenueByProductByDay>()
+                   .HasNoDiscriminator()
+                   .ToContainer(RevenueByProductByDay)
+                   .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<BudgetVsActualVariance>()
+                   .HasNoDiscriminator()
+                   .ToContainer(BudgetVsActualVariance)
+                   .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<RevenueStgByDay>()
+                  .HasNoDiscriminator()
+                  .ToContainer(RevenueStgByDay)
+                  .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<RevenueByMonth>()
+                 .HasNoDiscriminator()
+                 .ToContainer(RevenueByMonth)
+                 .HasPartitionKey(da => da.id);
 
 
 
@@ -109,10 +141,17 @@
         public DbSet<DimParkingSpaceCount> DimParkingSpaceCounts { get; set; }
 
         public DbSet<TransactionByHours> TransactionByHourss { get; set; }
+        public DbSet<TransactionByMonth> TransactionByMonths { get; set; }
 
+        public DbSet<RevenueVsBudget> RevenueVsBudgets { get; set; }
 
+        public DbSet<RevenueByProductByDay> RevenueByProductByDays { get; set; }
 
+        public DbSet<BudgetVsActualVariance> BudgetVsActualVariances { get; set; }
 
+        public DbSet<RevenueStgByDay> RevenueStgByDays { get; set; }
+
+        public DbSet<RevenueByMonth> RevenueByMonths { get; set; }
 
 
     }

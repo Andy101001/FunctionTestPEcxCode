@@ -10,19 +10,12 @@
     "KeyVaultUri": "https://abm-vtg-kv01-dev.vault.azure.net/"
   },
 
-  //"CosmosSettings": {
-  //    "EndPoint": "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
-  //    "AccessKey": "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
-  //    "EnableMigration": true,
-  //    "DocumentToCheck": "web-api_index",
-  //    "DatabaseName": "VantageDB"
-  //},
   "CosmosSettings": {
-    "EndPoint": "https://csvtestdb.documents.azure.com:443/",
-    "AccessKey": "ptLDlppxxaZQVea08VdIQcmCLoA5sPeWOQIP9tWJCHo9Z84KsQCUv4ZOR9Ucg2uAydJ6cronCNrxACDb6MOglA==",
+    "EndPoint": "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
+    "AccessKey": "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
     "EnableMigration": true,
     "DocumentToCheck": "web-api_index",
-    "DatabaseName": "testdb"
+    "DatabaseName": "VantageDB_UI"
   },
 
   "Values": {

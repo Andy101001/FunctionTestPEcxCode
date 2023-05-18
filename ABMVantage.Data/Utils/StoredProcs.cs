@@ -38,20 +38,20 @@
         //Transaction
 
        
-        public const string GetBudgetVsActualVriance = "[dbo].[GET_BUDGET_VARIANNCE]";
-        public const string GetRevenueByProductByDays = "[dbo].[RevenueByProduct]";
-        public const string GetRevenueVsBduget = "[dbo].[RevenueAndBudgetByMonth]";
-        public const string GetTranacionByHours = "[dbo].[GET_TRANSACTION_BY_HOURS]";
-        public const string GetTransactonByDays = "[dbo].[GET_TRANSACTION_BY_DAYS]";
-        public const string GetTransactonMonths = "[dbo].[GET_TRANSACTION_MONTHS]";
+        public const string GetBudgetVsActualVriance = "[dbo].[GET_BUDGET_VARIANNCE]"; //done
+        public const string GetRevenueByProductByDays = "[dbo].[RevenueByProduct]"; //done
+        public const string GetRevenueVsBduget = "[dbo].[RevenueAndBudgetByMonth]";//done
+        public const string GetTranacionByHours = "[dbo].[GET_TRANSACTION_BY_HOURS]"; //done
+        public const string GetTransactonByDays = "[dbo].[GET_TRANSACTION_BY_DAYS]"; //done
+        public const string GetTransactonMonths = "[dbo].[GET_TRANSACTION_MONTHS]"; //done
 
         //Cache
         
         public const string GetCacheTransactonByDays = "[DBO].[CACHE_GET_TRANSACTION_BY_DAYS]";
 
 
-        public const string GetRevenueByDay = "[dbo].[RevenueByDay]";
-        public const string GetRevenueByMonth = "[dbo].[RevenueByMonth]";
+        public const string GetRevenueByDay = "[dbo].[RevenueByDay]"; //done
+        public const string GetRevenueByMonth = "[dbo].[RevenueByMonth]"; //done
 
     }
 }
