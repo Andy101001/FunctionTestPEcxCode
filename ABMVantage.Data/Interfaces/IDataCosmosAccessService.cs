@@ -10,14 +10,20 @@ namespace ABMVantage.Data.Interfaces
 {
     public interface  IDataCosmosAccessService
     {
+        // Revenue and Trasaction       
         Task<IList<DailyTransaction>> GetTransactonByDays(FilterParam parameters);
         Task<IList<CurrentTransaction>> GetTransactonByHours(FilterParam parameters);
         Task<IList<MonthlyTransaction>> GetTransactonByMonth(FilterParam parameters);
         Task<IList<RevenueBudget>> GetRevenueVsBudget(FilterParam parameters);
-        Task<IList<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter);
-        Task<IList<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter);
+        Task<IList<RevenueByProduct>> GetRevenueByProductByDays(FilterParam parameters);
+        Task<IList<BudgetVariance>> GetBudgetVsActualVariance(FilterParam parameters);
+        Task<IList<RevenueByDay>> GetRevenueByDays(FilterParam parameters);
+        Task<IList<MonthlyRevenue>> GetRevenueByMonths(FilterParam parameters);
 
-        Task<IList<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter);
-        Task<IList<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter);
+        //Revenue
+        Task<IList<ReservationsByHour>> GetHourlyReservations(FilterParam parameters);
+        Task<IList<ReservationsByDay>> GetDailyReservations(FilterParam parameters);
+        Task<IList<ReservationsByMonth>> GetMonthlyReservations(FilterParam parameters);
+        Task<IList<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters);
     }
 }

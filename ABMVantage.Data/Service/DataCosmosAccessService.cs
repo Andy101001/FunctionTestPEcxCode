@@ -20,12 +20,15 @@ namespace ABMVantage.Data.Service
         /// </summary>
         private readonly IDbContextFactory<CosmosDataContext> _factory;
 
+        #region Reveneue and Transaction
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="factory">The factory instance.</param>
         public DataCosmosAccessService(IDbContextFactory<CosmosDataContext> factory) => _factory = factory;
 
+        #region Revene And Transaction
         public async Task<IList<DailyTransaction>> GetTransactonByDays(FilterParam parameters)
         {
            IList<DailyTransaction> dailyTransactions=null;
@@ -246,5 +249,117 @@ namespace ABMVantage.Data.Service
 
             return monthlyRevenue;
         }
+
+        #endregion
+
+        #endregion
+
+        #region Reservation
+
+        public async Task<IList<ReservationsByHour>> GetHourlyReservations(FilterParam parameters)
+        {
+            IList<ReservationsByHour> reservationsByHour = null;
+
+            try
+            {
+                using var context = _factory.CreateDbContext();
+
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+
+                var result = context.ReservationsStgByHours.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new ReservationsByHour { NoOfReservations = d.NoOfReservation, Time = d.Time };
+                reservationsByHour = data.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+            return reservationsByHour;
+        }
+
+        public async Task<IList<ReservationsByDay>> GetDailyReservations(FilterParam parameters)
+        {
+            IList<ReservationsByDay> reservationsByDay = null;
+
+            try
+            {
+                using var context = _factory.CreateDbContext();
+
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+
+                var result = context.ReservationsStgByDays.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new ReservationsByDay { NoOfReservations = d.NoOfReservations,WeekDay=d.WeekDay};
+                reservationsByDay = data.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+            return reservationsByDay;
+        }
+
+        public async Task<IList<ReservationsByMonth>> GetMonthlyReservations(FilterParam parameters)
+        {
+            IList<ReservationsByMonth> reservationsByMonth = null;
+
+            try
+            {
+                using var context = _factory.CreateDbContext();
+
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+
+                var result = context.ReservationsStgByMonths.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new ReservationsByMonth { NoOfReservations = d.NoOfReservation, Month=d.Month, Fiscal=d.Fiscal};
+                reservationsByMonth = data.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+            return reservationsByMonth;
+        }
+
+        public async Task<IList<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
+        {
+            IList<ResAvgTicketValue> resAvgTicketValue = null;
+
+            try
+            {
+                using var context = _factory.CreateDbContext();
+
+                var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
+                var facilities = parameters.Facilities.Select(x => x.Id).ToList();
+                var products = parameters.Products.Select(x => x.Id).ToList();
+
+                var result = context.ReservationStgAvgTicketValues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+
+                var data = from d in result select new ResAvgTicketValue {Time=d.Time, NoOfTransactions=d.NoOfTransactions };
+                resAvgTicketValue = data.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+
+            return resAvgTicketValue;
+        }
+
+        #endregion
     }
 }

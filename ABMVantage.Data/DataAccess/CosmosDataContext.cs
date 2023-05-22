@@ -32,6 +32,13 @@
         private const string Dashboard_MonthlyTransaction = nameof(Dashboard_MonthlyTransaction);
         private const string Dashboard_AverageMonthlyTicketValue = nameof(Dashboard_AverageMonthlyTicketValue);
 
+        //Reservation Containers
+
+        private const string ReservationsStgByHour = nameof(ReservationsStgByHour);
+        private const string ReservationsStgByDay = nameof(ReservationsStgByDay);
+        private const string ReservationsStgByMonth = nameof(ReservationsStgByMonth);
+        private const string ReservationStgAvgTicketValue = nameof(ReservationStgAvgTicketValue);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
         /// </summary>
@@ -137,6 +144,30 @@
                .ToContainer(Dashboard_AverageMonthlyTicketValue)
                .HasPartitionKey(da => da.id);
 
+            #region Reservation
+
+            modelBuilder.Entity<ReservationsStgByHour>()
+              .HasNoDiscriminator()
+              .ToContainer(ReservationsStgByHour)
+              .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<ReservationsStgByDay>()
+              .HasNoDiscriminator()
+              .ToContainer(ReservationsStgByDay)
+              .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<ReservationsStgByMonth>()
+              .HasNoDiscriminator()
+              .ToContainer(ReservationsStgByMonth)
+              .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<ReservationStgAvgTicketValue>()
+              .HasNoDiscriminator()
+              .ToContainer(ReservationStgAvgTicketValue)
+              .HasPartitionKey(da => da.id);
+
+            #endregion
+
         }
 
         /// <summary>
@@ -207,6 +238,16 @@
         public DbSet<Dashboard_MonthlyParkingOccupancy> Dashboard_MonthlyParkingOccupancyData { get; set; }
         public DbSet<Dashboard_MonthlyTransaction> Dashboard_MonthlyTransactionsData { get; set; }
         public DbSet<Dashboard_AverageMonthlyTicketValue> Dashboard_AverageMonthlyTicketValueData { get; set; }
+
+        #region Reservation APIs
+
+        public DbSet<ReservationsStgByHour> ReservationsStgByHours { get; set; }
+
+        public DbSet<ReservationsStgByDay> ReservationsStgByDays { get; set; }
+        public DbSet<ReservationsStgByMonth> ReservationsStgByMonths { get; set; }
+        public DbSet<ReservationStgAvgTicketValue> ReservationStgAvgTicketValues { get; set; }
+
+        #endregion
 
 
     }
