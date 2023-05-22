@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -16,13 +17,15 @@
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory, ITransactionService transactionService)
+        public DashboardFunctionDailyTotalRevenue(ILoggerFactory loggerFactory, ITransactionService transactionService, IDashboardService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
             _transactionService = transactionService;
+            _dashboardService = dashboardService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyTotalRevenue)}");
         }
 
@@ -39,7 +42,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyTotalRevenue)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _transactionService.GetDailyTotalRevenueAsync(filterParameters);
+                //var result = await _transactionService.GetDailyTotalRevenueAsync(filterParameters);
+                var result = await _dashboardService.GetDailyTotalRevenueAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTotalRevenue)}");
                 return new OkObjectResult(new { totalRevenue = result });
             }

@@ -1,6 +1,8 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Service;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Functions.RevenueNTransaction;
     using ABMVantage_Outbound_API.Services;
@@ -17,13 +19,15 @@
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService)
+        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService, IDashboardService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
             ArgumentNullException.ThrowIfNull(nameof(transactionService));
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyRevenueAndBudget>();
             _transactionService = transactionService;
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Monthly Revenue and Budget")]
@@ -39,7 +43,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionRevenueByDay)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _transactionService.GetMonthlyRevenueAndBudget(filterParameters);
+                //var result = await _transactionService.GetMonthlyRevenueAndBudget(filterParameters);
+                var result = await _dashboardService.GetMonthlyRevenueAndBudget(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueByDay)}");
 
                 //Just to make out json as required to UI

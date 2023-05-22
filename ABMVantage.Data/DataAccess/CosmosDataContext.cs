@@ -11,7 +11,6 @@
         /// </summary>
         public const string Id = nameof(Id);
 
-   
         private const string FactOccupancyDetail = nameof(FactOccupancyDetail);
         private const string StgRevenue = "Stg_revenue"; //nameof(StgRevenue);
         private const string DimParkingSpaceCount = nameof(DimParkingSpaceCount);
@@ -22,7 +21,16 @@
         private const string BudgetVsActualVariance = nameof(BudgetVsActualVariance);
         private const string RevenueStgByDay = "RevenueByDay";
         private const string RevenueByMonth = nameof(RevenueByMonth);
-        
+
+        //Dashboard Containers
+        private const string Dashboard_AverageDialyOccupany = nameof(Dashboard_AverageDialyOccupany);
+        private const string Dashboard_TotalRevenue = nameof(Dashboard_TotalRevenue);
+        private const string Dashboard_TotalTransactions = nameof(Dashboard_TotalTransactions);
+        private const string Dashboard_HourlyReservation = nameof(Dashboard_HourlyReservation);
+        private const string Dashboard_MonthlyRevenueAndBudget = nameof(Dashboard_MonthlyRevenueAndBudget);
+        private const string Dashboard_MonthlyParkingOccupancy = nameof(Dashboard_MonthlyParkingOccupancy);
+        private const string Dashboard_MonthlyTransaction = nameof(Dashboard_MonthlyTransaction);
+        private const string Dashboard_AverageMonthlyTicketValue = nameof(Dashboard_AverageMonthlyTicketValue);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
@@ -35,9 +43,7 @@
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-     
-            
+        {   
             modelBuilder.Entity<FactOccupancyDetail>()
                     .HasNoDiscriminator()
                     .ToContainer(FactOccupancyDetail)
@@ -90,7 +96,46 @@
                  .ToContainer(RevenueByMonth)
                  .HasPartitionKey(da => da.id);
 
+            //Dashboard Containers
+            modelBuilder.Entity<Dashboard_AverageDailyOccupancy>()
+               .HasNoDiscriminator()
+               .ToContainer(Dashboard_AverageDialyOccupany)
+               .HasPartitionKey(da => da.id);
 
+            modelBuilder.Entity<Dashboard_TotalRevenue>()
+                 .HasNoDiscriminator()
+                 .ToContainer(Dashboard_TotalRevenue)
+                 .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<Dashboard_TotalTransactions>()
+                .HasNoDiscriminator()
+                .ToContainer(Dashboard_TotalTransactions)
+                .HasPartitionKey(da => da.id);
+
+             modelBuilder.Entity<Dashboard_HourlyReservation>()
+                .HasNoDiscriminator()
+                .ToContainer(Dashboard_HourlyReservation)
+                .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<Dashboard_MonthlyRevenueAndBudget>()
+               .HasNoDiscriminator()
+               .ToContainer(Dashboard_MonthlyRevenueAndBudget)
+               .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<Dashboard_MonthlyParkingOccupancy>()
+               .HasNoDiscriminator()
+               .ToContainer(Dashboard_MonthlyParkingOccupancy)
+               .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<Dashboard_MonthlyTransaction>()
+               .HasNoDiscriminator()
+               .ToContainer(Dashboard_MonthlyTransaction)
+               .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<Dashboard_AverageMonthlyTicketValue>()
+               .HasNoDiscriminator()
+               .ToContainer(Dashboard_AverageMonthlyTicketValue)
+               .HasPartitionKey(da => da.id);
 
         }
 
@@ -152,6 +197,16 @@
         public DbSet<RevenueStgByDay> RevenueStgByDays { get; set; }
 
         public DbSet<RevenueByMonth> RevenueByMonths { get; set; }
+
+        //Dashboard APIs
+        public DbSet<Dashboard_AverageDailyOccupancy> Dashboard_AverageDialyOccupanyData { get; set; }
+        public DbSet<Dashboard_TotalRevenue> Dashboard_TotalRevenueData { get; set; }
+        public DbSet<Dashboard_TotalTransactions> Dashboard_TotalTransactionsData { get; set; }
+        public DbSet<Dashboard_HourlyReservation> Dashboard_HourlyReservationsData { get; set; }
+        public DbSet<Dashboard_MonthlyRevenueAndBudget> Dashboard_MonthlyRevenueAndBudgetData { get; set; }
+        public DbSet<Dashboard_MonthlyParkingOccupancy> Dashboard_MonthlyParkingOccupancyData { get; set; }
+        public DbSet<Dashboard_MonthlyTransaction> Dashboard_MonthlyTransactionsData { get; set; }
+        public DbSet<Dashboard_AverageMonthlyTicketValue> Dashboard_AverageMonthlyTicketValueData { get; set; }
 
 
     }

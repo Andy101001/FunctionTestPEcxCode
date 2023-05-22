@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -18,13 +19,15 @@
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardFunctionMonthlyTransactionCount(ILoggerFactory loggerFactory, ITransactionService transactionService)
+        public DashboardFunctionMonthlyTransactionCount(ILoggerFactory loggerFactory, ITransactionService transactionService, IDashboardService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
             ArgumentNullException.ThrowIfNull(nameof(transactionService));
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyTransactionCount>();
             _transactionService = transactionService;
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Monthly Transaction Count")]
@@ -40,7 +43,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _transactionService.GetMonthlyTransactionCountAsync(filterParameters);
+                //var result = await _transactionService.GetMonthlyTransactionCountAsync(filterParameters);
+                var result = await _dashboardService.GetMonthlyTransactionCountAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 return new OkObjectResult(result);
             }

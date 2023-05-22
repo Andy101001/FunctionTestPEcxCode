@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -16,13 +17,15 @@
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _dailyTransactionCountService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardFunctionDailyTransactionCount(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService)
+        public DashboardFunctionDailyTransactionCount(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService, IDashboardService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(dailyTransactionCountService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
             _dailyTransactionCountService = dailyTransactionCountService;
+            _dashboardService = dashboardService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyTransactionCount)}");
         }
 
@@ -39,7 +42,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyTransactionCount)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _dailyTransactionCountService.GetDailyTransactiontCountAsync(filterParameters);
+                //var result = await _dailyTransactionCountService.GetDailyTransactiontCountAsync(filterParameters);
+                var result = await _dashboardService.GetDailyTransactiontCountAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTransactionCount)}");
                 return new OkObjectResult(new { totalTransactions = result });
             }
