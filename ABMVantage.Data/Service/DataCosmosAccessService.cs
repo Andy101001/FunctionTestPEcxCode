@@ -44,6 +44,7 @@ namespace ABMVantage.Data.Service
 
                 var result = context.StgRevenues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
 
+                var query = result.ToQueryString();
                 var data = from d in result select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.Weekday };
                 dailyTransactions= data.ToList();
 
