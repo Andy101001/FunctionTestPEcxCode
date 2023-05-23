@@ -1,6 +1,10 @@
-﻿namespace ABMVantage.Data.DataAccess
+﻿using ABMVantage.Data.EntityModels;
+using Microsoft.EntityFrameworkCore;
+
+namespace ABMVantage.Data.DataAccess
 {
     using ABMVantage.Data.EntityModels;
+    using ABMVantage.Data.Models;
     using Microsoft.EntityFrameworkCore;
     using System.Threading.Tasks;
 
@@ -38,6 +42,10 @@
         private const string ReservationsStgByDay = nameof(ReservationsStgByDay);
         private const string ReservationsStgByMonth = nameof(ReservationsStgByMonth);
         private const string ReservationStgAvgTicketValue = nameof(ReservationStgAvgTicketValue);
+
+        //Occupany and Duration Containers
+        private const string OD_TotalOccupancyRevenue = nameof(OD_TotalOccupancyRevenue);
+        private const string OD_All = nameof(OD_All);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
@@ -119,7 +127,7 @@
                 .ToContainer(Dashboard_TotalTransactions)
                 .HasPartitionKey(da => da.id);
 
-             modelBuilder.Entity<Dashboard_HourlyReservation>()
+            modelBuilder.Entity<Dashboard_HourlyReservation>()
                 .HasNoDiscriminator()
                 .ToContainer(Dashboard_HourlyReservation)
                 .HasPartitionKey(da => da.id);
@@ -168,6 +176,16 @@
 
             #endregion
 
+            // Occupancy and Duration Containers
+            modelBuilder.Entity<OD_TotalOccupancyRevenue> ()
+               .HasNoDiscriminator()
+               .ToContainer(OD_TotalOccupancyRevenue)
+               .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<OD_All>()
+               .HasNoDiscriminator()
+               .ToContainer(OD_All)
+               .HasPartitionKey(da => da.id);
         }
 
         /// <summary>
@@ -229,7 +247,7 @@
 
         public DbSet<RevenueByMonth> RevenueByMonths { get; set; }
 
-        //Dashboard APIs
+        //Dashboard Container Data
         public DbSet<Dashboard_AverageDailyOccupancy> Dashboard_AverageDialyOccupanyData { get; set; }
         public DbSet<Dashboard_TotalRevenue> Dashboard_TotalRevenueData { get; set; }
         public DbSet<Dashboard_TotalTransactions> Dashboard_TotalTransactionsData { get; set; }
@@ -250,5 +268,8 @@
         #endregion
 
 
+        //Occupany and Duration Container Data
+        public DbSet<OD_TotalOccupancyRevenue> OD_TotalOccupancyRevenueData { get; set; }
+        public DbSet<OD_All> OD_AllData { get; set; }
     }
 }

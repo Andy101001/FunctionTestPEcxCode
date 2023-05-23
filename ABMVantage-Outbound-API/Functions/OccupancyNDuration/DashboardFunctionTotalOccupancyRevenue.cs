@@ -2,6 +2,7 @@
 {
     using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Service;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
@@ -15,13 +16,15 @@
     {
         private readonly ILogger _logger;
         private readonly IOccupancyService _occupancyService;
+        private readonly IODService _odService;
 
-        public DashboardFunctionTotalOccupancyRevenue(ILoggerFactory loggerFactory, IOccupancyService occupancyService)
+        public DashboardFunctionTotalOccupancyRevenue(ILoggerFactory loggerFactory, IOccupancyService occupancyService, IODService odService)
         {
             ArgumentNullException.ThrowIfNull(occupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionTotalOccupancyRevenue>();
             _occupancyService = occupancyService;
+            _odService = odService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionTotalOccupancyRevenue)}");
         }
 
@@ -39,7 +42,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _occupancyService.GetTotalOccRevenue(inputFilter);
+            //var result = await _occupancyService.GetTotalOccRevenue(inputFilter);
+              var result = await _odService.GetTotalOccRevenue(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionTotalOccupancyRevenue)}");
 
             //Just to make out json as required to UI

@@ -10,7 +10,7 @@
     using System;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using static ABMVantage.Data.Models.DashboardModels;
+    using ABMVantage.Data.Models.DashboardModels;
 
     public class DashboardService : ServiceBase, IDashboardService
     {
