@@ -15,13 +15,15 @@
     {
         private readonly ILogger _logger;
         private readonly IOccupancyService _occupancyService;
+        private readonly IODService _odService;
 
-        public DashboardFunctionYearlyOccupancy(ILoggerFactory loggerFactory, IOccupancyService occupancyService)
+        public DashboardFunctionYearlyOccupancy(ILoggerFactory loggerFactory, IOccupancyService occupancyService, IODService odService)
         {
             ArgumentNullException.ThrowIfNull(occupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionYearlyOccupancy>();
             _occupancyService = occupancyService;
+            _odService = odService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionYearlyOccupancy)}");
         }
 
@@ -39,7 +41,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _occupancyService.GetYearlyOccupancy(inputFilter);
+            //var result = await _occupancyService.GetYearlyOccupancy(inputFilter);
+             var result = await _odService.GetYearlyOccupancy(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionYearlyOccupancy)}");
 
             //Just to make out json as required to UI

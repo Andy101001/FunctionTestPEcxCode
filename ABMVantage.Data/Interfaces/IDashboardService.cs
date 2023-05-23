@@ -1,5 +1,5 @@
 ﻿using ABMVantage.Data.Models;
-using static ABMVantage.Data.Models.DashboardModels;
+using ABMVantage.Data.Models.DashboardModels;
 
 namespace ABMVantage.Data.Interfaces
 {

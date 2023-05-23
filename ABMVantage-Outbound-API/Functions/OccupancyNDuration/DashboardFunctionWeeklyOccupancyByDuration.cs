@@ -15,13 +15,15 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
     {
         private readonly ILogger _logger;
         private readonly IOccupancyService _occupancyService;
+        private readonly IODService _odService;
 
-        public DashboardFunctionWeeklyOccupancyByDuration(ILoggerFactory loggerFactory, IOccupancyService occupancyService)
+        public DashboardFunctionWeeklyOccupancyByDuration(ILoggerFactory loggerFactory, IOccupancyService occupancyService, IODService odService)
         {
             ArgumentNullException.ThrowIfNull(occupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionWeeklyOccupancyByDuration>();
             _occupancyService = occupancyService;
+            _odService = odService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionWeeklyOccupancyByDuration)}");
         }
 
@@ -39,7 +41,8 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _occupancyService.GetWeeklyOccByDuration(inputFilter);
+            //var result = await _occupancyService.GetWeeklyOccByDuration(inputFilter);
+            var result = await _odService.GetWeeklyOccByDuration(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionWeeklyOccupancyByDuration)}");
 
             //Just to make out json as required to UI
