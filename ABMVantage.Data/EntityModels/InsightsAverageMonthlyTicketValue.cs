@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class Dashboard_MonthlyTransaction
+    public class InsightsAverageMonthlyTicketValue
     {
         [Key]
         [JsonProperty("id")]
@@ -23,14 +23,15 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
+
         [JsonProperty("ProductName")]
         public string? ProductName { get; set; }
 
-        [JsonProperty("FirstDayofMonth")]
-        public DateTime FirstDayofMonth { get; set; }
+        [JsonProperty("FirstDayOfMonth")]
+        public DateTime FirstDayOfMonth { get; set; }
 
-        [JsonProperty("TransactionCount")]
-        public int TransactionCount { get; set; }
-       
+        [JsonProperty("AverageTicketValue")]
+        public double AverageTicketValue { get; set; }
+
     }
 }

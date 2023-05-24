@@ -19,9 +19,9 @@
     {
         private readonly ILogger _logger;
         private readonly ITransactionService _transactionService;
-        private readonly IDashboardService _dashboardService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService, IDashboardService dashboardService)
+        public DashboardFunctionMonthlyRevenueAndBudget(ILoggerFactory loggerFactory, ITransactionService transactionService, IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
             ArgumentNullException.ThrowIfNull(nameof(transactionService));

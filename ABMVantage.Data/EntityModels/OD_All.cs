@@ -21,18 +21,18 @@ namespace ABMVantage.Data.EntityModels
         public string? LevelId { get; set; }
 
         [JsonProperty("ProductId")]
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
 
-        [JsonProperty("occupancyId")]
-        public string? occupancyId { get; set; }
+        [JsonProperty("OccupancyId")]
+        public string? OccupancyId { get; set; }
 
         [JsonProperty("Duration")]
         public string? Duration { get; set; }
 
-        [JsonProperty("OccupancyEntryDate")]
-        public DateTime OccupancyEntryDate { get; set; }
+        [JsonProperty("OccupancyEntryDateTimeUtc")]
+        public DateTime? OccupancyEntryDateTimeUtc { get; set; }
 
-        [JsonProperty("OccupancyExitDate")]
-        public DateTime OccupancyExitDate { get; set; }
+        [JsonProperty("OccupancyExitDateTimeUtc")]
+        public DateTime? OccupancyExitDateTimeUtc { get; set; }
     }
 }

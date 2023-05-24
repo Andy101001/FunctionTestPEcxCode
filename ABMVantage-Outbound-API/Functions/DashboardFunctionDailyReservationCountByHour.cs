@@ -18,9 +18,9 @@ namespace ABMVantage_Outbound_API.Functions
     {
         private readonly ILogger _logger;
         private readonly IReservationService _reservationService;
-        private readonly IDashboardService _dashboardService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionDailyReservationCountByHour(ILoggerFactory loggerFactory, IReservationService reservationService, IDashboardService dashboardService)
+        public DashboardFunctionDailyReservationCountByHour(ILoggerFactory loggerFactory, IReservationService reservationService, IInsightsService dashboardService)
         {
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyReservationCountByHour>();
             _reservationService = reservationService;

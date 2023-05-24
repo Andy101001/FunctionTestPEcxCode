@@ -17,9 +17,9 @@
     {
         private readonly ILogger _logger;
         private readonly IParkingOccupancyService _parkingOccupancyService;
-        private readonly IDashboardService _dashboardService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionMonthlyParkingOccupancy(ILoggerFactory loggerFactory, IParkingOccupancyService parkingOccupancyService, IDashboardService dashboardService)
+        public DashboardFunctionMonthlyParkingOccupancy(ILoggerFactory loggerFactory, IParkingOccupancyService parkingOccupancyService, IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(parkingOccupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class Dashboard_TotalTransactions
+    public class InsightsAverageDailyOccupancy
     {
         [Key]
         [JsonProperty("id")]
@@ -23,10 +23,15 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
-        [JsonProperty("Day")]
-        public DateTime Day { get; set; }
+        [JsonProperty("TotalOccupancy")]
+        public int TotalOccupancy { get; set; }
 
-        [JsonProperty("TransactionCount")]
-        public int TransactionCount { get; set; }
+        [JsonProperty("Date")]
+        public DateTime Date { get; set; }
+
+        [JsonProperty("ParkingSpaceCount")]
+        public int ParkingSpaceCount { get; set; }
+        
+
     }
 }

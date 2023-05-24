@@ -131,7 +131,7 @@ namespace ABMVantage_Outbound_API
 
                 s.AddScoped<ITransaction_NewService, Transaction_NewService>();
                 s.AddScoped<IRedisCachingService, RedisCachingService>();
-                s.AddScoped<IDashboardService, DashboardService>();
+                s.AddScoped<IInsightsService, InsightsService>();
                 s.AddScoped<IODService, ODService>();
 
                 //Redis Cache Configuration

@@ -27,14 +27,14 @@ namespace ABMVantage.Data.DataAccess
         private const string RevenueByMonth = nameof(RevenueByMonth);
 
         //Dashboard Containers
-        private const string Dashboard_AverageDialyOccupany = nameof(Dashboard_AverageDialyOccupany);
-        private const string Dashboard_TotalRevenue = nameof(Dashboard_TotalRevenue);
-        private const string Dashboard_TotalTransactions = nameof(Dashboard_TotalTransactions);
-        private const string Dashboard_HourlyReservation = nameof(Dashboard_HourlyReservation);
-        private const string Dashboard_MonthlyRevenueAndBudget = nameof(Dashboard_MonthlyRevenueAndBudget);
-        private const string Dashboard_MonthlyParkingOccupancy = nameof(Dashboard_MonthlyParkingOccupancy);
-        private const string Dashboard_MonthlyTransaction = nameof(Dashboard_MonthlyTransaction);
-        private const string Dashboard_AverageMonthlyTicketValue = nameof(Dashboard_AverageMonthlyTicketValue);
+        private const string InsightsAverageDialyOccupany = nameof(InsightsAverageDialyOccupany);
+        private const string InsightsTotalRevenue = nameof(InsightsTotalRevenue);
+        private const string RevenueTransaction = nameof(RevenueTransaction);
+        private const string Reservation = nameof(Reservation);
+        private const string InsightsMonthlyRevenueAndBudget = nameof(InsightsMonthlyRevenueAndBudget);
+        private const string InsightsMonthlyParkingOccupancy = nameof(InsightsMonthlyParkingOccupancy);
+        private const string InsightsMonthlyTransaction = nameof(InsightsMonthlyTransaction);
+        private const string InsightsAverageMonthlyTicketValue = nameof(InsightsAverageMonthlyTicketValue);
 
         //Reservation Containers
 
@@ -44,8 +44,8 @@ namespace ABMVantage.Data.DataAccess
         private const string ReservationStgAvgTicketValue = nameof(ReservationStgAvgTicketValue);
 
         //Occupany and Duration Containers
-        private const string OD_TotalOccupancyRevenue = nameof(OD_TotalOccupancyRevenue);
-        private const string OD_All = nameof(OD_All);
+        private const string OccupancyRevenue = nameof(OccupancyRevenue);
+        private const string OccupancyVsDuration = nameof(OccupancyVsDuration);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocsContext"/> class.
@@ -112,44 +112,44 @@ namespace ABMVantage.Data.DataAccess
                  .HasPartitionKey(da => da.id);
 
             //Dashboard Containers
-            modelBuilder.Entity<Dashboard_AverageDailyOccupancy>()
+            modelBuilder.Entity<InsightsAverageDailyOccupancy>()
                .HasNoDiscriminator()
-               .ToContainer(Dashboard_AverageDialyOccupany)
+               .ToContainer(InsightsAverageDialyOccupany)
                .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_TotalRevenue>()
+            modelBuilder.Entity<InsightsTotalRevenue>()
                  .HasNoDiscriminator()
-                 .ToContainer(Dashboard_TotalRevenue)
+                 .ToContainer(InsightsTotalRevenue)
                  .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_TotalTransactions>()
+            modelBuilder.Entity<InsightsTotalTransactions>()
                 .HasNoDiscriminator()
-                .ToContainer(Dashboard_TotalTransactions)
+                .ToContainer(RevenueTransaction)
                 .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_HourlyReservation>()
+            modelBuilder.Entity<InsightsHourlyReservation>()
                 .HasNoDiscriminator()
-                .ToContainer(Dashboard_HourlyReservation)
+                .ToContainer(Reservation)
                 .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_MonthlyRevenueAndBudget>()
+            modelBuilder.Entity<InsightsMonthlyRevenueAndBudget>()
                .HasNoDiscriminator()
-               .ToContainer(Dashboard_MonthlyRevenueAndBudget)
+               .ToContainer(InsightsMonthlyRevenueAndBudget)
                .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_MonthlyParkingOccupancy>()
+            modelBuilder.Entity<InsightsMonthlyParkingOccupancy>()
                .HasNoDiscriminator()
-               .ToContainer(Dashboard_MonthlyParkingOccupancy)
+               .ToContainer(InsightsMonthlyParkingOccupancy)
                .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_MonthlyTransaction>()
+            modelBuilder.Entity<InsightsMonthlyTransaction>()
                .HasNoDiscriminator()
-               .ToContainer(Dashboard_MonthlyTransaction)
+               .ToContainer(InsightsMonthlyTransaction)
                .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<Dashboard_AverageMonthlyTicketValue>()
+            modelBuilder.Entity<InsightsAverageMonthlyTicketValue>()
                .HasNoDiscriminator()
-               .ToContainer(Dashboard_AverageMonthlyTicketValue)
+               .ToContainer(InsightsAverageMonthlyTicketValue)
                .HasPartitionKey(da => da.id);
 
             #region Reservation
@@ -179,12 +179,12 @@ namespace ABMVantage.Data.DataAccess
             // Occupancy and Duration Containers
             modelBuilder.Entity<OD_TotalOccupancyRevenue> ()
                .HasNoDiscriminator()
-               .ToContainer(OD_TotalOccupancyRevenue)
+               .ToContainer(OccupancyRevenue)
                .HasPartitionKey(da => da.id);
 
             modelBuilder.Entity<OD_All>()
                .HasNoDiscriminator()
-               .ToContainer(OD_All)
+               .ToContainer(OccupancyVsDuration)
                .HasPartitionKey(da => da.id);
         }
 
@@ -248,14 +248,14 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<RevenueByMonth> RevenueByMonths { get; set; }
 
         //Dashboard Container Data
-        public DbSet<Dashboard_AverageDailyOccupancy> Dashboard_AverageDialyOccupanyData { get; set; }
-        public DbSet<Dashboard_TotalRevenue> Dashboard_TotalRevenueData { get; set; }
-        public DbSet<Dashboard_TotalTransactions> Dashboard_TotalTransactionsData { get; set; }
-        public DbSet<Dashboard_HourlyReservation> Dashboard_HourlyReservationsData { get; set; }
-        public DbSet<Dashboard_MonthlyRevenueAndBudget> Dashboard_MonthlyRevenueAndBudgetData { get; set; }
-        public DbSet<Dashboard_MonthlyParkingOccupancy> Dashboard_MonthlyParkingOccupancyData { get; set; }
-        public DbSet<Dashboard_MonthlyTransaction> Dashboard_MonthlyTransactionsData { get; set; }
-        public DbSet<Dashboard_AverageMonthlyTicketValue> Dashboard_AverageMonthlyTicketValueData { get; set; }
+        public DbSet<InsightsAverageDailyOccupancy> InsightsAverageDialyOccupanyData { get; set; }
+        public DbSet<InsightsTotalRevenue> InsightsTotalRevenueData { get; set; }
+        public DbSet<InsightsTotalTransactions> InsightsTotalTransactionsData { get; set; }
+        public DbSet<InsightsHourlyReservation> InsightsHourlyReservationsData { get; set; }
+        public DbSet<InsightsMonthlyRevenueAndBudget> InsightsMonthlyRevenueAndBudgetData { get; set; }
+        public DbSet<InsightsMonthlyParkingOccupancy> InsightsMonthlyParkingOccupancyData { get; set; }
+        public DbSet<InsightsMonthlyTransaction> InsightsMonthlyTransactionsData { get; set; }
+        public DbSet<InsightsAverageMonthlyTicketValue> InsightsAverageMonthlyTicketValueData { get; set; }
 
         #region Reservation APIs
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class Dashboard_TotalRevenue
+    public class InsightsTotalRevenue
     {
         [Key]
         [JsonProperty("id")]

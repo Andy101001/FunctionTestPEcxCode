@@ -19,7 +19,7 @@
         private readonly IDbContextFactory<CosmosDataContext> _factory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardService"/> class.
+        /// Initializes a new instance of the <see cref="InsightsService"/> class.
         /// </summary>
         /// <param name="factory">The factory instance.</param>
         public DataAccessService(IDbContextFactory<CosmosDataContext> factory) => _factory = factory;
