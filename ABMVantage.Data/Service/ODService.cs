@@ -75,7 +75,7 @@
                  {
                      Duration = g.Key.Duration!,
                      TotalWeeklyOccupancy = g.Count()
-                 }).ToList();
+                 }).OrderBy(x => x.Duration).ToList();
 
             }
             catch (Exception ex)
