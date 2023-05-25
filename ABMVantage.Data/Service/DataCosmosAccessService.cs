@@ -3,12 +3,18 @@ using ABMVantage.Data.EntityModels;
 using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ABMVantage.Data.Service
@@ -19,6 +25,7 @@ namespace ABMVantage.Data.Service
         /// Factory to generate <see cref="DocsContext"/> instances.
         /// </summary>
         private readonly IDbContextFactory<CosmosDataContext> _factory;
+        private readonly IConnectionMultiplexer _cache;
 
         #region Reveneue and Transaction
 
@@ -26,8 +33,13 @@ namespace ABMVantage.Data.Service
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="factory">The factory instance.</param>
-        public DataCosmosAccessService(IDbContextFactory<CosmosDataContext> factory) => _factory = factory;
+        //public DataCosmosAccessService(IDbContextFactory<CosmosDataContext> factory) => _factory = factory;
+        public DataCosmosAccessService(IDbContextFactory<CosmosDataContext> factory, IConnectionMultiplexer cache)
+        {
 
+            _factory = factory;
+            _cache = cache;
+        } 
         #region Revene And Transaction
         public async Task<IList<DailyTransaction>> GetTransactonByDays(FilterParam parameters)
         {
@@ -42,11 +54,43 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.StgRevenues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).ToList();
 
-                var query = result.ToQueryString();
-                var data = from d in result select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.Weekday };
-                dailyTransactions= data.ToList();
+                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
+
+                #region chche
+                /*
+                // Add it to the redis cache
+                string key = $"DailyTransactionKey";
+                var redisKey = new RedisKey(key);
+                var resultDailyTransactionJson = JsonConvert.SerializeObject(result);
+
+                if (!_cache.GetDatabase().KeyExists(redisKey))
+                {
+                    await _cache.GetDatabase().StringSetAsync(key, resultDailyTransactionJson);
+                }
+                else
+                {
+                    var cacheData = await _cache.GetDatabase().StringGetAsync(key);
+
+                   var result2 = JsonConvert.DeserializeObject<IList<DailyTransaction>>(cacheData);
+                    dailyTransactions= result2.ToList();
+                }
+                */
+
+                #endregion
+
+                var finalRestut = result.GroupBy(x => new { x.TransactionDate.Value.DayOfWeek}).Select(g =>
+                new DailyTransaction
+                {
+                    WeekDay = g.Key.DayOfWeek.ToString(),
+                    NoOfTransactions=Convert.ToDecimal(g.Count())
+                    
+                }
+                );
+
+                dailyTransactions = finalRestut.ToList();
+
 
             }
             catch (Exception ex) 
@@ -71,10 +115,28 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //var result2 = context.TransactionByHourss.ToList();
 
-                var result = context.TransactionByHourss.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).ToList();
+                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
 
-                var data = from d in result select new CurrentTransaction { NoOfTransactions = d.NoOfTransactions, Time = d.Time };
-                transactionsByHours = data.ToList();
+                var finalRestut = result.GroupBy(x => new { x.TransactionDate.Value.TimeOfDay }).Select(g =>
+               new CurrentTransaction
+               {
+                   Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
+                   NoOfTransactions = Convert.ToDecimal(g.Count())
+
+               }
+               );
+
+                var finalRestut2 = finalRestut.GroupBy(x => new { x.Time }).Select(g =>
+                new CurrentTransaction
+                {
+                    Time = g.Key.Time,
+                    NoOfTransactions = Convert.ToDecimal(g.Count())
+                }
+                );
+
+                //var data = from d in result select new CurrentTransaction { NoOfTransactions = d.NoOfTransactions, Time = d.Time };
+                transactionsByHours = finalRestut2.ToList();
 
             }
             catch (Exception ex)
@@ -99,10 +161,22 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //var result2 = context.TransactionByHourss.ToList();
 
-                var result = context.TransactionByMonths.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)) && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).Take(100).ToList();
+                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)) && x.TransactionDate>=parameters.FromDate && x.TransactionDate<=parameters.ToDate).ToList();
 
-                var data = from d in result select new MonthlyTransaction { NoOfTransactions = d.NoOfTransactions, MonthAsInt=d.MonthAsInt, Year=d.Year};
-                transactionsByMonth = data.ToList();
+
+                var finalRestut = result.GroupBy(x => new { x.TransactionDate.Value.Year, x.TransactionDate.Value.Month }).Select(g =>
+               new MonthlyTransaction
+               {
+                   Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
+                   MonthAsInt= g.Key.Month,
+                   Year =g.Key.Year,
+                   NoOfTransactions = Convert.ToInt32(g.Count())
+
+               }
+               );
+
+                transactionsByMonth = finalRestut.ToList();
 
             }
             catch (Exception ex)
@@ -125,12 +199,20 @@ namespace ABMVantage.Data.Service
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
-                //var result2 = context.RevenueVsBudgets.ToList();
+                //var result2 = context.RevenueRevenueVsBudgets.Take(10).ToList();
 
-                var result = context.RevenueVsBudgets.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                //var result = context.RevenueRevenueVsBudgets.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionDate>=parameters.FromDate && x.TransactionDate<=parameters.ToDate).Take(100).ToList();
+                var result = context.RevenueRevenueVsBudgets.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).ToList();
 
-                var data = from d in result select new RevenueBudget {BudgetedRevenue = d.BudgetedRevenue, Month=d.Month, Revenue=d.Revenue };
-                revenueBudgets = data.ToList();
+                var finalRestut = result.GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
+                  new RevenueBudget
+                  {
+                      Month=g.Key.Month.ToString(),
+                      BudgetedRevenue=g.Sum(x=>x.BudgetedRevenue),
+                      Revenue = g.Sum(x => x.Revenue)
+                  }
+                  );
+                revenueBudgets = finalRestut.ToList();
 
             }
             catch (Exception ex)
@@ -153,12 +235,21 @@ namespace ABMVantage.Data.Service
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
-                //var result2 = context.RevenueVsBudgets.ToList();
+                var result2 = context.RevenueByProductByDays.Take(100).ToList();
 
-                var result = context.RevenueByProductByDays.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                //var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).Take(100).ToList();
+                var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).ToList();
 
-                var data = from d in result select new RevenueByProduct {Revenue=d.Revenue, Product=d.Product};
-                revenueBudgets = data.ToList();
+                var finalRestut = result.GroupBy(x => new { x.Product}).Select(g =>
+                  new RevenueByProduct
+                  {
+                      Product=g.Key.Product,
+                      Revenue= g.Sum(x => x.Revenue)
+                  }
+                  );
+
+               // var data = from d in result select new RevenueByProduct {Revenue=d.Revenue, Product=d.Product};
+                revenueBudgets = finalRestut.ToList();
 
             }
             catch (Exception ex)
@@ -171,12 +262,10 @@ namespace ABMVantage.Data.Service
 
         public async Task<IList<BudgetVariance>> GetBudgetVsActualVariance(FilterParam parameters)
         {
-
             IList<BudgetVariance> budgetVariance = null;
 
             try
             {
-
                 using var context = _factory.CreateDbContext();
 
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -184,10 +273,15 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //var result2 = context.RevenueVsBudgets.ToList();
 
-                var result = context.BudgetVsActualVariances.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.RevenueBudgetVsActualVariances.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)).ToList();
 
-                var data = from d in result select new BudgetVariance {Month=d.Month, BgtVariance=d.BgtVariance};
-                budgetVariance = data.ToList();
+                budgetVariance = result.GroupBy(x => new { x.Month }).Select(g =>
+                new BudgetVariance
+                {
+                    Month = g.Key.Month,
+                    BgtVariance = g.Sum(x => x.Bgtvariance),
+                }
+                ).ToList();
 
             }
             catch (Exception ex)
@@ -211,10 +305,19 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //var result2 = context.RevenueVsBudgets.ToList();
 
-                var result = context.RevenueStgByDays.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                //var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).Take(100).ToList();
+                var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).ToList();
 
-                var data = from d in result select new RevenueByDay {Revenue=d.Revenue,WeekDay=d.WeekDay};
-                revenueByDay = data.ToList();
+                var finalRestut = result.GroupBy(x => new { x.TransactionId.Value.DayOfWeek }).Select(g =>
+                  new RevenueByDay
+                  {
+                      WeekDay = g.Key.DayOfWeek.ToString(),
+                      Revenue = g.Sum(x => x.Revenue)
+                  }
+                  );
+
+                //var data = from d in result select new RevenueByDay {Revenue=d.Revenue,WeekDay=d.WeekDay};
+                revenueByDay = finalRestut.ToList();
 
             }
             catch (Exception ex)
@@ -237,10 +340,19 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.RevenueByMonths.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                //var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).Take(100).ToList();
+                var result = context.RevenueByProductByDays.Where(x => facilities.Contains(x.FacilityId) && products.Contains(x.ProductId) && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate).ToList();
 
-                var data = from d in result select new MonthlyRevenue {Revenue=d.Revenue, Month=d.Month, PreviousYearRevenue=d.PreviousYearRevenue};
-                monthlyRevenue = data.ToList();
+                var finalRestut = result.GroupBy(x => new { x.TransactionId.Value.Month }).Select(g =>
+                  new MonthlyRevenue
+                  {
+                      Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
+                      Revenue = g.Sum(x => x.Revenue)
+                  }
+                  );
+
+                //var data = from d in result select new MonthlyRevenue {Revenue=d.Revenue, Month=d.Month, PreviousYearRevenue=d.PreviousYearRevenue};
+                monthlyRevenue = finalRestut.ToList();
 
             }
             catch (Exception ex)
@@ -268,11 +380,19 @@ namespace ABMVantage.Data.Service
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
+                //var result2 = context.Reservations.ToList();
 
-                var result = context.ReservationsStgByHours.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.Reservations.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "" || x.LevelId==null) && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)).ToList();
 
-                var data = from d in result select new ReservationsByHour { NoOfReservations = d.NoOfReservation, Time = d.Time };
-                reservationsByHour = data.ToList();
+                var budgetVariance = result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Value.TimeOfDay }).Select(g =>
+                new ReservationsByHour
+                {
+                    Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
+                    NoOfReservations = g.Sum(x => x.NoOfReservations),
+                }
+                );
+
+                reservationsByHour = budgetVariance.ToList();
 
             }
             catch (Exception ex)
@@ -295,10 +415,18 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.ReservationsStgByDays.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.Reservations.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "" || x.LevelId == null) && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)).ToList();
 
-                var data = from d in result select new ReservationsByDay { NoOfReservations = d.NoOfReservations,WeekDay=d.WeekDay};
-                reservationsByDay = data.ToList();
+                var ltResult = result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Value.DayOfWeek }).Select(g =>
+                new ReservationsByDay
+                {
+                    WeekDay = g.Key.DayOfWeek.ToString(),
+                    NoOfReservations = g.Sum(x => x.NoOfReservations),
+                }
+                );
+
+                
+                reservationsByDay = ltResult.ToList();
 
             }
             catch (Exception ex)
@@ -312,6 +440,7 @@ namespace ABMVantage.Data.Service
         public async Task<IList<ReservationsByMonth>> GetMonthlyReservations(FilterParam parameters)
         {
             IList<ReservationsByMonth> reservationsByMonth = null;
+            IList<ReservationsByMonth> reservationsByMonthFinal = new List<ReservationsByMonth>();
 
             try
             {
@@ -321,10 +450,32 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.ReservationsStgByMonths.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.Reservations.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "" || x.LevelId == null) && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)).ToList();
 
-                var data = from d in result select new ReservationsByMonth { NoOfReservations = d.NoOfReservation, Month=d.Month, Fiscal=d.Fiscal};
-                reservationsByMonth = data.ToList();
+                var budgetVariance = result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Value.Month }).Select(g =>
+                new ReservationsByMonth
+                {
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
+                    NoOfReservations = g.Sum(x => x.NoOfReservations),
+                    Fiscal= "CURRENT"
+                }
+                );
+
+                reservationsByMonth = budgetVariance.ToList();
+
+                var result2 = result.Where(x => x.BeginningOfHour.Value.Year == x.BeginningOfHour.Value.AddYears(-1).Year);
+
+
+                var budgetVariance2 = result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Value.Month }).Select(g =>
+               new ReservationsByMonth
+               {
+                   Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
+                   NoOfReservations = g.Sum(x => x.NoOfReservations),
+                   Fiscal = "PREVIOUS"
+               }
+               );
+
+                reservationsByMonthFinal = reservationsByMonth.Concat(budgetVariance2.ToList()).ToList();
 
             }
             catch (Exception ex)
@@ -332,7 +483,7 @@ namespace ABMVantage.Data.Service
                 string error = ex.Message;
             }
 
-            return reservationsByMonth;
+            return reservationsByMonthFinal;
         }
 
         public async Task<IList<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
@@ -347,11 +498,32 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.ReservationStgAvgTicketValues.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.FacilityId) && products.Contains(x.ProductId));
+                var result = context.ReservationAvgTickets.Where(x => (levels.Contains(x.LevelId) || x.LevelId == "") && facilities.Contains(x.Facility_Id) && products.Contains(x.ProductId) && x.ReservedEntryDateTimeUtc >= parameters.FromDate && x.ReservedEntryDateTimeUtc <= parameters.ToDate).ToList();
 
-                var data = from d in result select new ResAvgTicketValue {Time=d.Time, NoOfTransactions=d.NoOfTransactions };
-                resAvgTicketValue = data.ToList();
+                //var data = from d in result select new ResAvgTicketValue {Time=d.Time, NoOfTransactions=d.NoOfTransactions };
+                //resAvgTicketValue = data.ToList();
 
+                var finalResult = result.GroupBy(x => new { x.ReservedEntryDateTimeUtc.Value.TimeOfDay }).Select(g =>
+                new ResAvgTicketValue
+                {
+                    NoOfTransactions = g.Average(x => x.Total),
+                    Time = g.Key.TimeOfDay.ToString("hh")
+                    
+
+                }
+                );
+                resAvgTicketValue = finalResult.ToList();
+
+
+                var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
+                
+                   new ResAvgTicketValue
+                   {
+                       Time= GetHourAMPM(g.Key.Time),
+                       NoOfTransactions=g.Average(x=>x.NoOfTransactions)
+                   }
+                );
+                resAvgTicketValue = result3.ToList();
             }
             catch (Exception ex)
             {
@@ -359,6 +531,15 @@ namespace ABMVantage.Data.Service
             }
 
             return resAvgTicketValue;
+        }
+
+        private string GetHourAMPM(string hour)
+        {
+            string hourAMPM = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {hour}:00:00.000";
+            
+            var dt =DateTime.Parse(hourAMPM);
+            return dt.ToString("hh:mm tt");
+
         }
 
         #endregion

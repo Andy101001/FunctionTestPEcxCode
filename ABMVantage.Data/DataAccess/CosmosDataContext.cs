@@ -21,10 +21,14 @@ namespace ABMVantage.Data.DataAccess
         private const string TransactionByHours = nameof(TransactionByHours);
         private const string TransactionByMonth = nameof(TransactionByMonth);
         private const string RevenueVsBudget = nameof(RevenueVsBudget);
-        private const string RevenueByProductByDay = nameof(RevenueByProductByDay);
-        private const string BudgetVsActualVariance = nameof(BudgetVsActualVariance);
+        private const string RevenueByProductByDay = "Revenuebyday";
+        private const string RevenueBudgetVsActualVariance = nameof(RevenueBudgetVsActualVariance);
         private const string RevenueStgByDay = "RevenueByDay";
         private const string RevenueByMonth = nameof(RevenueByMonth);
+
+        private const string RevenueTransaction = nameof(RevenueTransaction);
+
+        
 
         //Dashboard Containers
         private const string Dashboard_AverageDialyOccupany = nameof(Dashboard_AverageDialyOccupany);
@@ -42,6 +46,15 @@ namespace ABMVantage.Data.DataAccess
         private const string ReservationsStgByDay = nameof(ReservationsStgByDay);
         private const string ReservationsStgByMonth = nameof(ReservationsStgByMonth);
         private const string ReservationStgAvgTicketValue = nameof(ReservationStgAvgTicketValue);
+
+        private const string Reservation = nameof(Reservation);
+        private const string ReservationAvgTicket = nameof(ReservationAvgTicket);
+        private const string RevenueRevenueVsBudget = nameof(RevenueRevenueVsBudget);
+        
+
+
+
+
 
         //Occupany and Duration Containers
         private const string OD_TotalOccupancyRevenue = nameof(OD_TotalOccupancyRevenue);
@@ -96,9 +109,9 @@ namespace ABMVantage.Data.DataAccess
                    .ToContainer(RevenueByProductByDay)
                    .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<BudgetVsActualVariance>()
+            modelBuilder.Entity<RevenueBudgetVsActualVariance>()
                    .HasNoDiscriminator()
-                   .ToContainer(BudgetVsActualVariance)
+                   .ToContainer(RevenueBudgetVsActualVariance)
                    .HasPartitionKey(da => da.id);
 
             modelBuilder.Entity<RevenueStgByDay>()
@@ -169,10 +182,31 @@ namespace ABMVantage.Data.DataAccess
               .ToContainer(ReservationsStgByMonth)
               .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<ReservationStgAvgTicketValue>()
+            modelBuilder.Entity<ReservationAvgTicket>()
               .HasNoDiscriminator()
-              .ToContainer(ReservationStgAvgTicketValue)
+              .ToContainer(ReservationAvgTicket)
               .HasPartitionKey(da => da.id);
+
+
+            modelBuilder.Entity<Reservation>()
+             .HasNoDiscriminator()
+             .ToContainer(Reservation)
+             .HasPartitionKey(da => da.id);
+            
+            //Transaciton
+            modelBuilder.Entity<RevenueTransaction>()
+             .HasNoDiscriminator()
+             .ToContainer(RevenueTransaction)
+             .HasPartitionKey(da => da.id);
+
+            modelBuilder.Entity<RevenueRevenueVsBudget>()
+            .HasNoDiscriminator()
+            .ToContainer(RevenueRevenueVsBudget)
+            .HasPartitionKey(da => da.id);
+
+            
+
+
 
             #endregion
 
@@ -241,11 +275,18 @@ namespace ABMVantage.Data.DataAccess
 
         public DbSet<RevenueByProductByDay> RevenueByProductByDays { get; set; }
 
-        public DbSet<BudgetVsActualVariance> BudgetVsActualVariances { get; set; }
+        public DbSet<RevenueBudgetVsActualVariance> RevenueBudgetVsActualVariances { get; set; }
 
         public DbSet<RevenueStgByDay> RevenueStgByDays { get; set; }
 
         public DbSet<RevenueByMonth> RevenueByMonths { get; set; }
+
+        public DbSet<RevenueTransaction> RevenueTransactions { get; set; }
+        public DbSet<RevenueRevenueVsBudget> RevenueRevenueVsBudgets { get; set; }
+
+        
+
+
 
         //Dashboard Container Data
         public DbSet<Dashboard_AverageDailyOccupancy> Dashboard_AverageDialyOccupanyData { get; set; }
@@ -263,7 +304,14 @@ namespace ABMVantage.Data.DataAccess
 
         public DbSet<ReservationsStgByDay> ReservationsStgByDays { get; set; }
         public DbSet<ReservationsStgByMonth> ReservationsStgByMonths { get; set; }
-        public DbSet<ReservationStgAvgTicketValue> ReservationStgAvgTicketValues { get; set; }
+        //public DbSet<ReservationAvgTicket> ReservationStgAvgTicketValues { get; set; }
+
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ReservationAvgTicket> ReservationAvgTickets { get; set; }
+        
+
+
+
 
         #endregion
 

@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class RevenueByProductByDay
+    public class RevenueRevenueVsBudget
     {
         [Key]
         [JsonProperty("id")]
         public string id { get; set; }
 
         [JsonProperty("FacilityId")]
-        public string? FacilityId { get; set; }
+        public string FacilityId { get; set; }
 
         [JsonProperty("LevelId")]
         public string? LevelId { get; set; }
@@ -23,19 +23,19 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
-        [JsonProperty("Product")]
-        public string? Product { get; set; }
+        [JsonProperty("TransactionDate")]
+        public DateTime TransactionDate { get; set; }
+
+        [JsonProperty("Year")]
+        public int Year { get; set; }
+
+        [JsonProperty("Month")]
+        public int Month { get; set; }
 
         [JsonProperty("Revenue")]
         public decimal? Revenue { get; set; }
 
         [JsonProperty("BudgetedRevenue")]
         public decimal? BudgetedRevenue { get; set; }
-
-        [JsonProperty("TransactionDate")]
-        public DateTime? TransactionDate { get; set; }
-
-        [JsonProperty("TransactionId")]
-        public DateTime? TransactionId { get; set; }
     }
 }

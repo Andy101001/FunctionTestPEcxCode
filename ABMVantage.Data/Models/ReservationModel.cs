@@ -4,6 +4,7 @@
     {
         public int? NoOfReservations { get; set; }
         public string? Time { get; set; }
+       
     }
     public class ReservationsByDay
     {

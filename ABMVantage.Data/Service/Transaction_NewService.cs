@@ -27,101 +27,22 @@
 
         #region Public Methods
 
+        #region old code
+
         //public Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetBudgetVsActualVariance(inputFilter);
-
-        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
-        {
-           var result = await _cosmosAccessService.GetBudgetVsActualVariance(inputFilter);
-
-            return result;
-        }
-
-
         //public Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetRevenueByDays(inputFilter);
-
-        public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetRevenueByDays(inputFilter);
-
-            return result;
-        }
-
-
         //public Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetRevenueByMonths(inputFilter);
-
-        public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetRevenueByMonths(inputFilter);
-
-            return result;
-        }
-          
-
         //public Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetRevenueByProductByDays(inputFilter);
-
-        public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetRevenueByProductByDays(inputFilter);
-
-            return result;
-        }
-          
-
         //public Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetRevenueVsBudget(inputFilter);
-
-        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetRevenueVsBudget(inputFilter);
-
-            return result;
-
-        }
-           
-
         //public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
         //     => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
-
-        public async Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetTransactonByHours(inputFilter);
-
-            return result;
-        }
-           
-
-
         //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
         //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
-
-        //TODO: DO NOT DELTE BELOW CODE
-
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        {
-            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
-
-            return result;
-        }
-
-        //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
-
-
-        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        //{
-        //    IEnumerable<DailyTransaction>? result = null;
-        //    result = await _cache.GetStgTransactonByDays(inputFilter);
-
-        //    return result;
-        //}
-
-
-
-
         //public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
         //{
         //    var result = new List<CurrentAndPreviousYearMonthlyTransaction>();
@@ -161,6 +82,56 @@
         //    return result;
         //}
 
+        #endregion
+        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam inputFilter)
+        {
+           var result = await _cosmosAccessService.GetBudgetVsActualVariance(inputFilter);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetRevenueByDays(inputFilter);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetRevenueByMonths(inputFilter);
+
+            return result;
+        }
+          
+        public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetRevenueByProductByDays(inputFilter);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetRevenueVsBudget(inputFilter);
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByHours(inputFilter);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        {
+            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+
+            return result;
+        }
 
         public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
         {
@@ -179,9 +150,10 @@
                     Products = inputFilter.Products
                 };
 
-               
+
 
                 var currentYearResults = await _cosmosAccessService.GetTransactonByMonth(currentYearFilter);
+                
                 var data2 = currentYearResults.ToList();
 
                 var previousYearResults = await _cosmosAccessService.GetTransactonByMonth(previousyearFilter);
@@ -204,6 +176,31 @@
 
             return result;
         }
+
+
+
+        //TODO: DO NOT DELTE BELOW CODE
+
+
+
+        //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
+
+
+        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //{
+        //    IEnumerable<DailyTransaction>? result = null;
+        //    result = await _cache.GetStgTransactonByDays(inputFilter);
+
+        //    return result;
+        //}
+
+
+
+
+        
+
+
 
         //GetTransactonByMonth
 

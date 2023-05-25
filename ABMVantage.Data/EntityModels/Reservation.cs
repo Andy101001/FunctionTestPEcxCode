@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class BudgetVsActualVariance
+    public class Reservation
     {
-
         [Key]
         [JsonProperty("id")]
         public string id { get; set; }
@@ -18,16 +17,20 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("FacilityId")]
         public string? FacilityId { get; set; }
 
+        [JsonProperty("Facility")]
+        public string? Facility { get; set; }
+
         [JsonProperty("LevelId")]
         public string? LevelId { get; set; }
 
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
-        [JsonProperty("Month")]
-        public string? Month { get; set; }
+        [JsonProperty("NoOfReservations")]
+        public int NoOfReservations { get; set; }
 
-        [JsonProperty("BgtVariance")]
-        public decimal? BgtVariance { get; set; }
+        [JsonProperty("BeginningOfHour")]
+        public DateTime? BeginningOfHour { get; set; }
+     
     }
 }
