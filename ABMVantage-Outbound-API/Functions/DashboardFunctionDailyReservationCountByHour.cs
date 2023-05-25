@@ -1,6 +1,8 @@
 namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Service;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -16,11 +18,13 @@ namespace ABMVantage_Outbound_API.Functions
     {
         private readonly ILogger _logger;
         private readonly IReservationService _reservationService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionDailyReservationCountByHour(ILoggerFactory loggerFactory, IReservationService reservationService)
+        public DashboardFunctionDailyReservationCountByHour(ILoggerFactory loggerFactory, IReservationService reservationService, IInsightsService dashboardService)
         {
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyReservationCountByHour>();
             _reservationService = reservationService;
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Reservation count by hour")]
@@ -36,7 +40,8 @@ namespace ABMVantage_Outbound_API.Functions
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyReservationCountByHour)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _reservationService.GetHourlyReservationsByProduct(filterParameters);
+                //var result = await _reservationService.GetHourlyReservationsByProduct(filterParameters);
+                var result = await _dashboardService.GetHourlyReservationsByProduct(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyReservationCountByHour)}");
                 return new OkObjectResult(result);
             }

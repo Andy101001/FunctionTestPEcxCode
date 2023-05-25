@@ -8,12 +8,14 @@
 
     public class OccupancyService : ServiceBase, IOccupancyService
     {
+        private IDataAccessService _dataAccessService;
         #region Constructor
 
-        public OccupancyService(IRepository repository)
+        public OccupancyService(IRepository repository, IDataAccessService dataAccessService)
         {
             ArgumentNullException.ThrowIfNull(repository);
             _repository = repository;
+            _dataAccessService = dataAccessService;
         }
 
         #endregion Constructor
@@ -34,6 +36,12 @@
 
         public Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter)
            => _repository.OccupancyRepository.GetYearlyOccupancy(inputFilter);
+
+        public Task<DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters)
+        {
+            return _dataAccessService.GetDailyAverageOccupancy(filterParameters);
+            
+        }
 
         #endregion Public Methods
     }

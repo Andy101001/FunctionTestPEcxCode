@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -16,14 +17,16 @@
     {
         private readonly ILogger _logger;
         private readonly ITicketService _ticketService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService)
+        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService, IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(ticketService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
 
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyAverageTicketValue>();
             _ticketService = ticketService;
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Monthly Average Ticket Value")]
@@ -39,7 +42,8 @@
             _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyReservationCountByHour)}");
             try
             {
-                var result = await _ticketService.AverageTicketValuePerYear(filterParameters);
+                //var result = await _ticketService.AverageTicketValuePerYear(filterParameters);
+                var result = await _dashboardService.AverageTicketValuePerYear(filterParameters);
 
                 return new OkObjectResult(result);
             }

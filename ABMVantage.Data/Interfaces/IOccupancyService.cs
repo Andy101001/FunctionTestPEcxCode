@@ -14,5 +14,6 @@ namespace ABMVantage.Data.Interfaces
         Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam inputFilter);
         Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam inputFilter);
         Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter);
+        Task <DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters);
     }
 }

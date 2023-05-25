@@ -2,7 +2,6 @@
 {
     public class OccRevenueByProduct
     {
-        public int ProductId { get; set; }
         public string Product { get; set; }
         public decimal Revenue { get; set; }
     }
@@ -33,5 +32,13 @@
         public string Month { get; set; }
         public string Fiscal { get; set; }
         public Int32 Occupancy { get; set; }
+    }
+
+    public class OccVsDurationGroupedResult
+    {
+        public string? Duration { get; set; }
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public int NoOfVehicles { get; set; }
     }
 }

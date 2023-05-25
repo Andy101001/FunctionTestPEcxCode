@@ -22,6 +22,7 @@ using System.Configuration;
 using ABMVantage.Data.Service;
 using StackExchange.Redis;
 using ABMVantage.Data.Configuration;
+using ABMVantage.Data.DataAccess;
 
 namespace ABMVantage_Outbound_API
 {
@@ -109,6 +110,7 @@ namespace ABMVantage_Outbound_API
             }).ConfigureServices(s =>
             {
                 s.AddScoped<IDataAccessSqlService, DataAccessSqlService>();
+                s.AddScoped<IDataAccessService, DataAccessService>();
                 s.AddScoped<ITransactionService, TransactionService>();
                 s.AddScoped<IParkingOccupancyService, ParkingOccupancyService>();
                 s.AddScoped<IFloorDetailsService, FloorDetailsService>();
@@ -129,12 +131,17 @@ namespace ABMVantage_Outbound_API
 
                 s.AddScoped<ITransaction_NewService, Transaction_NewService>();
                 s.AddScoped<IRedisCachingService, RedisCachingService>();
+                s.AddScoped<IInsightsService, InsightsService>();
+                s.AddScoped<IODService, ODService>();
 
                 //Redis Cache Configuration
                 var redisSettings = s.BuildServiceProvider().GetRequiredService<IOptions<RedisSettings>>().Value;
                 //string redisConnection = Configuration["RedisCacheOptions:Configuration"]; ;
                 var multiplexer = ConnectionMultiplexer.Connect(redisSettings.ConntecitonString);
                 s.AddSingleton<IConnectionMultiplexer>(multiplexer);
+                s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
+
+                
 
                 s.AddOptions();
 

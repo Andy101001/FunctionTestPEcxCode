@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -16,14 +17,16 @@
     {
         private readonly ILogger _logger;
         private readonly IParkingOccupancyService _parkingOccupancyService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionMonthlyParkingOccupancy(ILoggerFactory loggerFactory, IParkingOccupancyService parkingOccupancyService)
+        public DashboardFunctionMonthlyParkingOccupancy(ILoggerFactory loggerFactory, IParkingOccupancyService parkingOccupancyService, IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(parkingOccupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
 
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyParkingOccupancy>();
             _parkingOccupancyService = parkingOccupancyService;
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Monthly Parking Occupancy")]
@@ -39,7 +42,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyParkingOccupancy)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _parkingOccupancyService.GetMonthlyParkingOccupancyAsync(filterParameters);
+                //var result = await _parkingOccupancyService.GetMonthlyParkingOccupancyAsync(filterParameters);
+                var result = await _dashboardService.GetMonthlyParkingOccupancyAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyParkingOccupancy)}");
                 return new OkObjectResult(result);
             }

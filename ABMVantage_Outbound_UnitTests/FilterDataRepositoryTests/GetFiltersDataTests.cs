@@ -42,7 +42,7 @@
             _mockTransactionRepository.Setup(x => x.GetRevenueVsBudget(filterParam)).ReturnsAsync(TestDataBuilder.GetRevenueBudgetTestData());
             _mockRepository.SetupGet(x => x.TransactionRepository).Returns(_mockTransactionRepository.Object);
 
-            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object);
+            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object, null);
 
             List<RevenueBudget> result = new List<RevenueBudget>(await _transactionService.GetRevenueVsBudget(filterParam));
 
@@ -68,7 +68,7 @@
             _mockTransactionRepository.Setup(x => x.GetRevenueVsBudget(new FilterParam())).ReturnsAsync(TestDataBuilder.GetRevenueBudgetTestData());
             _mockRepository.SetupGet(x => x.TransactionRepository).Returns(_mockTransactionRepository.Object);
 
-            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object);
+            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object, null);
 
             List<RevenueBudget> result = new List<RevenueBudget>(await _transactionService.GetRevenueVsBudget(filterParam));
 
@@ -94,7 +94,7 @@
             _mockTransactionRepository.Setup(x => x.GetBudgetVsActualVariance(filterParam)).ReturnsAsync(TestDataBuilder.GetBudgetVarianceTestData());
             _mockRepository.SetupGet(x => x.TransactionRepository).Returns(_mockTransactionRepository.Object);
 
-            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object);
+            _transactionService = new Transaction_NewService(_mockLogger.Object, _mockRepository.Object, null);
 
             List<BudgetVariance> result = new List<BudgetVariance>(await _transactionService.GetBudgetVsActualVariance(filterParam));
 

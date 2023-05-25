@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage_Outbound_API.Functions
 {
+    using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
     using ABMVantage_Outbound_API.DashboardFunctionModels;
     using ABMVantage_Outbound_API.Services;
@@ -15,15 +16,17 @@
     public class DashboardFunctionDailyAverageOccupancy
     {
         private readonly ILogger _logger;
-        private readonly ITransactionService _dailyTransactionCountService;
+        private readonly IOccupancyService _occupancyService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, ITransactionService dailyTransactionCountService)
+        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, IOccupancyService occupancyService , IInsightsService dashboardService)
         {
-            ArgumentNullException.ThrowIfNull(dailyTransactionCountService);
+            ArgumentNullException.ThrowIfNull(occupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyTotalRevenue>();
-            _dailyTransactionCountService = dailyTransactionCountService;
+            _occupancyService = occupancyService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyAverageOccupancy)}");
+            _dashboardService = dashboardService;
         }
 
         [Function("ABM Dashboard - Get Daily Average Occupancy")]
@@ -39,7 +42,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionDailyAverageOccupancy)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                var result = await _dailyTransactionCountService.GetDailyAverageOccupancy(filterParameters);
+                //var result = await _occupancyService.GetDailyAverageOccupancy(filterParameters);
+                var result = await _dashboardService.GetDailyAverageOccupancy(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyAverageOccupancy)}");
                 return new OkObjectResult(new { averageDailyOccupancyInteger = result.AverageDailyOccupancyInteger, averageDailyOccupancyPercentage = result.AverageDailyOccupancyPercentage });
             }
