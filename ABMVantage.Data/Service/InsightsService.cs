@@ -11,17 +11,18 @@
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using ABMVantage.Data.Models.DashboardModels;
+    using System.Drawing;
 
-    public class DashboardService : ServiceBase, IDashboardService
+    public class InsightsService : ServiceBase, IInsightsService
     {
-        private readonly ILogger<DashboardService> _logger;
+        private readonly ILogger<InsightsService> _logger;
         private readonly IDbContextFactory<CosmosDataContext> _factory;
 
-        public DashboardService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory)
+        public InsightsService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(loggerFactory);
-            _logger = loggerFactory.CreateLogger<DashboardService>();
+            _logger = loggerFactory.CreateLogger<InsightsService>();
             _repository = repository;
             _factory = factory;
         }
@@ -36,11 +37,11 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                
-                var result = context.Dashboard_AverageDialyOccupanyData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                && (x.Day >= filterParameters!.FromDate && x.Day < filterParameters.ToDate));
 
-                int totalOccupiedParkingSpotHours = result.Sum(x => x.TOTAL_OCCUPIED_PARKING_SPOT_HOURS_FOR_DAY);
+                var result = context.InsightsAverageDialyOccupanyData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                          && (x.Date >= filterParameters!.FromDate && x.Date < filterParameters.ToDate));
+
+                int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
                 int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
 
                 if (totalParkingSpaceCount > 0)
@@ -68,7 +69,7 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Dashboard_TotalRevenueData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
+                var result = context.InsightsTotalRevenueData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                          && (x.Day >= filterParameters!.FromDate && x.Day < filterParameters.ToDate));
 
                 totalRevenue = result.Sum(x => x.TotalRevenue);
@@ -93,10 +94,10 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Dashboard_TotalTransactionsData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                         && (x.Day >= filterParameters!.FromDate && x.Day < filterParameters.ToDate));
+                var result = context.InsightsTotalTransactionsData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                          && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters.ToDate));
 
-                totalTransactionsCount = result.Sum(x => x.TransactionCount);
+                totalTransactionsCount = result.Count();
 
             }
             catch (Exception ex)
@@ -117,28 +118,28 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Dashboard_HourlyReservationsData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                         && (x.BeginingHour >= filterParameters!.FromDate && x.BeginingHour < filterParameters.ToDate)).ToList();
+                var result = context.InsightsHourlyReservationsData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                        && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.FromDate.AddDays(1))).ToList();
 
                 //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginingHour }).Select(g =>
+                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.TimeOfDay }).Select(g =>
                  new ReservationsForProductAndHour
                  {
                      Product = g.Key.ProductName,
-                     Hour = g.Key.BeginingHour,
-                     ReservationCount = g.Sum(x => x.ReservationCount)
-                 });
+                     Hour = g.Key.TimeOfDay,
+                     ReservationCount = g.Sum(x => x.NoOfReservations)
+                 }).OrderBy(x => x.Hour);
 
                 //Group by Again for the UI Specifications
                 var fResult = from ReservationsForProductAndHour res in gResult
-                                group res by res.Hour into hourlyGroup
+                                group res by res.Hour into hourlyGroup 
                           select new HourlyReservationCount
                           {
-                              ReservationTime = hourlyGroup.Key.ToString("h:mm tt"),
-                              Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product })
+                              ReservationDateTime =  new DateTime() + hourlyGroup.Key,
+                              Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product! })
                           };
-
-                dashboardDailyReservationCountByHour.ReservationsByHour = fResult.ToList();
+                //dashboardDailyReservationCountByHour.ReservationsByHour = fResult.OrderBy(x => x.ReservationDateTime).ToList();
+                 dashboardDailyReservationCountByHour.ReservationsByHour = fResult;
             }
             catch (Exception ex)
             {
@@ -158,26 +159,27 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Dashboard_MonthlyRevenueAndBudgetData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                         && (x.FirstDayofMonth >= filterParameters!.FromDate && x.FirstDayofMonth < filterParameters.ToDate)).ToList();
+                var result = context.InsightsMonthlyRevenueAndBudgetData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
 
                 //Group by Year and Month
-                var gResult = result.GroupBy(x => new { x.FirstDayofMonth.Year, x.FirstDayofMonth.Month }).Select(g =>
+                var gResult = result.GroupBy(x => new { x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month }).Select(g =>
                  new RevenueAndBudgetForMonth
                  {
                      Year = g.Key.Year,
                      Month = g.Key.Month,
                      Revenue = g.Sum(x => x.Revenue),
                      BudgetedRevenue = g.Sum(x => x.BudgetedRevenue)
-                 });
+                 }).ToList();
 
-                dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget = from RevenueAndBudgetForMonth rnb in gResult
-                                                                           select new RevenueAndBudget
-                                                                           {
-                                                                               Month = rnb.Year.ToString() + rnb.Month.ToString().PadLeft(2, '0'),
-                                                                               Revenue = rnb.Revenue,
-                                                                               BudgetedRevenue = rnb.BudgetedRevenue
-                                                                           };
+                var fResult = from RevenueAndBudgetForMonth rnb in gResult
+                                select new RevenueAndBudget
+                                {
+                                    Date = new DateTime(rnb.Year, rnb.Month, 1),
+                                    Revenue = rnb.Revenue,
+                                    BudgetedRevenue = rnb.BudgetedRevenue
+                                    };
+                dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget = fResult.OrderBy(x => x.Date);
             }
             catch (Exception ex)
             {
@@ -198,22 +200,19 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                filterParameters!.FromDate = filterParameters.FromDate.AddYears(-1);
-                filterParameters!.ToDate = filterParameters.ToDate.AddYears(-1);
-
-                var result = context.Dashboard_MonthlyParkingOccupancyData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                         && (x.FirstDayofMonth >= filterParameters!.FromDate && x.FirstDayofMonth < filterParameters.ToDate)).ToList();
+                var result = context.InsightsMonthlyParkingOccupancyData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
 
                 //Group by Year and Month
                 IEnumerable<OccupancyByMonth> gResult = new List<OccupancyByMonth>();
                 if (result.Sum(x => x.ParkingSpaceCount) > 0) {
-                    gResult  = result.GroupBy(x => new { x.FirstDayofMonth.Year, x.FirstDayofMonth.Month }).Select(g =>
+                    gResult  = result.GroupBy(x => new { x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month }).Select(g =>
                      new OccupancyByMonth
                      {
                          Year = g.Key.Year,
                          Month =  g.Key.Month,
-                         OccupancyInteger =  ((g.Sum(x => x.TotalOccupiedParkingSpotHoursForMonth) / g.Sum(x => x.ParkingSpaceCount * x.NumberOfDaysInMonth * 24)) * g.Sum(x => x.ParkingSpaceCount)),
-                         OccupancyPercentage = (g.Sum(x => x.TotalOccupiedParkingSpotHoursForMonth) / g.Sum(x => x.ParkingSpaceCount * x.NumberOfDaysInMonth * 24)) * 100,
+                         OccupancyInteger =  ((g.Sum(x => x.TotalOccupancy) / g.Sum(x => x.ParkingSpaceCount * x.NoOFDaysInMonth * 24)) * g.Sum(x => x.ParkingSpaceCount)),
+                         OccupancyPercentage = (g.Sum(x => x.TotalOccupancy) / g.Sum(x => x.ParkingSpaceCount * x.NoOFDaysInMonth * 24)) * 100,
                      });
                 }
 
@@ -222,7 +221,7 @@
                     var currentYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year && x.Month == monthStart.Month);
                     var priorYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year - 1 && x.Month == monthStart.Month);
                     var parkingOccupancy = new ParkingOccupancy();
-                    parkingOccupancy.Month = $"{monthStart.Month}{monthStart.Year}";
+                    parkingOccupancy.Month = new DateTime(monthStart.Year, monthStart.Month, 1).ToString("MMM"); // $"{monthStart.Month}{monthStart.Year}";
                     if (currentYearOccupancyByMonth != null)
                     {
                         parkingOccupancy.OccupancyInteger = currentYearOccupancyByMonth.OccupancyInteger;
@@ -245,7 +244,6 @@
                     }
                     monthlyParkingOccupancyData.Add(parkingOccupancy);
                 }
-
                 dashboardMonthlyParkingOccupancy.MonthlyParkingOccupancy = monthlyParkingOccupancyData;
             }
             catch (Exception ex)
@@ -265,27 +263,28 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Dashboard_MonthlyTransactionsData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                        && (x.FirstDayofMonth >= filterParameters!.FromDate && x.FirstDayofMonth < filterParameters.ToDate)).ToList();
+                var result = context.InsightsMonthlyTransactionsData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
 
                 //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new {x.FirstDayofMonth.Year, x.FirstDayofMonth.Month, x.ProductName }).Select(g =>
+                var gResult = result.GroupBy(x => new {x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month, x.ProdutName }).Select(g =>
                  new TransactionsByMonthAndProduct
                  {
                      Year = g.Key.Year,
                      Month = g.Key.Month,
-                     ParkingProduct = g.Key.ProductName,
+                     ParkingProduct = g.Key.ProdutName,
                      TransactionCount = g.Sum( x => x.TransactionCount)
-                 });
+                 }).ToList();
 
                 var fResults = from TransactionsByMonthAndProduct cnt in gResult
                               group cnt by new { cnt.Year, cnt.Month } into monthlyGroup
                               select new TransactionCountForMonth
                               {
-                                  Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
+                                  Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1),
                                   Data = monthlyGroup.Select(x => new TransactionsForProduct { NoOfTransactions = x.TransactionCount, Product = x.ParkingProduct })
                               };
-                dashboardMonthlyTransactionCount.MonthlyTransactions = fResults;
+
+                dashboardMonthlyTransactionCount.MonthlyTransactions = fResults.OrderBy(x => x.Date);
 
             }
             catch (Exception ex)
@@ -305,20 +304,18 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
+                var result = context.InsightsAverageMonthlyTicketValueData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                     && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
 
-                var result = context.Dashboard_AverageMonthlyTicketValueData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                      && (x.FirstDayofMonth >= filterParameters!.FromDate && x.FirstDayofMonth < filterParameters.ToDate)).ToList();
-
-
-                var fResult = from Dashboard_AverageMonthlyTicketValue data in result
-                         group data by new { data.FirstDayofMonth.Year , data.FirstDayofMonth.Month } into monthlyGroup
+                var fResult = from InsightsAverageMonthlyTicketValue data in result
+                         group data by new { data.FirstDayOfMonth.Year , data.FirstDayOfMonth.Month } into monthlyGroup
                          select new AverageTicketValueForMonth
                          {
-                             Month = monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
+                             Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1), //monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
                              Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ProductName, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
                          };
 
-                dashboardMonthlyAverageTicketValue.Response = fResult;
+                dashboardMonthlyAverageTicketValue.Response = fResult.OrderBy(x => x.Date);
             }
             catch (Exception ex)
             {

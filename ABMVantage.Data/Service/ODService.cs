@@ -25,7 +25,7 @@
 
         public async Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam filterParameters)
         {
-            IEnumerable<OccRevenueByProduct> occRevenueByProductList = null;
+            IEnumerable<OccRevenueByProduct> occRevenueByProductList = new List<OccRevenueByProduct>();
             try
             {
                 using var context = _factory.CreateDbContext();
@@ -34,13 +34,15 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.OD_TotalOccupancyRevenueData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)).ToList();
+                var result = context.OD_TotalOccupancyRevenueData.Where(x => facilities!.Contains(x.FacilityId!) &&
+                (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) &&
+                (x.ProductId == null || products!.Contains(x.ProductId.Value!))).ToList();
 
                 //Group by Product Name 
                 occRevenueByProductList = (List<OccRevenueByProduct>)result.GroupBy(x => new { x.ProductName}).Select(g =>
                  new OccRevenueByProduct
                  {
-                     Product = g.Key.ProductName,
+                     Product = g.Key.ProductName!,
                      Revenue = g.Sum(x => x.Amount)
                  }).ToList();
                 
@@ -55,7 +57,7 @@
 
         public async Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam filterParameters)
         {
-            List<OccWeeklyOccByDuration> occWeeklyOccByDuration = null;
+            List<OccWeeklyOccByDuration> occWeeklyOccByDuration = new List<OccWeeklyOccByDuration>();
             try
             {
                 using var context = _factory.CreateDbContext();
@@ -64,16 +66,16 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.OD_AllData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                && (x.OccupancyEntryDate >= filterParameters!.FromDate && x.OccupancyEntryDate < filterParameters.ToDate)).ToList();
+                var result = context.OD_AllData.Where(x => facilities!.Contains(x.FacilityId!)
+                && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyEntryDateTimeUtc < filterParameters.ToDate)).ToList();
 
                 //Group by Duration
                 occWeeklyOccByDuration = (List<OccWeeklyOccByDuration>)result.GroupBy(x => new { x.Duration }).Select(g =>
                  new OccWeeklyOccByDuration
                  {
-                     Duration = g.Key.Duration,
+                     Duration = g.Key.Duration!,
                      TotalWeeklyOccupancy = g.Count()
-                 }).ToList();
+                 }).OrderBy(x => x.Duration).ToList();
 
             }
             catch (Exception ex)
@@ -95,8 +97,10 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.OD_AllData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                && (x.OccupancyEntryDate >= filterParameters!.FromDate && x.OccupancyEntryDate < filterParameters.ToDate)).ToList();
+                var result = context.OD_AllData.Where(x => facilities!.Contains(x.FacilityId!)
+                && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyExitDateTimeUtc != null &&
+                x.OccupancyEntryDateTimeUtc < filterParameters.ToDate
+                )).ToList();
 
                 var start = DateTime.Today;
                 var clockQuery = from offset in Enumerable.Range(0, 24)
@@ -104,8 +108,8 @@
                 foreach (var time in clockQuery)
                 {
                     DateTime tempTime = time.AddHours(1);
-                    var fResult = result.FindAll(x => TimeSpan.Compare(x.OccupancyEntryDate.TimeOfDay, time.TimeOfDay) > 0
-                    && TimeSpan.Compare(x.OccupancyExitDate!.TimeOfDay, tempTime.TimeOfDay) < 0);
+                    var fResult = result.FindAll(x => TimeSpan.Compare(x.OccupancyEntryDateTimeUtc!.Value.TimeOfDay, time.TimeOfDay) > 0
+                    && TimeSpan.Compare(x.OccupancyExitDateTimeUtc!.Value.TimeOfDay, tempTime.TimeOfDay) < 0);
 
                     occCurrent.Add(new OccCurrent()
                     {
@@ -133,11 +137,12 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.OD_AllData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                && (x.OccupancyEntryDate >= filterParameters!.FromDate && x.OccupancyEntryDate < filterParameters.ToDate)).ToList();
+                var result = context.OD_AllData.Where(x =>facilities!.Contains(x.FacilityId!)
+                && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate &&
+                 x.OccupancyExitDateTimeUtc != null && x.OccupancyEntryDateTimeUtc < filterParameters.ToDate)).ToList();
 
                 //Group by Duration,Year and Month
-                List<OccVsDurationGroupedResult> gResult = result.GroupBy(x => new { x.Duration, x.OccupancyEntryDate.Year, x.OccupancyEntryDate.Month }).Select(g =>
+                List<OccVsDurationGroupedResult> gResult = result.GroupBy(x => new { x.Duration, x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
                  new OccVsDurationGroupedResult
                  {
                      Duration = g.Key.Duration,
@@ -186,11 +191,12 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.OD_AllData.Where(x => (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty) && facilities!.Contains(x.FacilityId!) && products!.Contains(x.ProductId)
-                && (x.OccupancyEntryDate >= filterParameters!.FromDate && x.OccupancyEntryDate < filterParameters.ToDate)).ToList();
+                var result = context.OD_AllData.Where(x => facilities!.Contains(x.FacilityId!)
+                && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate &&
+                x.OccupancyExitDateTimeUtc != null && x.OccupancyEntryDateTimeUtc < filterParameters.ToDate)).ToList();
 
                 //Group by Duration,Year and Month
-                List<OccVsDurationGroupedResult> gResult = result.GroupBy(x => new { x.OccupancyEntryDate.Year, x.OccupancyEntryDate.Month }).Select(g =>
+                List<OccVsDurationGroupedResult> gResult = result.GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
                  new OccVsDurationGroupedResult
                  {
                      Year = g.Key.Year,

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class Dashboard_HourlyReservation
+    public class InsightsTotalTransactions
     {
         [Key]
         [JsonProperty("id")]
@@ -23,15 +23,10 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
-        [JsonProperty("ProductName")]
-        public string? ProductName { get; set; }
+        [JsonProperty("TransactionDate")]
+        public DateTime TransactionDate { get; set; }
 
-
-        [JsonProperty("BeginingHour")]
-        public DateTime BeginingHour { get; set; }
-
-
-        [JsonProperty("ReservationCount")]
-        public int ReservationCount { get; set; }
+        [JsonProperty("Amount")]
+        public int Amount { get; set; }
     }
 }

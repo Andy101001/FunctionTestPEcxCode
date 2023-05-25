@@ -21,7 +21,7 @@ namespace ABMVantage.Data.EntityModels
         public string? LevelId { get; set; }
 
         [JsonProperty("ProductId")]
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
 
         [JsonProperty("ProductName")]
         public string? ProductName { get; set; }

@@ -3,7 +3,7 @@ using ABMVantage.Data.Models.DashboardModels;
 
 namespace ABMVantage.Data.Interfaces
 {
-    public interface IDashboardService
+    public interface IInsightsService
     {
         Task<DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters);
         Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters);

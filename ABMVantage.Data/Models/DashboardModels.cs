@@ -18,15 +18,16 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class ReservationsForProductAndHour
     {
-        public DateTime Hour { get; set; }
+        public TimeSpan Hour { get; set; }
         public string? Product { get; set; }
         public int ReservationCount { get; set; }
     }
 
     public class HourlyReservationCount
     {
-        public string ReservationTime { get; set; }
-        public IEnumerable<ReservationsByProduct> Data { get; set; }
+        public DateTime ReservationDateTime { get; set; }
+        public string? ReservationTime { get { return this.ReservationDateTime.ToString("hh:mm tt"); } }
+        public IEnumerable<ReservationsByProduct> Data { get; set; } = new List<ReservationsByProduct>();
     }
 
     public class ReservationsByProduct
@@ -50,9 +51,11 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class RevenueAndBudget
     {
-        public string Month { get; set; } = string.Empty;
+        public string Month { get { return this.Date.ToString("MMM yyyy"); } }
         public int Revenue { get; set; }
         public int BudgetedRevenue { get; set; }
+
+        public DateTime Date { get; set; }
     }
 
     public class DashboardMonthlyParkingOccupancy
@@ -93,7 +96,8 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class TransactionCountForMonth
     {
-        public string Month { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public string Month { get { return this.Date.ToString("MMM yyyy"); } }
         public IEnumerable<TransactionsForProduct> Data { get; set; } = new List<TransactionsForProduct>();
     }
 
@@ -110,7 +114,8 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class AverageTicketValueForMonth
     {
-        public string Month { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public string Month { get { return this.Date.ToString("MMM yyyy"); } }
         public IEnumerable<TicketValueAverage> Data { get; set; } = new List<TicketValueAverage>();
 
     }

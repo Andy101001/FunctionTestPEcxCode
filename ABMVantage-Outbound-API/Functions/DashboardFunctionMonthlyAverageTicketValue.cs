@@ -17,9 +17,9 @@
     {
         private readonly ILogger _logger;
         private readonly ITicketService _ticketService;
-        private readonly IDashboardService _dashboardService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService, IDashboardService dashboardService)
+        public DashboardFunctionMonthlyAverageTicketValue(ILoggerFactory loggerFactory, ITicketService ticketService, IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(ticketService);
             ArgumentNullException.ThrowIfNull(loggerFactory);

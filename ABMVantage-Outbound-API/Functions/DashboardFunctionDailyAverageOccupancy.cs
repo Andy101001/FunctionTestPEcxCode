@@ -17,9 +17,9 @@
     {
         private readonly ILogger _logger;
         private readonly IOccupancyService _occupancyService;
-        private readonly IDashboardService _dashboardService;
+        private readonly IInsightsService _dashboardService;
 
-        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, IOccupancyService occupancyService , IDashboardService dashboardService)
+        public DashboardFunctionDailyAverageOccupancy(ILoggerFactory loggerFactory, IOccupancyService occupancyService , IInsightsService dashboardService)
         {
             ArgumentNullException.ThrowIfNull(occupancyService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
