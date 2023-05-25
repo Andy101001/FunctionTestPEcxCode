@@ -72,83 +72,83 @@ namespace ABMVantage.Data.Service
             return result;
         }
 
-        public async Task<IEnumerable<DailyTransaction>> GetStgTransactonByDays(FilterParam inputFilter)
-        {
-            IEnumerable<DailyTransaction>? result = null;
-            IEnumerable<StgDailyTransaction>? resultStg = null;
+        //public async Task<IEnumerable<DailyTransaction>> GetStgTransactonByDays(FilterParam inputFilter)
+        //{
+        //    IEnumerable<DailyTransaction>? result = null;
+        //    IEnumerable<StgDailyTransaction>? resultStg = null;
 
-            string key = $"DailyTransactionKey";
-            var redisKey = new RedisKey(key);
+        //    string key = $"DailyTransactionKey";
+        //    var redisKey = new RedisKey(key);
 
-            if (!_cache.GetDatabase().KeyExists(redisKey))
-            {
-                resultStg = await _filterDataRepository.TransactionRepository.GetTransactionByDays(inputFilter);
+        //    if (!_cache.GetDatabase().KeyExists(redisKey))
+        //    {
+        //        resultStg = await _filterDataRepository.TransactionRepository.GetTransactionByDays(inputFilter);
 
-                var resultStgJson = JsonConvert.SerializeObject(resultStg);
+        //        var resultStgJson = JsonConvert.SerializeObject(resultStg);
 
-                await _cache.GetDatabase().StringSetAsync(key, resultStgJson);
-            }
-            else
-            {
-                //retur data from cache.
+        //        await _cache.GetDatabase().StringSetAsync(key, resultStgJson);
+        //    }
+        //    else
+        //    {
+        //        //retur data from cache.
 
-                var cacheData = await _cache.GetDatabase().StringGetAsync(key);
+        //        var cacheData = await _cache.GetDatabase().StringGetAsync(key);
 
-                resultStg = JsonConvert.DeserializeObject<IList<StgDailyTransaction>>(cacheData).ToList();
+        //        resultStg = JsonConvert.DeserializeObject<IList<StgDailyTransaction>>(cacheData).ToList();
                
-            }
+        //    }
 
-            var levels = inputFilter.ParkingLevels.Select(x => x.Id).ToArray();
-            var facilityes = inputFilter.Facilities.Select(x => x.Id).ToArray();
-            var products = inputFilter.Products.Select(x => x.Id).ToArray();
+        //    var levels = inputFilter.ParkingLevels.Select(x => x.Id).ToArray();
+        //    var facilityes = inputFilter.Facilities.Select(x => x.Id).ToArray();
+        //    var products = inputFilter.Products.Select(x => x.Id).ToArray();
 
-            ///DOTO need to fix LevelId fiter<Staging table having levelId nulll></Staging>
-            var data = resultStg.ToList().Where(x => (levels.Contains(x.LevelId) || x.LevelId == null) && facilityes.Contains(x.FacilityId) && products.Contains(Convert.ToInt32(x.ProductId)));
+        //    ///DOTO need to fix LevelId fiter<Staging table having levelId nulll></Staging>
+        //    var data = resultStg.ToList().Where(x => (levels.Contains(x.LevelId) || x.LevelId == null) && facilityes.Contains(x.FacilityId) && products.Contains(Convert.ToInt32(x.ProductId)));
 
-            result = from d in data
-                     select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.WeekDay };
+        //    result = from d in data
+        //             select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.WeekDay };
 
-            return result.ToList();
-        }
+        //    return result.ToList();
+        //}
 
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        {
-            IEnumerable<DailyTransaction>? result = null;
-            IEnumerable<StgDailyTransaction>? resultStg = null;
+        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //{
+        //    IEnumerable<DailyTransaction>? result = null;
+        //    IEnumerable<StgDailyTransaction>? resultStg = null;
 
-            string key = $"GetTransactonByDaysKey";
-            var redisKey = new RedisKey(key);
+        //    string key = $"GetTransactonByDaysKey";
+        //    var redisKey = new RedisKey(key);
 
-            if (!_cache.GetDatabase().KeyExists(redisKey))
-            {
-                resultStg = await _filterDataRepository.TransactionRepository.GetTransactionByDays(inputFilter);
+        //    if (!_cache.GetDatabase().KeyExists(redisKey))
+        //    {
+        //        resultStg = await _filterDataRepository.TransactionRepository.GetTransactionByDays(inputFilter);
 
-                var resultStgJson = JsonConvert.SerializeObject(resultStg);
+        //        var resultStgJson = JsonConvert.SerializeObject(resultStg);
 
-                await _cache.GetDatabase().StringSetAsync(key, resultStgJson);
-            }
-            else
-            {
-                //retur data from cache.
+        //        await _cache.GetDatabase().StringSetAsync(key, resultStgJson);
+        //    }
+        //    else
+        //    {
+        //        //retur data from cache.
 
-                var cacheData = await _cache.GetDatabase().StringGetAsync(key);
+        //        var cacheData = await _cache.GetDatabase().StringGetAsync(key);
 
-                resultStg = JsonConvert.DeserializeObject<IList<StgDailyTransaction>>(cacheData).ToList();
+        //        resultStg = JsonConvert.DeserializeObject<IList<StgDailyTransaction>>(cacheData).ToList();
 
-            }
+        //    }
 
-            var levels = inputFilter.ParkingLevels.Select(x => x.Id).ToArray();
-            var facilityes = inputFilter.Facilities.Select(x => x.Id).ToArray();
-            var products = inputFilter.Products.Select(x => x.Id).ToArray();
+        //    var levels = inputFilter.ParkingLevels.Select(x => x.Id).ToArray();
+        //    var facilityes = inputFilter.Facilities.Select(x => x.Id).ToArray();
+        //    var products = inputFilter.Products.Select(x => x.Id).ToArray();
 
-            ///DOTO need to fix LevelId fiter<Staging table having levelId nulll></Staging>
-            var data = resultStg.ToList().Where(x => (levels.Contains(x.LevelId) || x.LevelId == null) && facilityes.Contains(x.FacilityId) && products.Contains(Convert.ToInt32(x.ProductId)));
+        //    ///DOTO need to fix LevelId fiter<Staging table having levelId nulll></Staging>
+        //    var data = resultStg.ToList().Where(x => (levels.Contains(x.LevelId) || x.LevelId == null) && facilityes.Contains(x.FacilityId) && products.Contains(Convert.ToInt32(x.ProductId)));
 
-            result = from d in data
-                     select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.WeekDay };
+        //    result = from d in data
+        //             select new DailyTransaction { NoOfTransactions = d.NoOfTransactions, WeekDay = d.WeekDay };
 
-            return result.ToList();
-        }
+        //    return result.ToList();
+        //}
     }
 }

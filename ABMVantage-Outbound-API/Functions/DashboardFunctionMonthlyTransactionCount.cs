@@ -43,8 +43,8 @@
                 _logger.LogInformation($"Executing function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 FilterParam filterParameters = JsonConvert.DeserializeObject<FilterParam>(content);
-                //var result = await _transactionService.GetMonthlyTransactionCountAsync(filterParameters);
-                var result = await _dashboardService.GetMonthlyTransactionCountAsync(filterParameters);
+                var result = await _transactionService.GetMonthlyTransactionCountAsync(filterParameters);
+                //var result = await _dashboardService.GetMonthlyTransactionCountAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransactionCount)}");
                 return new OkObjectResult(result);
             }
