@@ -2,9 +2,11 @@
 using ABMVantage.Data.EntityModels;
 using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -48,6 +50,8 @@ namespace ABMVantage.Data.Service
             try
             {
 
+                var stdate = DateTime.Now;
+
                 using var context = _factory.CreateDbContext();
 
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -56,7 +60,7 @@ namespace ABMVantage.Data.Service
 
                 //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).ToList();
 
-                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
+                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
 
                 #region chche
                 /*
@@ -80,18 +84,38 @@ namespace ABMVantage.Data.Service
 
                 #endregion
 
-                var finalRestut = result.GroupBy(x => new { x.TransactionDate.Value.DayOfWeek}).Select(g =>
+
+
+                var result = context.RevenueTransactions.AsEnumerable().Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId)));
+
+                dailyTransactions = result.GroupBy(x => new { x.TransactionDate.Value.DayOfWeek }).Select(g =>
                 new DailyTransaction
                 {
                     WeekDay = g.Key.DayOfWeek.ToString(),
-                    NoOfTransactions=Convert.ToDecimal(g.Count())
-                    
+                    NoOfTransactions = g.Count()
+
+
+
                 }
-                );
+                ).ToList();
 
-                dailyTransactions = finalRestut.ToList();
+                var enddate = DateTime.Now;
 
+                var elp = enddate - stdate;
+                Console.WriteLine(elp);
 
+                //var finalRestut = result.GroupBy(x => new { x.TransactionDate.Value.DayOfWeek}).Select(g =>
+                //new DailyTransaction
+                //{
+                //    WeekDay = g.Key.DayOfWeek.ToString(),
+                //    NoOfTransactions=Convert.ToDecimal(g.Count())
+
+                //}
+                //);
+
+                //dailyTransactions = finalRestut.ToList();
+
+                var ss = dailyTransactions;
             }
             catch (Exception ex) 
             {
