@@ -45,8 +45,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            //var result = await _occupancyService.GetOccCurrent(inputFilter);
-            var result = await _odService.GetOccCurrent(inputFilter);
+            var result = await _occupancyService.GetOccCurrent(inputFilter);
+            //var result = await _odService.GetOccCurrent(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionCurrentOccupancy)}");
 
             //Just to make out json as required to UI
