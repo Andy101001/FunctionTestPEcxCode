@@ -42,8 +42,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            //var result = await _occupancyService.GetAvgMonthlyOccVsDuration(inputFilter);
-            var result = await _odService.GetAvgMonthlyOccVsDuration(inputFilter);
+            var result = await _occupancyService.GetAvgMonthlyOccVsDuration(inputFilter);
+            //var result = await _odService.GetAvgMonthlyOccVsDuration(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionAvgMonthlyOccVsDuration)}");
 
             //Just to make out json as required to UI
