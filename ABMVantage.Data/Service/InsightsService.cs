@@ -94,7 +94,7 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsTotalTransactionsData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                var result = context.RevenueTransactions.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                           && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters.ToDate));
 
                 totalTransactionsCount = result.Count();
@@ -118,11 +118,11 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsHourlyReservationsData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                var result = context.Reservations.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
                         && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.FromDate.AddDays(1))).ToList();
 
                 //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.TimeOfDay }).Select(g =>
+                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.Value.TimeOfDay }).Select(g =>
                  new ReservationsForProductAndHour
                  {
                      Product = g.Key.ProductName,

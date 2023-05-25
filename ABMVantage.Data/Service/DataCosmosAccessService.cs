@@ -54,9 +54,9 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).ToList();
+                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).ToList();
 
-                //var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
+                var result = context.RevenueTransactions.Where(x => (facilities.Contains(x.FacilityId) && products.Contains(x.ProductId))).Take(100).ToList();
 
                 #region chche
                 /*

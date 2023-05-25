@@ -26,7 +26,7 @@ namespace ABMVantage.Data.DataAccess
         private const string RevenueStgByDay = "RevenueByDay";
         private const string RevenueByMonth = nameof(RevenueByMonth);
 
-        private const string RevenueTransaction = nameof(RevenueTransaction);
+        //private const string RevenueTransaction = nameof(RevenueTransaction);
 
         
 
@@ -34,10 +34,8 @@ namespace ABMVantage.Data.DataAccess
         private const string InsightsAverageDialyOccupany = nameof(InsightsAverageDialyOccupany);
         private const string InsightsTotalRevenue = nameof(InsightsTotalRevenue);
         private const string RevenueTransaction = nameof(RevenueTransaction);
-        private const string Reservation = nameof(Reservation);
         private const string InsightsMonthlyRevenueAndBudget = nameof(InsightsMonthlyRevenueAndBudget);
         private const string InsightsMonthlyParkingOccupancy = nameof(InsightsMonthlyParkingOccupancy);
-        private const string InsightsMonthlyTransaction = nameof(InsightsMonthlyTransaction);
         private const string InsightsAverageMonthlyTicketValue = nameof(InsightsAverageMonthlyTicketValue);
 
         //Reservation Containers
@@ -135,15 +133,6 @@ namespace ABMVantage.Data.DataAccess
                  .ToContainer(InsightsTotalRevenue)
                  .HasPartitionKey(da => da.id);
 
-            modelBuilder.Entity<InsightsTotalTransactions>()
-                .HasNoDiscriminator()
-                .ToContainer(RevenueTransaction)
-                .HasPartitionKey(da => da.id);
-
-            modelBuilder.Entity<InsightsHourlyReservation>()
-                .HasNoDiscriminator()
-                .ToContainer(Reservation)
-                .HasPartitionKey(da => da.id);
 
             modelBuilder.Entity<InsightsMonthlyRevenueAndBudget>()
                .HasNoDiscriminator()
@@ -153,11 +142,6 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<InsightsMonthlyParkingOccupancy>()
                .HasNoDiscriminator()
                .ToContainer(InsightsMonthlyParkingOccupancy)
-               .HasPartitionKey(da => da.id);
-
-            modelBuilder.Entity<InsightsMonthlyTransaction>()
-               .HasNoDiscriminator()
-               .ToContainer(InsightsMonthlyTransaction)
                .HasPartitionKey(da => da.id);
 
             modelBuilder.Entity<InsightsAverageMonthlyTicketValue>()
@@ -197,7 +181,7 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<RevenueTransaction>()
              .HasNoDiscriminator()
              .ToContainer(RevenueTransaction)
-             .HasPartitionKey(da => da.id);
+             .HasPartitionKey(da => da.FacilityId);
 
             modelBuilder.Entity<RevenueRevenueVsBudget>()
             .HasNoDiscriminator()
@@ -291,8 +275,7 @@ namespace ABMVantage.Data.DataAccess
         //Dashboard Container Data
         public DbSet<InsightsAverageDailyOccupancy> InsightsAverageDialyOccupanyData { get; set; }
         public DbSet<InsightsTotalRevenue> InsightsTotalRevenueData { get; set; }
-        public DbSet<InsightsTotalTransactions> InsightsTotalTransactionsData { get; set; }
-        public DbSet<InsightsHourlyReservation> InsightsHourlyReservationsData { get; set; }
+        
         public DbSet<InsightsMonthlyRevenueAndBudget> InsightsMonthlyRevenueAndBudgetData { get; set; }
         public DbSet<InsightsMonthlyParkingOccupancy> InsightsMonthlyParkingOccupancyData { get; set; }
         public DbSet<InsightsMonthlyTransaction> InsightsMonthlyTransactionsData { get; set; }

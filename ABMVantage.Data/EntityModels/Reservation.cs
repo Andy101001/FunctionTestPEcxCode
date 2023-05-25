@@ -26,6 +26,9 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ProductId")]
         public int ProductId { get; set; }
 
+        [JsonProperty("ProductName")]
+        public string ProductName { get; set; }
+
         [JsonProperty("NoOfReservations")]
         public int NoOfReservations { get; set; }
 
