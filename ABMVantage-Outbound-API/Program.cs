@@ -91,6 +91,12 @@ namespace ABMVantage_Outbound_API
                     configuration.GetSection("DashboardFunctionSettings").Bind(settings);
                 });
 
+                //Read Sql settings from configuration or local settings for VTG DB
+                builder.Services.AddOptions<SqlSettings_VTG>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("SqlSettings_VTG").Bind(settings);
+                });
+
             }).ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 // load environment variables into the config
@@ -133,6 +139,9 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IRedisCachingService, RedisCachingService>();
                 s.AddScoped<IInsightsService, InsightsService>();
                 s.AddScoped<IODService, ODService>();
+                s.AddScoped<IReservationAndTicketService, ReservationAndTicketService>();
+                s.AddScoped<IRevenueAndTransactionService, RevenueAndTransactionService>();
+                s.AddScoped<IFilterDataService_New, FilterDataService_New>();
 
                 //Redis Cache Configuration
                 var redisSettings = s.BuildServiceProvider().GetRequiredService<IOptions<RedisSettings>>().Value;
@@ -141,7 +150,6 @@ namespace ABMVantage_Outbound_API
                 s.AddSingleton<IConnectionMultiplexer>(multiplexer);
                 s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
 
-                
 
                 s.AddOptions();
 
@@ -231,6 +239,7 @@ namespace ABMVantage_Outbound_API
                 var cosmosSettings = s.BuildServiceProvider().GetRequiredService<IOptions<CosmosSettings>>().Value;
                 var sqlSettings = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings>>().Value;
                 var dashboardSettings = s.BuildServiceProvider().GetRequiredService<IOptions<DashboardFunctionSettings>>().Value;
+                var sqlSettingsVTG = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings_VTG>>().Value;
 
 
                 if (dashboardSettings != null)
@@ -278,6 +287,22 @@ namespace ABMVantage_Outbound_API
                     }
                 });
 
+                if(sqlSettingsVTG != null)
+                {
+                    s.AddDbContextFactory<SqlDataContextVTG>((IServiceProvider sp, DbContextOptionsBuilder opts) =>
+                    {
+                        // Make sure we successfully read in the security settings
+                        if (sqlSettingsVTG != null)
+                        {
+                            // Check for the null strings
+                            if (!string.IsNullOrEmpty(sqlSettingsVTG.ConnectionString))
+                            {
+                                opts.UseSqlServer(sqlSettingsVTG.ConnectionString);
+                            }
+                        }
+                    });
+
+                }
 
 
             });

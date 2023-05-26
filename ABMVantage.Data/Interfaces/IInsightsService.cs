@@ -6,7 +6,7 @@ namespace ABMVantage.Data.Interfaces
     public interface IInsightsService
     {
         Task<DailyAverageOccupancy> GetDailyAverageOccupancy(FilterParam? filterParameters);
-        Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters);
+        Task<double> GetDailyTotalRevenueAsync(FilterParam filterParameters);
         Task<int> GetDailyTransactiontCountAsync(FilterParam filterParameters);
         Task<DashboardDailyReservationCountByHour> GetHourlyReservationsByProduct(FilterParam filterParameters);
         Task<DashboardMonthlyRevenueAndBudget> GetMonthlyRevenueAndBudget(FilterParam filterParameters);

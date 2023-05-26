@@ -15,13 +15,15 @@
     {
         private readonly ILogger _logger;
         private readonly ITransaction_NewService _transactionService;
+        private readonly IRevenueAndTransactionService _revenueAndTransactionService;
 
-        public DashboardFunctionDailyRevenueByProduct(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
+        public DashboardFunctionDailyRevenueByProduct(ILoggerFactory loggerFactory, ITransaction_NewService transactionService, IRevenueAndTransactionService revenueAndTransactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyRevenueByProduct>();
             _transactionService = transactionService;
+            _revenueAndTransactionService = revenueAndTransactionService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyRevenueByProduct)}");
         }
 
@@ -39,7 +41,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _transactionService.GetRevenueByProductByDays(inputFilter);
+            //var result = await _transactionService.GetRevenueByProductByDays(inputFilter);
+            var result = await _revenueAndTransactionService.GetRevenueByProductByDays(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyRevenueByProduct)}");
 
             //Just to make out json as required to UI

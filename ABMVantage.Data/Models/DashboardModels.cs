@@ -45,15 +45,15 @@ namespace ABMVantage.Data.Models.DashboardModels
     {
         public int Year { get; internal set; }
         public int Month { get; internal set; }
-        public int BudgetedRevenue { get; internal set; }
-        public int Revenue { get; internal set; }
+        public decimal BudgetedRevenue { get; internal set; }
+        public decimal Revenue { get; internal set; }
     }
 
     public class RevenueAndBudget
     {
         public string Month { get { return this.Date.ToString("MMM yyyy"); } }
-        public int Revenue { get; set; }
-        public int BudgetedRevenue { get; set; }
+        public decimal Revenue { get; set; }
+        public decimal BudgetedRevenue { get; set; }
 
         public DateTime Date { get; set; }
     }
@@ -123,7 +123,7 @@ namespace ABMVantage.Data.Models.DashboardModels
     public class TicketValueAverage
     {
         public string ParkingProduct { get; set; } = string.Empty;
-        public decimal AverageTicketValue { get; set; }
+        public double AverageTicketValue { get; set; }
     }
 
 }

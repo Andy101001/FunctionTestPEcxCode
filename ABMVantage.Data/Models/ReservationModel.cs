@@ -3,8 +3,8 @@
     public class ReservationsByHour
     {
         public int? NoOfReservations { get; set; }
-        public string? Time { get; set; }
-       
+        public string Time { get; set; }
+
     }
     public class ReservationsByDay
     {
@@ -15,7 +15,8 @@
     {
         public int? NoOfReservations { get; set; }
         public string Month { get; set; }
-        public string Fiscal { get; set; }
+        public int Year { get; set; }
+        public string Fiscal {  get; set; } 
 
     }
     public class ResAvgTicketValue

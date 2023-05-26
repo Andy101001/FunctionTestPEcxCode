@@ -15,14 +15,16 @@
     {
         private readonly ILogger _logger;
         private readonly ITransaction_NewService _transactionService;
+        private readonly IRevenueAndTransactionService _revenueAndTransactionService;
 
-        public DashboardFunctionMonthlyTransaction(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
+        public DashboardFunctionMonthlyTransaction(ILoggerFactory loggerFactory, ITransaction_NewService transactionService, IRevenueAndTransactionService revenueAndTransactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionMonthlyTransaction>();
             _transactionService = transactionService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionMonthlyTransaction)}");
+            _revenueAndTransactionService = revenueAndTransactionService;
         }
 
         [Function("ABM Dashboard - Get Monthly Transaction")]
@@ -39,7 +41,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _transactionService.GetTransactonMonths(inputFilter);
+            //var result = await _transactionService.GetTransactonMonths(inputFilter);
+            var result = await _revenueAndTransactionService.GetTransactonMonths(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionMonthlyTransaction)}");
 
             //Just to make out json as required to UI

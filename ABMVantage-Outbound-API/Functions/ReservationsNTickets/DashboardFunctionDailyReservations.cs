@@ -15,13 +15,15 @@
     {
         private readonly ILogger _logger;
         private readonly IReservationNTicketService _reservationService;
+        private readonly IReservationAndTicketService _reservationAndTicketService;
 
-        public DashboardFunctionDailyReservations(ILoggerFactory loggerFactory, IReservationNTicketService reservationService)
+        public DashboardFunctionDailyReservations(ILoggerFactory loggerFactory, IReservationNTicketService reservationService, IReservationAndTicketService reservationAndTicketService)
         {
             ArgumentNullException.ThrowIfNull(reservationService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionDailyReservations>();
             _reservationService = reservationService;
+            _reservationAndTicketService = reservationAndTicketService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionDailyReservations)}");
         }
 
@@ -39,7 +41,8 @@
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _reservationService.GetDailyReservations(inputFilter);
+            //var result = await _reservationService.GetDailyReservations(inputFilter);
+            var result = await _reservationAndTicketService.GetDailyReservations(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyReservations)}");
 
             //Just to make out json as required to UI
