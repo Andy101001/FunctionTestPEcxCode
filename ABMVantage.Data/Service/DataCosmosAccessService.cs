@@ -129,6 +129,15 @@ namespace ABMVantage.Data.Service
         {
             IList<CurrentTransaction> transactionsByHours = null;
 
+            var data = await GetDataAsync();
+            transactionsByHours= data.ToList();
+
+            foreach(var item in transactionsByHours)
+            {
+                item.Time = GetHourAMPM(item.Time);
+            }
+               
+            /*
             try
             {
 
@@ -161,13 +170,14 @@ namespace ABMVantage.Data.Service
 
                 //var data = from d in result select new CurrentTransaction { NoOfTransactions = d.NoOfTransactions, Time = d.Time };
                 transactionsByHours = finalRestut2.ToList();
+            
 
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-
+            */
             return transactionsByHours;
         }
 
@@ -567,5 +577,47 @@ namespace ABMVantage.Data.Service
         }
 
         #endregion
+
+        private async Task<CurrentTransaction[]> GetDataAsync()
+        {
+            Console.WriteLine("Hello, World!");
+            CurrentTransaction[] documents = null;
+
+            var time = DateTime.Now;
+
+            var client = new CosmosClient("AccountEndpoint=https://abm-vtg-cosmos01-dev.documents.azure.com:443/;AccountKey=6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==;");
+            var container = client.GetContainer("VantageDB_UI", "RevenueTransaction");
+
+            var sql = "SELECT count(1) NoOfTransactions,DateTimePart(\"hh\", c.TransactionDate) AS Time from c\r\ngroup by DateTimePart(\"hh\", c.TransactionDate)";
+
+            var queryDefinition = new QueryDefinition(sql);
+
+
+            var iterator = container.GetItemQueryStreamIterator(queryDefinition);
+
+            while (iterator.HasMoreResults)
+            {
+                var result = await iterator.ReadNextAsync();
+
+                using (StreamReader sr = new StreamReader(result.Content))
+                using (JsonTextReader jtr = new JsonTextReader(sr))
+                {
+                    var result2 = JObject.Load(jtr);
+
+                    var o = JObject.Parse(result2.ToString());
+                    var jsonType = o["Documents"];
+                    if (jsonType.ToString().Contains("NoOfTransactions"))
+                    {
+                        documents = JsonConvert.DeserializeObject<CurrentTransaction[]>(jsonType.ToString());
+                    }
+                }
+            }
+
+            var time2 = DateTime.Now;
+            Console.WriteLine((time2 - time));
+
+            return documents;
+
+        }
     }
 }
