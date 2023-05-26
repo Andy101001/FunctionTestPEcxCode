@@ -24,7 +24,7 @@
     "ServiceBusConnectionString": "Endpoint=sb://abm-vtg-sb01-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gwN1BGC3XZAHkANqJHT2aAc6i9m5lnimr+kgW7hgwmQ="
 
   },
-  "Host": {"CORS": "*"},
+  "Host": { "CORS": "*" },
 
   "RedisSettings": {
     "ConntecitonString": "abm-vtg-redis01-dev.redis.cache.windows.net:6380,password=JqWq41UYLfWAkIcrEjbaggzF6LuIggjVuAzCaEGjCzU=,ssl=true,abortConnect=false"
@@ -32,6 +32,12 @@
 
   "SqlSettings": {
     "ConnectionString": "Server=tcp:abm-vtg-syn01-dev.sql.azuresynapse.net,1433;Initial Catalog=abmvtgsyn01dp01;Persist Security Info=False;User ID=sqladminuser;Password=Ez8zD#VcMdM;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "IsSqlDbConnectionOn": true
+
+
+  },
+  "SqlSettings_VTG": {
+    "ConnectionString": "Server=abm-vtg-sql01-dev.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev;Persist Security Info=False;User ID=abmvtgsqldevadmin;Password=K!ya5hNg;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
     "IsSqlDbConnectionOn": true
 
 

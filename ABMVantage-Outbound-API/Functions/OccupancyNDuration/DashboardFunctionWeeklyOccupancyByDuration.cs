@@ -41,8 +41,8 @@ namespace ABMVantage_Outbound_API.Functions.OccupancyNDuration
             FilterParam inputFilter = JsonConvert.DeserializeObject<FilterParam>(content);
 
             //Get total occupancy revenue
-            var result = await _occupancyService.GetWeeklyOccByDuration(inputFilter);
-            //var result = await _odService.GetWeeklyOccByDuration(inputFilter);
+            //var result = await _occupancyService.GetWeeklyOccByDuration(inputFilter);
+            var result = await _odService.GetWeeklyOccByDuration(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionWeeklyOccupancyByDuration)}");
 
             //Just to make out json as required to UI

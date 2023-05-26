@@ -15,14 +15,16 @@
     {
         private readonly ILogger _logger;
         private readonly IFilterDataService _filterDataService;
+        private readonly IFilterDataService_New _filterDataServiceNew;
 
-        public DashboardFunctionFiltersData(ILoggerFactory loggerFactory, IFilterDataService filterDataService)
+        public DashboardFunctionFiltersData(ILoggerFactory loggerFactory, IFilterDataService filterDataService, IFilterDataService_New filterDataServiceNew)
         {
             ArgumentNullException.ThrowIfNull(filterDataService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<DashboardFunctionFiltersData>();
             _filterDataService = filterDataService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionFiltersData)}");
+            _filterDataServiceNew = filterDataServiceNew;
         }
 
         [Function("ABM Dashboard - Get Filters Data based on User Access")]
@@ -38,7 +40,8 @@
             ServiceLocations inputFilter = JsonConvert.DeserializeObject<ServiceLocations>(content);
 
             //Get total occupancy revenue
-            var result = await _filterDataService.GetFiltersData(inputFilter);
+            //var result = await _filterDataService.GetFiltersData(inputFilter);
+            var result = await _filterDataServiceNew.GetFiltersData(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionFiltersData)}");
 
             //Just to make out json as required to UI

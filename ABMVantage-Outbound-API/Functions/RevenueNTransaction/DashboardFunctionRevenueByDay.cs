@@ -16,14 +16,16 @@
     {
         private readonly ILogger _logger;
         private readonly ITransaction_NewService _transactionService;
+        private readonly IRevenueAndTransactionService _revenueAndTransactionService;
 
-        public DashboardFunctionRevenueByDay(ILoggerFactory loggerFactory, ITransaction_NewService transactionService)
+        public DashboardFunctionRevenueByDay(ILoggerFactory loggerFactory, ITransaction_NewService transactionService, IRevenueAndTransactionService revenueAndTransactionService)
         {
             ArgumentNullException.ThrowIfNull(transactionService);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<RevenueService>();
             _transactionService = transactionService;
             _logger.LogInformation($"Constructing {nameof(DashboardFunctionRevenueByDay)}");
+            _revenueAndTransactionService = revenueAndTransactionService;
         }
 
         [Function("ABM Dashboard - GetRevenueByDay")]
@@ -45,7 +47,8 @@
                 throw new ArgumentNullException("inputFilter");
             }
 
-            var result = await _transactionService.GetRevenueByDays(inputFilter);
+            //var result = await _transactionService.GetRevenueByDays(inputFilter);
+            var result = await _revenueAndTransactionService.GetRevenueByDays(inputFilter);
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueByDay)}");
 
             //Just to make out json as required to UI

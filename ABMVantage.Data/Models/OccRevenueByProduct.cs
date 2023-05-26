@@ -3,7 +3,7 @@
     public class OccRevenueByProduct
     {
         public string Product { get; set; }
-        public decimal Revenue { get; set; }
+        public double Revenue { get; set; }
     }
 
     public class OccWeeklyOccByDuration

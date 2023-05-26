@@ -1,30 +1,29 @@
 ﻿namespace ABMVantage.Data.Service
 {
     using ABMVantage.Data.DataAccess;
-    using ABMVantage.Data.EntityModels;
+    using ABMVantage.Data.EntityModels.SQL;
     using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
-    using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+    using ABMVantage.Data.Models.DashboardModels;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using ABMVantage.Data.Models.DashboardModels;
-    using System.Drawing;
 
     public class InsightsService : ServiceBase, IInsightsService
     {
         private readonly ILogger<InsightsService> _logger;
         private readonly IDbContextFactory<CosmosDataContext> _factory;
+        private readonly IDbContextFactory<SqlDataContextVTG> _sqlDataContextVTG;
 
-        public InsightsService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory)
+        public InsightsService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory, IDbContextFactory<SqlDataContextVTG> sqlDataContextVTG)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<InsightsService>();
             _repository = repository;
             _factory = factory;
+            _sqlDataContextVTG = sqlDataContextVTG;
         }
         public async Task<DailyAverageOccupancy>? GetDailyAverageOccupancy(FilterParam? filterParameters)
         {
@@ -32,14 +31,15 @@
 
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsAverageDialyOccupanyData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                          && (x.Date >= filterParameters!.FromDate && x.Date < filterParameters.ToDate));
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
+                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                    && products!.Contains(x.ProductId)
+                    && (x.Date >= filterParameters!.FromDate && x.Date < filterParameters.ToDate));
 
                 int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
                 int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
@@ -58,22 +58,20 @@
             return dailyAverageOccupancy;
         }
 
-        public async Task<decimal> GetDailyTotalRevenueAsync(FilterParam filterParameters)
+        public async Task<double> GetDailyTotalRevenueAsync(FilterParam filterParameters)
         {
-            decimal totalRevenue = 0;
+            double totalRevenue = 0;
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsTotalRevenueData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                          && (x.Day >= filterParameters!.FromDate && x.Day < filterParameters.ToDate));
 
                 totalRevenue = result.Sum(x => x.TotalRevenue);
-
             }
             catch (Exception ex)
             {
@@ -88,17 +86,15 @@
             int totalTransactionsCount = 0;
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.RevenueTransactions.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                           && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters.ToDate));
 
                 totalTransactionsCount = result.Count();
-
             }
             catch (Exception ex)
             {
@@ -112,23 +108,25 @@
             DashboardDailyReservationCountByHour? dashboardDailyReservationCountByHour = new DashboardDailyReservationCountByHour();
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.Reservations.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
-                        && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.FromDate.AddDays(1))).ToList();
+                //Requirement is only for 1 DAY
+                filterParameters.ToDate = filterParameters.FromDate.AddDays(1);
+
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                        && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate));
 
                 //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.Value.TimeOfDay }).Select(g =>
+                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.TimeOfDay }).Select(g =>
                  new ReservationsForProductAndHour
                  {
                      Product = g.Key.ProductName,
                      Hour = g.Key.TimeOfDay,
                      ReservationCount = g.Sum(x => x.NoOfReservations)
-                 }).OrderBy(x => x.Hour);
+                 }).OrderBy(x => x.Hour).ToList();
 
                 //Group by Again for the UI Specifications
                 var fResult = from ReservationsForProductAndHour res in gResult
@@ -153,14 +151,13 @@
             DashboardMonthlyRevenueAndBudget? dashboardMonthlyRevenueAndBudget = new DashboardMonthlyRevenueAndBudget();
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsMonthlyRevenueAndBudgetData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsMonthlyRevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate));
 
                 //Group by Year and Month
                 var gResult = result.GroupBy(x => new { x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month }).Select(g =>
@@ -194,14 +191,13 @@
             try
             {
                 List<ParkingOccupancy> monthlyParkingOccupancyData = new List<ParkingOccupancy>();
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsMonthlyParkingOccupancyData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate));
 
                 //Group by Year and Month
                 IEnumerable<OccupancyByMonth> gResult = new List<OccupancyByMonth>();
@@ -216,7 +212,7 @@
                      });
                 }
 
-                for (DateTime monthStart = filterParameters.FromDate; monthStart < filterParameters.ToDate; monthStart = monthStart.AddMonths(1))
+                for (DateTime monthStart = filterParameters!.FromDate; monthStart < filterParameters.ToDate; monthStart = monthStart.AddMonths(1))
                 {
                     var currentYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year && x.Month == monthStart.Month);
                     var priorYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year - 1 && x.Month == monthStart.Month);
@@ -257,22 +253,21 @@
             DashboardMonthlyTransactionCount? dashboardMonthlyTransactionCount = new DashboardMonthlyTransactionCount();
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsMonthlyTransactionsData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsMonthlyTransactionsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate));
 
                 //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new {x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month, x.ProdutName }).Select(g =>
+                var gResult = result.GroupBy(x => new {x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month, x.ProductName }).Select(g =>
                  new TransactionsByMonthAndProduct
                  {
                      Year = g.Key.Year,
                      Month = g.Key.Month,
-                     ParkingProduct = g.Key.ProdutName,
+                     ParkingProduct = g.Key.ProductName,
                      TransactionCount = g.Sum( x => x.TransactionCount)
                  }).ToList();
 
@@ -285,7 +280,6 @@
                               };
 
                 dashboardMonthlyTransactionCount.MonthlyTransactions = fResults.OrderBy(x => x.Date);
-
             }
             catch (Exception ex)
             {
@@ -298,21 +292,20 @@
             DashboardMonthlyAverageTicketValue? dashboardMonthlyAverageTicketValue = new DashboardMonthlyAverageTicketValue();
             try
             {
-                using var context = _factory.CreateDbContext();
-
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                var result = context.InsightsAverageMonthlyTicketValueData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                var result = sqlContext.InsightsAverageMonthlyTicketValueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate)).ToList();
 
-                var fResult = from InsightsAverageMonthlyTicketValue data in result
+                var fResult =  from InsightsAverageMonthlyTicketValueSQL data in result
                          group data by new { data.FirstDayOfMonth.Year , data.FirstDayOfMonth.Month } into monthlyGroup
                          select new AverageTicketValueForMonth
                          {
                              Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1), //monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
-                             Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ProductName, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
+                             Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ProductName!, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
                          };
 
                 dashboardMonthlyAverageTicketValue.Response = fResult.OrderBy(x => x.Date);
