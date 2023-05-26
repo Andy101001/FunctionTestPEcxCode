@@ -39,10 +39,10 @@
             => _repository.TransactionRepository.GetRevenueByProductByDays(inputFilter);
         public Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam inputFilter)
             => _repository.TransactionRepository.GetRevenueVsBudget(inputFilter);
-        public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
-             => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
-        //public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
-        //    => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
+        //public Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
+        //     => _repository.TransactionRepository.GetTranactionByHours(inputFilter);
+        public Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+            => _repository.TransactionRepository.GetTransactionByDays(inputFilter);
         public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
         {
             var result = new List<CurrentAndPreviousYearMonthlyTransaction>();
@@ -82,12 +82,20 @@
             return result;
         }
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+
+
+        public async Task<IEnumerable<CurrentTransaction>> GetTranacionByHours(FilterParam inputFilter)
         {
-            var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+            var result = await _cosmosAccessService.GetTransactonByHours(inputFilter);
 
             return result;
         }
+        //public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam inputFilter)
+        //{
+        //    var result = await _cosmosAccessService.GetTransactonByDays(inputFilter);
+
+        //    return result;
+        //}
 
 
         #endregion
