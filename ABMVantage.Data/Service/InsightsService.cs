@@ -1,5 +1,6 @@
 ﻿namespace ABMVantage.Data.Service
 {
+    using ABMVantage.Data.Configuration;
     using ABMVantage.Data.DataAccess;
     using ABMVantage.Data.EntityModels.SQL;
     using ABMVantage.Data.Interfaces;
@@ -15,8 +16,9 @@
         private readonly ILogger<InsightsService> _logger;
         private readonly IDbContextFactory<CosmosDataContext> _factory;
         private readonly IDbContextFactory<SqlDataContextVTG> _sqlDataContextVTG;
+        private readonly InsightsServiceSettings _insightsServiceSettings;
 
-        public InsightsService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory, IDbContextFactory<SqlDataContextVTG> sqlDataContextVTG)
+        public InsightsService(ILoggerFactory loggerFactory, IRepository repository, IDbContextFactory<CosmosDataContext> factory, IDbContextFactory<SqlDataContextVTG> sqlDataContextVTG, InsightsServiceSettings insightsServiceSettings)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -24,6 +26,7 @@
             _repository = repository;
             _factory = factory;
             _sqlDataContextVTG = sqlDataContextVTG;
+            _insightsServiceSettings = insightsServiceSettings;
         }
         public async Task<DailyAverageOccupancy>? GetDailyAverageOccupancy(FilterParam? filterParameters)
         {
@@ -194,10 +197,13 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+                var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
+                var toDate = fromDate.AddMonths(_insightsServiceSettings.MonthlyOccupancyDataRange);
+
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                       && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate));
+                       && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate));
 
                 //Group by Year and Month
                 IEnumerable<OccupancyByMonth> gResult = new List<OccupancyByMonth>();
@@ -212,7 +218,7 @@
                      });
                 }
 
-                for (DateTime monthStart = filterParameters!.FromDate; monthStart < filterParameters.ToDate; monthStart = monthStart.AddMonths(1))
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
                 {
                     var currentYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year && x.Month == monthStart.Month);
                     var priorYearOccupancyByMonth = gResult.FirstOrDefault(x => x.Year == monthStart.Year - 1 && x.Month == monthStart.Month);
