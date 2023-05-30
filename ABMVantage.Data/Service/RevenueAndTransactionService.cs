@@ -47,7 +47,7 @@
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
+                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
                 dailyTransactionsList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek }).Select(g =>
                         new DailyTransaction
@@ -79,7 +79,7 @@
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
+                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
                 var result1 = result.GroupBy(x => new { x.TransactionDate.TimeOfDay }).Select(g =>
                           new CurrentTransaction
@@ -111,11 +111,26 @@
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
+                //Requirement: Show 13 month of data from todate
+                var fromMonth= Convert.ToInt32(parameters.FromDate.ToString("yyyyMM"));
+                var toMonth = Convert.ToInt32(parameters.FromDate.AddMonths(13).ToString("yyyyMM"));
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+
+                var budgetVariance2 = sqlContext.RevenueBudgetVsActualVarianceSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                   && products!.Contains(x.ProductId) && x.MonthId >= fromMonth && x.MonthId <= toMonth)
+                   .GroupBy(x => new { x.Month }).Select(g =>
+                       new BudgetVariance
+                       {
+                           Month = g.Key.Month,
+                           BgtVariance = g.Sum(x => x.Bgtvariance),
+                       }
+                       );
+
                 budgetVariance = sqlContext.RevenueBudgetVsActualVarianceSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId))
+                    && products!.Contains(x.ProductId) && x.MonthId>=fromMonth && x.MonthId <= toMonth)
                     .GroupBy(x => new { x.Month }).Select(g =>
                         new BudgetVariance
                         {
@@ -141,7 +156,7 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Requirement
+                //Requirement: show 7 days data
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
@@ -180,7 +195,7 @@
                 monthlyRevenueList = sqlContext.RevenuebydaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionId >= parameters.FromDate && x.TransactionId < parameters.ToDate)
+                  && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate)
                     .GroupBy(x => new { x.TransactionId.Month }).Select(g =>
                       new MonthlyRevenue
                       {
@@ -205,12 +220,15 @@
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
+               //Show only 24 hours of data
+                parameters.ToDate = parameters.FromDate.AddHours(24);
+
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 revenueByProductList = sqlContext.RevenuebydaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
-                    && x.TransactionId >= parameters.FromDate && x.TransactionId < parameters.ToDate)
+                    && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate)
                         .GroupBy(x => new { x.Product }).Select(g =>
                           new RevenueByProduct
                           {
@@ -241,7 +259,7 @@
                 revenueBudgetList = sqlContext.RevenueRevenueVsBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                  && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                  && products!.Contains(x.ProductId)
-                 && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate)
+                 && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
                     .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
                           new RevenueBudget
                           {
@@ -305,11 +323,13 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
+                parameters.ToDate = parameters.FromDate.AddMonths(13);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 transactionsByMonth = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                  && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                  && products!.Contains(x.ProductId)
-                 && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate)
+                 && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
                     .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
                        new MonthlyTransaction
                        {

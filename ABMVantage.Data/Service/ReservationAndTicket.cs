@@ -34,10 +34,14 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
+                //Requirement:  show the next 6 hours of reservations
+                parameters.FromDate=DateTime.Now;
+                parameters.ToDate = parameters.FromDate.AddHours(6);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByHourList = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId)).ToList()
+                    && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour <= parameters.ToDate).ToList()
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.TimeOfDay }).Select(g =>
                             new ReservationsByHour
                             {
@@ -61,10 +65,14 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
+                //Requirement: next 7 days of reservations (including current day) 
+                parameters.FromDate = DateTime.Today;
+                parameters.ToDate = parameters.FromDate.AddDays(7);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByDay = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId)).ToList()
+                    && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.DayOfWeek }).Select(g =>
                         new ReservationsByDay
                         {
@@ -90,10 +98,27 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
+                //Requirement: next 7 days of reservations (including current day) 
+                parameters.FromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                parameters.ToDate = parameters.FromDate.AddMonths(7);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+
+                var dtresult = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                   && products!.Contains(x.ProductId) && x.BeginningOfHour >= parameters.ToDate && x.BeginningOfHour <= parameters.ToDate)
+                   .GroupBy(x => new { x.BeginningOfHour.Year, x.BeginningOfHour.Month }).Select(g =>
+                        new ReservationAndTicketGroupedResult
+                        {
+                            Month = g.Key.Month,
+                            Year = g.Key.Year,
+                            NoOfReservations = g.Sum(x => x.NoOfReservations)
+                        }).ToList();
+
+
                 var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId))
+                   && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.ToDate && x.BeginningOfHour<=parameters.ToDate)
                    .GroupBy(x => new { x.BeginningOfHour.Year, x.BeginningOfHour.Month }).Select(g =>
                         new ReservationAndTicketGroupedResult
                         {

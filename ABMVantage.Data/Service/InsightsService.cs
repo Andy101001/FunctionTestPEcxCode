@@ -9,7 +9,9 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Buffers.Text;
     using System.Threading.Tasks;
+    using static System.Runtime.InteropServices.JavaScript.JSType;
 
     public class InsightsService : ServiceBase, IInsightsService
     {
@@ -37,6 +39,8 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+               // filterParameters.ToDate = filterParameters.FromDate.AddMonths(6);
+
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
@@ -44,12 +48,17 @@
                     && products!.Contains(x.ProductId)
                     && (x.Date >= filterParameters!.FromDate && x.Date < filterParameters.ToDate));
 
+                var sql= result.ToQueryString();
+
+                var data=result.ToList();
+
                 int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
                 int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
 
                 if (totalParkingSpaceCount > 0)
                 {
-                    dailyAverageOccupancy.AverageDailyOccupancyInteger = totalOccupiedParkingSpotHours / (totalParkingSpaceCount * 24) * totalParkingSpaceCount;
+                    var avdt = totalOccupiedParkingSpotHours / totalParkingSpaceCount * 24;
+                    dailyAverageOccupancy.AverageDailyOccupancyInteger = totalOccupiedParkingSpotHours / (totalParkingSpaceCount * 24)* totalParkingSpaceCount;
                     dailyAverageOccupancy.AverageDailyOccupancyPercentage = totalOccupiedParkingSpotHours / (totalParkingSpaceCount * 24) * 100;
                 }
             }
@@ -72,7 +81,7 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                         && (x.Day >= filterParameters!.FromDate && x.Day < filterParameters.ToDate));
+                         && (x.Day >= filterParameters!.FromDate && x.Day <= filterParameters.ToDate));
 
                 totalRevenue = result.Sum(x => x.TotalRevenue);
             }
@@ -157,6 +166,10 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+                //Charan
+                // show data for 7 months of data based on 'Start Date' filter.Full months of data should be shown regardless of date selected.
+                var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
+                filterParameters.ToDate = filterParameters.FromDate.AddMonths(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsMonthlyRevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
@@ -197,8 +210,10 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+
+                //should show data for 6 months based on the 'Start Date' filter. Full months of data should be shown regardless of date selected. 
                 var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
-                var toDate = fromDate.AddMonths(_insightsServiceSettings.MonthlyOccupancyDataRange);
+                var toDate = fromDate.AddMonths(6);
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
@@ -262,10 +277,14 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+                filterParameters!.FromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
+                filterParameters.ToDate= filterParameters!.FromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsMonthlyTransactionsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth < filterParameters.ToDate));
+                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth <= filterParameters.ToDate));
+
+                var sql = result.ToQueryString();
 
                 //Group by Product Name and Hour
                 var gResult = result.GroupBy(x => new {x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month, x.ProductName }).Select(g =>
@@ -284,6 +303,8 @@
                                   Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1),
                                   Data = monthlyGroup.Select(x => new TransactionsForProduct { NoOfTransactions = x.TransactionCount, Product = x.ParkingProduct })
                               };
+
+             
 
                 dashboardMonthlyTransactionCount.MonthlyTransactions = fResults.OrderBy(x => x.Date);
             }
