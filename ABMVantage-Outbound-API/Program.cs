@@ -85,6 +85,12 @@ namespace ABMVantage_Outbound_API
                     configuration.GetSection("SqlSettings").Bind(settings);
                 });
 
+                //Read Insights filter settings from configuration or local settings
+                builder.Services.AddOptions<InsightsServiceSettings>().Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("InsightsServiceSettings").Bind(settings);
+                });
+
                 //Read Dashboard function settings from configuration or local settings
                 builder.Services.AddOptions<DashboardFunctionSettings>().Configure<IConfiguration>((settings, configuration) =>
                 {
@@ -238,14 +244,22 @@ namespace ABMVantage_Outbound_API
                 var securitySettings = s.BuildServiceProvider().GetRequiredService<IOptions<SecuritySettings>>().Value;
                 var cosmosSettings = s.BuildServiceProvider().GetRequiredService<IOptions<CosmosSettings>>().Value;
                 var sqlSettings = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings>>().Value;
-                var dashboardSettings = s.BuildServiceProvider().GetRequiredService<IOptions<DashboardFunctionSettings>>().Value;
+                var insightsServiceSettings = s.BuildServiceProvider().GetRequiredService<IOptions<InsightsServiceSettings>>().Value;
+                var dashboardFunctionSettings = s.BuildServiceProvider().GetRequiredService<IOptions<DashboardFunctionSettings>>().Value;
                 var sqlSettingsVTG = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings_VTG>>().Value;
 
 
-                if (dashboardSettings != null)
+                if (insightsServiceSettings != null)
+                {
+                    s.AddScoped<InsightsServiceSettings, InsightsServiceSettings>(sp =>
+                        insightsServiceSettings
+                    );
+                }
+
+                if (dashboardFunctionSettings != null) 
                 {
                     s.AddScoped<DashboardFunctionSettings, DashboardFunctionSettings>(sp =>
-                        dashboardSettings
+                        dashboardFunctionSettings
                     );
                 }
 
