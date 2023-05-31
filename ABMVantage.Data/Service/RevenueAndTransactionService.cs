@@ -82,20 +82,21 @@
                   && products!.Contains(x.ProductId)
                   && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
-                var result1 = result.GroupBy(x => new { x.TransactionDate.TimeOfDay }).Select(g =>
+                var result1 = result.GroupBy(x => new { Hour = new DateTime(x.TransactionDate.Year, x.TransactionDate.Month, x.TransactionDate.Day, x.TransactionDate.Hour, 0,0) }).Select(g =>
                           new CurrentTransaction
                           {
-                              Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
+                              TimeOfDay = g.Key.Hour.TimeOfDay,
                               NoOfTransactions = Convert.ToDecimal(g.Count())
 
-                          });
+                          }).ToArray();
 
-                transactionsByHoursList = result1.GroupBy(x => new { x.Time }).Select(g =>
+                transactionsByHoursList = result1.GroupBy(x => new { x.TimeOfDay }).Select(g =>
                       new CurrentTransaction
                       {
-                          Time = g.Key.Time,
-                          NoOfTransactions = Convert.ToDecimal(g.Count())
-                      }).ToList();
+                          TimeOfDay = g.Key.TimeOfDay,
+                          Time = DateTime.Today.Add(g.Key.TimeOfDay).ToString("hh:mm tt"),
+                          NoOfTransactions = g.Sum(x => x.NoOfTransactions)
+                      }).OrderBy(x=>x.TimeOfDay).ToList();
             }
             catch (Exception ex)
             {
@@ -349,14 +350,14 @@
             return transactionsByMonth;
         }
 
-        private string GetHourAMPM(string hour)
+        /*private string GetHourAMPM(string hour)
         {
             string hourAMPM = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {hour}:00:00.000";
 
             var dt = DateTime.Parse(hourAMPM);
             return dt.ToString("hh:mm tt");
 
-        }
+        }*/
 
         #endregion Public Methods
     }

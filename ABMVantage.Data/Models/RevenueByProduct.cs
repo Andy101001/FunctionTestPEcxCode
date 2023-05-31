@@ -16,6 +16,7 @@
     {
         public string? Time { get; set; }
         public decimal NoOfTransactions { get; set; }
+        public TimeSpan TimeOfDay { get; set; }
     }
 
     public class DailyTransaction
