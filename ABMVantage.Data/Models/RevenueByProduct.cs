@@ -22,6 +22,7 @@
     {
         public string? WeekDay { get; set; }
         public decimal NoOfTransactions { get; set; }
+        public DateTime TransactionDate { get; internal set; }
     }
     public class StgDailyTransaction
     {

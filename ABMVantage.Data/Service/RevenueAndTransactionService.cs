@@ -49,12 +49,13 @@
                   && products!.Contains(x.ProductId)
                   && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
-                dailyTransactionsList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek }).Select(g =>
+                dailyTransactionsList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek, TransactionDate = x.TransactionDate.Date }).Select(g =>
                         new DailyTransaction
                         {
+                            TransactionDate= g.Key.TransactionDate,
                             WeekDay = g.Key.DayOfWeek.ToString(),
                             NoOfTransactions = Convert.ToDecimal(g.Count())
-                        }).ToList();
+                        }).OrderBy(x => x.TransactionDate).ToList();
             }
             catch (Exception ex)
             {
