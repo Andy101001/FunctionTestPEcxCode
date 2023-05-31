@@ -162,16 +162,16 @@
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.RevenuebydaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
-                     && x.TransactionId >= parameters.FromDate && x.TransactionId < parameters.ToDate).AsEnumerable();
+                     && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
 
-                revenueByDayList = result.GroupBy(x => new { x.TransactionId.DayOfWeek }).Select(g =>
+                revenueByDayList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek }).Select(g =>
                           new RevenueByDay
                           {
                               WeekDay = g.Key.DayOfWeek.ToString(),
-                              Revenue = g.Sum(x => x.Revenue)
+                              Revenue = g.Sum(x => x.Amount)
                           }).ToList();
             }
             catch (Exception ex)
@@ -194,15 +194,15 @@
                 parameters.ToDate = parameters.FromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                monthlyRevenueList = sqlContext.RevenuebydaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                monthlyRevenueList = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate)
-                    .GroupBy(x => new { x.TransactionId.Month }).Select(g =>
+                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
+                    .GroupBy(x => new { x.TransactionDate.Month }).Select(g =>
                       new MonthlyRevenue
                       {
                           Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
-                          Revenue = g.Sum(x => x.Revenue)
+                          Revenue = g.Sum(x => x.Amount)
                       }).ToList();
             }
             catch (Exception ex)
@@ -227,15 +227,15 @@
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                revenueByProductList = sqlContext.RevenuebydaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                revenueByProductList = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
-                    && x.TransactionId >= parameters.FromDate && x.TransactionId <= parameters.ToDate)
-                        .GroupBy(x => new { x.Product }).Select(g =>
+                    && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
+                        .GroupBy(x => new { x.ProductName }).Select(g =>
                           new RevenueByProduct
                           {
-                              Product = g.Key.Product,
-                              Revenue = g.Sum(x => x.Revenue)
+                              Product = g.Key.ProductName,
+                              Revenue = g.Sum(x => x.Amount)
                           }).ToList();
             }
             catch (Exception ex)
