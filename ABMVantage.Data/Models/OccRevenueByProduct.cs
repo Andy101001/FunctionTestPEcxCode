@@ -34,11 +34,20 @@
         public Int32 Occupancy { get; set; }
     }
 
+    public class YearlyOccupancyGroupedResult
+    {
+        public DateTime FirstDayOfMonth { get; set; }
+        public Int32 Occupancy { get; set; }
+    }
+
+
     public class OccVsDurationGroupedResult
     {
         public string? Duration { get; set; }
+
         public int Year { get; set; }
-        public int Month { get; set; }
+        public string Month { get; set; }
+
         public int NoOfVehicles { get; set; }
     }
 }

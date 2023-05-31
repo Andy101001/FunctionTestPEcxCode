@@ -133,21 +133,24 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-
+                var toDate = filterParameters!.ToDate;
+                var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < filterParameters.ToDate
+                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                      x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.Duration, x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
                          new OccVsDurationGroupedResult
                          {
                              Duration = g.Key.Duration,
                              Year = g.Key.Year,
-                             Month = g.Key.Month,
+                             Month = new DateTime (g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                              NoOfVehicles = g.Count()
                          });
 
-                List<string> durations = new List<string>() { "0 - 60 MINS", "1 - 3 HOURS", "4 - 8 HOURS", "9 - 12 HOURS", "GREATER THAN 12 HOURS" };
+                avgMonthlyOccVsDurationList = result.Select(x => new AvgMonthlyOccVsDuration { Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year  }).ToList();
+
+                /*List<string> durations = new List<string>() { "0 - 60 MINS", "1 - 3 HOURS", "4 - 8 HOURS", "9 - 12 HOURS", "GREATER THAN 12 HOURS" };
                 DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
                 for(var m = dt.Month; m <= 12; m++)
                 {
@@ -162,7 +165,7 @@
                         });
                     }
                     dt = dt.AddMonths(1);
-                }
+                }*/
             }
             catch (Exception ex)
             {
@@ -180,19 +183,37 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-
+                var toDate = filterParameters!.ToDate;
+                var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2978
+                
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < filterParameters.ToDate
-                      )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
-                         new OccVsDurationGroupedResult
-                         {
-                             Year = g.Key.Year,
-                             Month = g.Key.Month,
-                             NoOfVehicles = g.Count()
-                         });
 
+
+                var currentYearResult = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                      x.OccupancyEntryDateTimeUtc < toDate
+                      )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
+                         new YearlyOccupancyGroupedResult
+                         {
+                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
+                             Occupancy = g.Count()
+                         }).ToArray();
+
+                var previousYearResults = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                            && (x.OccupancyEntryDateTimeUtc >= fromDate.AddYears(-1) && x.OccupancyExitDateTimeUtc != null &&
+                            x.OccupancyEntryDateTimeUtc < toDate.AddYears(-1)         
+                         )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
+                         new YearlyOccupancyGroupedResult
+                         {
+                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
+                             Occupancy = g.Count()
+                         }).ToArray();
+
+                yearlyOccupancy = currentYearResult.Select(x => new YearlyOccupancy { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "CURRENT" }).ToList();
+                yearlyOccupancy.AddRange(previousYearResults.Select(x => new YearlyOccupancy { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "PREVIOUS" }).ToList());
+
+
+                /*
                 DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
                 DateTime dtTo = dt.AddYears(-1);
                 List<DateTime> fiscals = new List<DateTime>() { dt, dtTo };
@@ -211,6 +232,7 @@
                         fiscalDate = fiscalDate.AddMonths(1);
                     }
                 });
+                */
             }
             catch (Exception ex)
             {
