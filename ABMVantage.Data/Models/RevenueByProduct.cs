@@ -41,6 +41,7 @@
         public string? Month { get; set; }
         public decimal? Revenue { get; set; }
         public decimal? PreviousYearRevenue { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 
     public class MonthlyTransaction

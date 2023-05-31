@@ -199,9 +199,10 @@
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
                   && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
-                    .GroupBy(x => new { x.TransactionDate.Month }).Select(g =>
+                    .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
                       new MonthlyRevenue
                       {
+                          FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
                           Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
                           Revenue = g.Sum(x => x.Amount)
                       }).ToList();
@@ -211,7 +212,7 @@
                 string error = ex.Message;
             }
 
-            return monthlyRevenueList;
+            return monthlyRevenueList.OrderBy(x => x.FirstDayOfMonth);
         }
           
         public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam parameters)
