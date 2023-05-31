@@ -71,7 +71,7 @@
     {
         public string? WeekDay { get; set; }
         public decimal? Revenue { get; set; }
-       
+        public DateTime Day { get; internal set; }
     }
 
 }
