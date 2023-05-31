@@ -32,6 +32,8 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+                var toDate = filterParameters!.FromDate;
+                var fromDate = toDate.AddDays(-1);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 occRevenueByProductList = sqlContext.OccupancyRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
@@ -60,14 +62,13 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-
-                //As per Requirement only Weeks Data
-                filterParameters!.ToDate = filterParameters.FromDate.AddDays(7);
+                var toDate = filterParameters!.FromDate;
+                var fromDate = toDate.AddDays(-1);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 occWeeklyOccByDuration = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < filterParameters.ToDate
+                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                      x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.Duration }).Select(g =>
                  new OccWeeklyOccByDuration
                  {
@@ -88,8 +89,9 @@
             List<OccCurrent> occCurrent = new List<OccCurrent>();
             try
             {
-                //Based on the Requirement it should only take 1 DAY DATA
-                filterParameters!.ToDate = filterParameters.FromDate.AddDays(1);
+                //Requirement expressed by Arjun and captured in story 2976 the data is from the 24 hours preceding the start date
+                var toDate = filterParameters.FromDate;
+                var fromDate = toDate.AddDays(-1);
                     
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
@@ -97,8 +99,8 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.OccupancyEntryDateTimeUtc >= filterParameters!.FromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < filterParameters.ToDate
+                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                      x.OccupancyEntryDateTimeUtc < toDate
                       )).ToList();
              
                 var start = DateTime.Today;
@@ -133,7 +135,7 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                var toDate = filterParameters!.ToDate;
+                var toDate = filterParameters!.FromDate;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
@@ -183,7 +185,7 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                var toDate = filterParameters!.ToDate;
+                var toDate = filterParameters!.FromDate;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2978
                 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
