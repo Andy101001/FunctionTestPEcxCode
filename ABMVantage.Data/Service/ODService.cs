@@ -103,7 +103,7 @@
                       x.OccupancyEntryDateTimeUtc < toDate
                       )).ToList();
              
-                var start = DateTime.Today;
+                var start = fromDate;
                 var clockQuery = from offset in Enumerable.Range(0, 24)
                                  select start.AddMinutes(60 * offset);
                 foreach (var time in clockQuery)
