@@ -283,24 +283,27 @@
         public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
         {
             var result = new List<CurrentAndPreviousYearMonthlyTransaction>();
-            var currentYearFilter = inputFilter;
+            
             try
             {
+                var currentYearFilter = inputFilter;
+                currentYearFilter.FromDate = new DateTime(inputFilter.FromDate.Year, inputFilter.FromDate.Month, 1);
+                currentYearFilter.ToDate = currentYearFilter.FromDate.AddMonths(13);
                 var previousyearFilter = new FilterParam
                 {
-                    CustomerId = inputFilter.CustomerId,
-                    UserId = inputFilter.UserId,
-                    Facilities = inputFilter.Facilities,
-                    FromDate = inputFilter.FromDate.AddYears(-1),
-                    ToDate = inputFilter.ToDate.AddYears(-1),
-                    ParkingLevels = inputFilter.ParkingLevels,
-                    Products = inputFilter.Products
+                    CustomerId = currentYearFilter.CustomerId,
+                    UserId = currentYearFilter.UserId,
+                    Facilities = currentYearFilter.Facilities,
+                    FromDate = currentYearFilter.FromDate.AddYears(-1),
+                    ToDate = currentYearFilter.ToDate.AddYears(-1),
+                    ParkingLevels = currentYearFilter.ParkingLevels,
+                    Products = currentYearFilter.Products
                 };
 
                 var currentYearResults = await GetTransactonByMonth(currentYearFilter);
                 var previousYearResults = await GetTransactonByMonth(previousyearFilter);
 
-                for (DateTime monthStart = inputFilter.FromDate; monthStart <= inputFilter.ToDate; monthStart = monthStart.AddMonths(1))
+                for (DateTime monthStart = currentYearFilter.FromDate; monthStart <= currentYearFilter.ToDate; monthStart = monthStart.AddMonths(1))
                 {
                     var data = new CurrentAndPreviousYearMonthlyTransaction();
                     data.Month = monthStart.ToString("MMM");
