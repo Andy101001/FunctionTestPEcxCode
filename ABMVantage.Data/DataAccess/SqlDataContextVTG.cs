@@ -63,7 +63,9 @@ namespace ABMVantage.Data.DataAccess
         //Revenue and Transactions
         public DbSet<RevenueTransactionSQL> RevenueTransactionSQLData { get; set; }
         public DbSet<RevenueRevenueVsBudgetSQL> RevenueRevenueVsBudgetSQLData { get; set; }
-        public DbSet<RevenuebydaySQL> RevenuebydaySQLData { get; set; }
+        
+        //Removing this sql table because it has bad data. Replacing this table with RevenueTransactionSQL which has the same data without a bad join.
+        //public DbSet<RevenuebydaySQL> RevenuebydaySQLData { get; set; }
         public DbSet<RevenueBudgetVsActualVarianceSQL> RevenueBudgetVsActualVarianceSQLData { get; set; }
 
 

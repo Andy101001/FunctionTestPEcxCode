@@ -16,12 +16,14 @@
     {
         public string? Time { get; set; }
         public decimal NoOfTransactions { get; set; }
+        public TimeSpan TimeOfDay { get; set; }
     }
 
     public class DailyTransaction
     {
         public string? WeekDay { get; set; }
         public decimal NoOfTransactions { get; set; }
+        public DateTime TransactionDate { get; internal set; }
     }
     public class StgDailyTransaction
     {
@@ -39,6 +41,7 @@
         public string? Month { get; set; }
         public decimal? Revenue { get; set; }
         public decimal? PreviousYearRevenue { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 
     public class MonthlyTransaction
@@ -69,7 +72,7 @@
     {
         public string? WeekDay { get; set; }
         public decimal? Revenue { get; set; }
-       
+        public DateTime Day { get; internal set; }
     }
 
 }

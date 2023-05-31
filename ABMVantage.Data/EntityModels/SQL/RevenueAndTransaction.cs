@@ -16,7 +16,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("Id")]
         public int Id { get; set; }
 
-        [Column("FacilityId")]
+       [Column("FacilityId")]
         public string? FacilityId { get; set; }
 
         [Column("LevelId")]
@@ -30,6 +30,9 @@ namespace ABMVantage.Data.EntityModels.SQL
 
         [Column("Amount")]
         public decimal Amount { get; set; }
+
+        [Column("ProductName")]
+        public string ProductName { get; set; }
     }
 
 
