@@ -3,6 +3,7 @@ using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace ABMVantage.Data.Service
 {
@@ -190,9 +191,9 @@ namespace ABMVantage.Data.Service
                 var result = sqlContext.ReservationAvgTicketSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                    && products!.Contains(x.ProductId)
-                   && x.ReservedEntryDateTimeUtc >= parameters.FromDate && x.ReservedEntryDateTimeUtc < parameters.ToDate);
+                   && x.ReservedEntryDateTimeUtc >= fromDate && x.ReservedEntryDateTimeUtc < toDate).ToList();
 
-                var finalResult = result.GroupBy(x => new { x.ReservedEntryDateTimeUtc.TimeOfDay }).Select(g =>
+                var finalResult = result.GroupBy(x => new { TimeOfDay = new DateTime(x.ReservedEntryDateTimeUtc.Year, x.ReservedEntryDateTimeUtc.Month, x.ReservedEntryDateTimeUtc.Day,x.ReservedEntryDateTimeUtc.Hour, 0,0).TimeOfDay  }).Select(g =>
                     new ResAvgTicketValue
                     {
                         TimeOfDay = g.Key.TimeOfDay,
