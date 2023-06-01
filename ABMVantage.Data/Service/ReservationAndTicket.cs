@@ -36,20 +36,20 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 //Requirement:  show the next 6 hours of reservations
-                parameters.FromDate=DateTime.Now;
+                parameters.FromDate= new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0,0);
                 parameters.ToDate = parameters.FromDate.AddHours(6);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByHourList = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour <= parameters.ToDate).ToList()
-                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.TimeOfDay }).Select(g =>
+                    && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour < parameters.ToDate).ToList()
+                    .Select(g =>
                             new ReservationsByHour
                             {
-                                TimeOfDay = g.Key.TimeOfDay,
-                                Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
-                                NoOfReservations = g.Sum(x => x.NoOfReservations),
-                            }).OrderBy(x => x.TimeOfDay).ToList();
+                                BeginningOfHour = g.BeginningOfHour,
+                                Time = g.BeginningOfHour.ToString("hh:mm tt"),
+                                NoOfReservations = g.NoOfReservations
+                            }).OrderBy(x => x.BeginningOfHour).ToList();
             }
             catch (Exception ex)
             {
