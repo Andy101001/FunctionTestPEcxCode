@@ -40,6 +40,9 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<RevenuebydaySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueBudgetVsActualVarianceSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueAndBudgetSQL>().HasKey(c => c.Id);
+
+            //Other
+            modelBuilder.Entity<FacilityLevelProductSQL>().HasKey(c => c.Id);
         }
 
         //Insights
@@ -70,6 +73,8 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<RevenueBudgetVsActualVarianceSQL> RevenueBudgetVsActualVarianceSQLData { get; set; }
 
         public DbSet<RevenueAndBudgetSQL> RevenueAndBudgetSQLData { get; set; }
+
+        public DbSet<FacilityLevelProductSQL> FacilityLevelProductSQLData { get; set; }
 
 
 

@@ -41,6 +41,7 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
                // filterParameters.ToDate = filterParameters.FromDate.AddMonths(6);
 
+                
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
@@ -53,13 +54,16 @@
                 var data=result.ToList();
 
                 int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
-                int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
+                int totalAvailableSpaceHours = result.Sum(x => x.ParkingSpaceCount * 24);
+                int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
+                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) 
+                    && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
 
                 if (totalParkingSpaceCount > 0)
                 {
-                    var avdt = totalOccupiedParkingSpotHours / totalParkingSpaceCount * 24;
-                    dailyAverageOccupancy.AverageDailyOccupancyInteger = totalOccupiedParkingSpotHours / (totalParkingSpaceCount * 24)* totalParkingSpaceCount;
-                    dailyAverageOccupancy.AverageDailyOccupancyPercentage = totalOccupiedParkingSpotHours / (totalParkingSpaceCount * 24) * 100;
+                    //var avdt = totalOccupiedParkingSpotHours / totalParkingSpaceCount * 24;
+                    dailyAverageOccupancy.AverageDailyOccupancyInteger = Convert.ToInt32((decimal) totalOccupiedParkingSpotHours / (decimal) totalAvailableSpaceHours * (decimal) totalParkingSpaceCount);
+                    dailyAverageOccupancy.AverageDailyOccupancyPercentage = Convert.ToInt32((decimal) totalOccupiedParkingSpotHours / (decimal) totalAvailableSpaceHours * 100);
                 }
             }
             catch (Exception ex)
