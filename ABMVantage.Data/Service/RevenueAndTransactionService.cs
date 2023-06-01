@@ -297,7 +297,7 @@
                 var currentYearResults = await GetTransactonByMonth(currentYearFilter);
                 var previousYearResults = await GetTransactonByMonth(previousyearFilter);
 
-                for (DateTime monthStart = currentYearFilter.FromDate; monthStart <= currentYearFilter.ToDate; monthStart = monthStart.AddMonths(1))
+                for (DateTime monthStart = currentYearFilter.FromDate; monthStart < currentYearFilter.ToDate; monthStart = monthStart.AddMonths(1))
                 {
                     var data = new CurrentAndPreviousYearMonthlyTransaction();
                     data.Month = monthStart.ToString("MMM");
@@ -323,7 +323,7 @@
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
-
+                //to show 13 month of data, it 12 month to from date and 1 current month is alrady included.
                 parameters.ToDate = parameters.FromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
