@@ -24,7 +24,6 @@
     {
         public decimal? NoOfTransactions { get; set; }
         public string? Time { get; set; }
-        
-        public TimeSpan TimeOfDay { get; set; }
+        public DateTime Hour { get; internal set; }
     }
 }

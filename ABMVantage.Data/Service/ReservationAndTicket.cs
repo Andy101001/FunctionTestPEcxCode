@@ -193,12 +193,12 @@ namespace ABMVantage.Data.Service
                    && products!.Contains(x.ProductId)
                    && x.ReservedEntryDateTimeUtc >= fromDate && x.ReservedEntryDateTimeUtc < toDate).ToList();
 
-                var finalResult = result.GroupBy(x => new { TimeOfDay = new DateTime(x.ReservedEntryDateTimeUtc.Year, x.ReservedEntryDateTimeUtc.Month, x.ReservedEntryDateTimeUtc.Day,x.ReservedEntryDateTimeUtc.Hour, 0,0).TimeOfDay  }).Select(g =>
+                var finalResult = result.GroupBy(x => new { Hour = new DateTime(x.ReservedEntryDateTimeUtc.Year, x.ReservedEntryDateTimeUtc.Month, x.ReservedEntryDateTimeUtc.Day,x.ReservedEntryDateTimeUtc.Hour, 0,0) }).Select(g =>
                     new ResAvgTicketValue
                     {
-                        TimeOfDay = g.Key.TimeOfDay,
+                        Hour = g.Key.Hour,
                         NoOfTransactions = g.Average(x => x.Total),
-                        Time = g.Key.TimeOfDay.ToString("hh")
+                        Time = g.Key.Hour.ToString("hh:mm tt")
                     }).ToList();
 
                 resAvgTicketValue = finalResult.ToList();
@@ -209,7 +209,7 @@ namespace ABMVantage.Data.Service
                        NoOfTransactions = g.Average(x => x.NoOfTransactions)
                    }
                 );*/
-                resAvgTicketValue = finalResult.OrderBy(x=> x.TimeOfDay).ToList();
+                resAvgTicketValue = finalResult.OrderBy(x=> x.Hour).ToList();
             }
             catch (Exception ex)
             {
