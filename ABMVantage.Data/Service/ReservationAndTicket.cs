@@ -80,7 +80,7 @@ namespace ABMVantage.Data.Service
                         {
                             Date = g.Key.Date, 
                             WeekDay = g.Key.Date.DayOfWeek.ToString(),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations),
+                            NoOfReservations = g.Max(x => x.NoOfReservations),
                         }).OrderBy(x =>x.Date).ToList();
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ namespace ABMVantage.Data.Service
                         new ReservationAndTicketGroupedResult
                         {
                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations)
+                            NoOfReservations = g.Max(x => x.NoOfReservations)
                         }).ToList();
 
 
@@ -125,7 +125,7 @@ namespace ABMVantage.Data.Service
                         new ReservationAndTicketGroupedResult
                         {
                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations)
+                            NoOfReservations = g.Max(x => x.NoOfReservations)
                         }).ToList();
 
                 reservationsByMonthList = currentYearResult.Select(x => new ReservationsByMonth
