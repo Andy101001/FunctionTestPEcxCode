@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
 
     public class ODService : ServiceBase, IODService
@@ -144,13 +145,14 @@
                       )).GroupBy(x => new { x.Duration, x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
                          new OccVsDurationGroupedResult
                          {
+                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
                              Duration = g.Key.Duration,
                              Year = g.Key.Year,
                              Month = new DateTime (g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                              NoOfVehicles = g.Count()
-                         });
+                         }).ToList();
 
-                avgMonthlyOccVsDurationList = result.Select(x => new AvgMonthlyOccVsDuration { Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year  }).ToList();
+                avgMonthlyOccVsDurationList = result.Select(x => new AvgMonthlyOccVsDuration {FirstDayOfMonth = x.FirstDayOfMonth, Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year  }).ToList();
 
                 /*List<string> durations = new List<string>() { "0 - 60 MINS", "1 - 3 HOURS", "4 - 8 HOURS", "9 - 12 HOURS", "GREATER THAN 12 HOURS" };
                 DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
@@ -174,7 +176,7 @@
                 string error = ex.Message;
             }
 
-            return avgMonthlyOccVsDurationList;
+            return avgMonthlyOccVsDurationList.OrderBy(x=>x.FirstDayOfMonth);
         }
 
         public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam filterParameters)
@@ -211,10 +213,10 @@
                              Occupancy = g.Count()
                          }).ToArray();
 
-                yearlyOccupancy = currentYearResult.Select(x => new YearlyOccupancy { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "CURRENT" }).ToList();
-                yearlyOccupancy.AddRange(previousYearResults.Select(x => new YearlyOccupancy { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "PREVIOUS" }).ToList());
+                yearlyOccupancy = currentYearResult.Select(x => new YearlyOccupancy {FirstDayOfMonth = x.FirstDayOfMonth, Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "CURRENT" }).ToList();
+                yearlyOccupancy.AddRange(previousYearResults.Select(x => new YearlyOccupancy { FirstDayOfMonth = x.FirstDayOfMonth, Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "PREVIOUS" }).ToList());
 
-
+                
                 /*
                 DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
                 DateTime dtTo = dt.AddYears(-1);
@@ -241,7 +243,7 @@
                 string error = ex.Message;
             }
 
-            return yearlyOccupancy;
+            return yearlyOccupancy.OrderBy(x => x.FirstDayOfMonth);
         }
     }
 }

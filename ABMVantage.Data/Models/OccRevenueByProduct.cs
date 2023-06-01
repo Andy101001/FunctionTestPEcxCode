@@ -24,6 +24,7 @@
         public string Month { get; set; }
         public Int32 NoOfVehicles { get; set; }
         public string Duration { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 
     public class YearlyOccupancy
@@ -32,6 +33,7 @@
         public string Month { get; set; }
         public string Fiscal { get; set; }
         public Int32 Occupancy { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 
     public class YearlyOccupancyGroupedResult
@@ -49,5 +51,6 @@
         public string Month { get; set; }
 
         public int NoOfVehicles { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 }
