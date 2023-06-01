@@ -35,9 +35,12 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
+                var estDateTime = DateTime.UtcNow.AddHours(-4);
+
                 //Requirement:  show the next 6 hours of reservations
-                parameters.FromDate= new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0,0);
-                parameters.ToDate = parameters.FromDate.AddHours(6);
+                parameters.FromDate= new(estDateTime.Year, estDateTime.Month, estDateTime.Day, estDateTime.Hour, 0,0);
+                // it has to add 5 next hours to show 6 record in including 1 one current hour.
+                parameters.ToDate = estDateTime.AddHours(5);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByHourList = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
