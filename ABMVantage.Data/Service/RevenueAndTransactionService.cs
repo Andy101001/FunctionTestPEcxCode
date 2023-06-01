@@ -114,32 +114,24 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //Requirement: Show 13 month of data from todate
-                var fromMonth= Convert.ToInt32(parameters.FromDate.ToString("yyyyMM"));
-                var toMonth = Convert.ToInt32(parameters.FromDate.AddMonths(13).ToString("yyyyMM"));
+                var fromDate = new DateTime(parameters.FromDate.Year, parameters.FromDate.Month, 1);
+                var toDate = fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-                var budgetVariance2 = sqlContext.RevenueBudgetVsActualVarianceSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                budgetVariance = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId) && x.MonthId >= fromMonth && x.MonthId <= toMonth)
-                   .GroupBy(x => new { x.Month }).Select(g =>
+                   && products!.Contains(x.ProductId) && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth<= toDate)
+                   .GroupBy(x => x.FirstDayOfMonth).Select(g =>
                        new BudgetVariance
                        {
-                           Month = g.Key.Month,
-                           BgtVariance = g.Sum(x => x.Bgtvariance),
+                           FirstDayOfMonth = g.Key,
+                           Month = g.Key.ToString("MMM"),
+                           BgtVariance = ((g.Sum(x => x.Revenue)-g.Sum(x=>x.BudgetedRevenue))/ g.Sum(x => x.BudgetedRevenue)),
                        }
-                       );
+                       ).OrderBy(x => x.FirstDayOfMonth).ToList();
 
-                budgetVariance = sqlContext.RevenueBudgetVsActualVarianceSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId) && x.MonthId>=fromMonth && x.MonthId <= toMonth)
-                    .GroupBy(x => new { x.Month }).Select(g =>
-                        new BudgetVariance
-                        {
-                            Month = g.Key.Month,
-                            BgtVariance = g.Sum(x => x.Bgtvariance),
-                        }
-                        ).ToList();
+
 
             }
             catch (Exception ex)
@@ -257,20 +249,22 @@
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 //Only filter Past 7 Months of Data
-                parameters.ToDate = parameters.FromDate.AddMonths(7);
-
+                var fromDate = new DateTime(parameters.FromDate.Year, parameters.FromDate.Month, 1);
+                var toDate = fromDate.AddMonths(7);
+ 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                revenueBudgetList = sqlContext.RevenueRevenueVsBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                revenueBudgetList = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                  && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                  && products!.Contains(x.ProductId)
-                 && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
-                    .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
+                 && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)
+                    .GroupBy(x => x.FirstDayOfMonth).Select(g =>
                           new RevenueBudget
                           {
-                              Month = g.Key.Month.ToString(),
+                              FirstDayOfMonth = g.Key,
+                              Month = g.Key.ToString("MMM"),
                               BudgetedRevenue = g.Sum(x => x.BudgetedRevenue),
                               Revenue = g.Sum(x => x.Revenue)
-                          }).ToList();
+                          }).OrderBy(x => x.FirstDayOfMonth).ToList();
             }
             catch (Exception ex)
             {
