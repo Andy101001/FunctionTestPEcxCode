@@ -10,6 +10,7 @@
     {
         public string? Month { get; set; }
         public decimal? BgtVariance { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
 
     public class CurrentTransaction
@@ -67,6 +68,7 @@
         public string? Month { get; set; }
         public decimal? Revenue { get; set; }
         public decimal? BudgetedRevenue { get; set; }
+        public DateTime FirstDayOfMonth { get; internal set; }
     }
     public class RevenueByDay
     {
