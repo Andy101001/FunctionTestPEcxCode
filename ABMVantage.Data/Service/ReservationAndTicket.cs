@@ -188,20 +188,21 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.ReservationAvgTicketSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                    && products!.Contains(x.ProductId)
-                   && x.ReservedEntryDateTimeUtc >= fromDate && x.ReservedEntryDateTimeUtc < toDate).ToList();
+                   && x.BeginningOfHour >= fromDate && x.BeginningOfHour < toDate).Select(r =>
+                   new ResAvgTicketValue
+                   {
+                       Hour = r.BeginningOfHour,
+                       NoOfTransactions = (r.TotalTicketValue/r.NoOfReservations),
+                       Time = r.BeginningOfHour.ToString("hh:mm tt")
+                   }).OrderBy(x=>x.Hour);
 
-                var finalResult = result.GroupBy(x => new { Hour = new DateTime(x.ReservedEntryDateTimeUtc.Year, x.ReservedEntryDateTimeUtc.Month, x.ReservedEntryDateTimeUtc.Day,x.ReservedEntryDateTimeUtc.Hour, 0,0) }).Select(g =>
-                    new ResAvgTicketValue
-                    {
-                        Hour = g.Key.Hour,
-                        NoOfTransactions = g.Average(x => x.Total),
-                        Time = g.Key.Hour.ToString("hh:mm tt")
-                    }).ToList();
 
-                resAvgTicketValue = finalResult.ToList();
+
+
+                resAvgTicketValue = result.ToList();
                 /*var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
                     new ResAvgTicketValue    
                     {
@@ -209,7 +210,7 @@ namespace ABMVantage.Data.Service
                        NoOfTransactions = g.Average(x => x.NoOfTransactions)
                    }
                 );*/
-                resAvgTicketValue = finalResult.OrderBy(x=> x.Hour).ToList();
+   
             }
             catch (Exception ex)
             {
