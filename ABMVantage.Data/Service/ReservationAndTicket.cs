@@ -45,9 +45,10 @@ namespace ABMVantage.Data.Service
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.TimeOfDay }).Select(g =>
                             new ReservationsByHour
                             {
+                                TimeOfDay = g.Key.TimeOfDay,
                                 Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
                                 NoOfReservations = g.Sum(x => x.NoOfReservations),
-                            }).ToList();
+                            }).OrderBy(x => x.TimeOfDay).ToList();
             }
             catch (Exception ex)
             {
@@ -73,12 +74,13 @@ namespace ABMVantage.Data.Service
                 reservationsByDay = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
-                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.DayOfWeek }).Select(g =>
+                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
                         new ReservationsByDay
                         {
-                            WeekDay = g.Key.DayOfWeek.ToString(),
+                            Date = g.Key.Date, 
+                            WeekDay = g.Key.Date.DayOfWeek.ToString(),
                             NoOfReservations = g.Sum(x => x.NoOfReservations),
-                        }).ToList();
+                        }).OrderBy(x =>x.Date).ToList();
             }
             catch (Exception ex)
             {
@@ -127,6 +129,7 @@ namespace ABMVantage.Data.Service
 
                 reservationsByMonthList = currentYearResult.Select(x => new ReservationsByMonth
                 {
+                    FirstDayOfMonth = x.FirstDayOfMonth,
                     Fiscal = "CURRENT",
                     Year = x.FirstDayOfMonth.Year,
                     NoOfReservations = x.NoOfReservations,
@@ -135,6 +138,8 @@ namespace ABMVantage.Data.Service
 
                 reservationsByMonthList.AddRange(previousYearResult.Select(x => new ReservationsByMonth
                 {
+
+                    FirstDayOfMonth = x.FirstDayOfMonth,
                     Fiscal = "PREVIOUS",
                     Year = x.FirstDayOfMonth.Year,
                     NoOfReservations = x.NoOfReservations,
@@ -167,13 +172,14 @@ namespace ABMVantage.Data.Service
             {
                 string error = ex.Message;
             }
-            return reservationsByMonthList;
+            return reservationsByMonthList.OrderBy(x=>x.FirstDayOfMonth);
         }
 
         public async Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
         {
             IList<ResAvgTicketValue> resAvgTicketValue = null;
-
+            var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0);
+            var toDate = fromDate.AddDays(1);
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -189,19 +195,20 @@ namespace ABMVantage.Data.Service
                 var finalResult = result.GroupBy(x => new { x.ReservedEntryDateTimeUtc.TimeOfDay }).Select(g =>
                     new ResAvgTicketValue
                     {
+                        TimeOfDay = g.Key.TimeOfDay,
                         NoOfTransactions = g.Average(x => x.Total),
                         Time = g.Key.TimeOfDay.ToString("hh")
-                    });
+                    }).ToList();
 
                 resAvgTicketValue = finalResult.ToList();
-                var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
+                /*var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
                     new ResAvgTicketValue    
                     {
                        Time = GetHourAMPM(g.Key.Time),
                        NoOfTransactions = g.Average(x => x.NoOfTransactions)
                    }
-                );
-                resAvgTicketValue = result3.ToList();
+                );*/
+                resAvgTicketValue = finalResult.OrderBy(x=> x.TimeOfDay).ToList();
             }
             catch (Exception ex)
             {
