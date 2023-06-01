@@ -3,6 +3,7 @@ using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace ABMVantage.Data.Service
 {
@@ -35,19 +36,20 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 //Requirement:  show the next 6 hours of reservations
-                parameters.FromDate=DateTime.Now;
+                parameters.FromDate= new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0,0);
                 parameters.ToDate = parameters.FromDate.AddHours(6);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByHourList = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                    && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour <= parameters.ToDate).ToList()
-                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.TimeOfDay }).Select(g =>
+                    && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour < parameters.ToDate).ToList()
+                    .Select(g =>
                             new ReservationsByHour
                             {
-                                Time = GetHourAMPM(g.Key.TimeOfDay.ToString("hh")),
-                                NoOfReservations = g.Sum(x => x.NoOfReservations),
-                            }).ToList();
+                                BeginningOfHour = g.BeginningOfHour,
+                                Time = g.BeginningOfHour.ToString("hh:mm tt"),
+                                NoOfReservations = g.NoOfReservations
+                            }).OrderBy(x => x.BeginningOfHour).ToList();
             }
             catch (Exception ex)
             {
@@ -73,12 +75,13 @@ namespace ABMVantage.Data.Service
                 reservationsByDay = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
-                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.DayOfWeek }).Select(g =>
+                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
                         new ReservationsByDay
                         {
-                            WeekDay = g.Key.DayOfWeek.ToString(),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations),
-                        }).ToList();
+                            Date = g.Key.Date, 
+                            WeekDay = g.Key.Date.DayOfWeek.ToString(),
+                            NoOfReservations = g.Max(x => x.NoOfReservations),
+                        }).OrderBy(x =>x.Date).ToList();
             }
             catch (Exception ex)
             {
@@ -111,7 +114,7 @@ namespace ABMVantage.Data.Service
                         new ReservationAndTicketGroupedResult
                         {
                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations)
+                            NoOfReservations = g.Max(x => x.NoOfReservations)
                         }).ToList();
 
 
@@ -122,11 +125,12 @@ namespace ABMVantage.Data.Service
                         new ReservationAndTicketGroupedResult
                         {
                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations)
+                            NoOfReservations = g.Max(x => x.NoOfReservations)
                         }).ToList();
 
                 reservationsByMonthList = currentYearResult.Select(x => new ReservationsByMonth
                 {
+                    FirstDayOfMonth = x.FirstDayOfMonth,
                     Fiscal = "CURRENT",
                     Year = x.FirstDayOfMonth.Year,
                     NoOfReservations = x.NoOfReservations,
@@ -135,6 +139,8 @@ namespace ABMVantage.Data.Service
 
                 reservationsByMonthList.AddRange(previousYearResult.Select(x => new ReservationsByMonth
                 {
+
+                    FirstDayOfMonth = x.FirstDayOfMonth,
                     Fiscal = "PREVIOUS",
                     Year = x.FirstDayOfMonth.Year,
                     NoOfReservations = x.NoOfReservations,
@@ -167,13 +173,14 @@ namespace ABMVantage.Data.Service
             {
                 string error = ex.Message;
             }
-            return reservationsByMonthList;
+            return reservationsByMonthList.OrderBy(x=>x.FirstDayOfMonth);
         }
 
         public async Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
         {
             IList<ResAvgTicketValue> resAvgTicketValue = null;
-
+            var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0);
+            var toDate = fromDate.AddDays(1);
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -181,27 +188,29 @@ namespace ABMVantage.Data.Service
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.ReservationAvgTicketSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                    && products!.Contains(x.ProductId)
-                   && x.ReservedEntryDateTimeUtc >= parameters.FromDate && x.ReservedEntryDateTimeUtc < parameters.ToDate);
+                   && x.BeginningOfHour >= fromDate && x.BeginningOfHour < toDate).Select(r =>
+                   new ResAvgTicketValue
+                   {
+                       Hour = r.BeginningOfHour,
+                       NoOfTransactions = (r.TotalTicketValue/r.NoOfReservations),
+                       Time = r.BeginningOfHour.ToString("hh:mm tt")
+                   }).OrderBy(x=>x.Hour);
 
-                var finalResult = result.GroupBy(x => new { x.ReservedEntryDateTimeUtc.TimeOfDay }).Select(g =>
-                    new ResAvgTicketValue
-                    {
-                        NoOfTransactions = g.Average(x => x.Total),
-                        Time = g.Key.TimeOfDay.ToString("hh")
-                    });
 
-                resAvgTicketValue = finalResult.ToList();
-                var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
+
+
+                resAvgTicketValue = result.ToList();
+                /*var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
                     new ResAvgTicketValue    
                     {
                        Time = GetHourAMPM(g.Key.Time),
                        NoOfTransactions = g.Average(x => x.NoOfTransactions)
                    }
-                );
-                resAvgTicketValue = result3.ToList();
+                );*/
+   
             }
             catch (Exception ex)
             {
