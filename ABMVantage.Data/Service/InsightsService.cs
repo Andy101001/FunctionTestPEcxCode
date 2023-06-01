@@ -219,11 +219,15 @@
                 //should show data for 6 months based on the 'Start Date' filter. Full months of data should be shown regardless of date selected. 
                 var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
                 var toDate = fromDate.AddMonths(6);
-
-
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+
+                int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
+
+
                 var result = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                       && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate));
+                       && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate)).ToList();
 
                 //Group by Year and Month
                 IEnumerable<OccupancyByMonth> gResult = new List<OccupancyByMonth>();
@@ -233,8 +237,8 @@
                      {
                          Year = g.Key.Year,
                          Month =  g.Key.Month,
-                         OccupancyInteger =  ((g.Sum(x => x.TotalOccupancy) / g.Sum(x => x.ParkingSpaceCount * x.NoOFDaysInMonth * 24)) * g.Sum(x => x.ParkingSpaceCount)),
-                         OccupancyPercentage = (g.Sum(x => x.TotalOccupancy) / g.Sum(x => x.ParkingSpaceCount * x.NoOFDaysInMonth * 24)) * 100,
+                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancy) / ((decimal) (totalParkingSpaceCount * g.First().NoOFDaysInMonth * 24)) * ((decimal) totalParkingSpaceCount)),
+                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancy)) / ((decimal) (totalParkingSpaceCount * g.First().NoOFDaysInMonth * 24)) * 100)
                      });
                 }
 
