@@ -54,11 +54,12 @@
                 var data=result.ToList();
 
                 int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
-                int totalAvailableSpaceHours = result.Sum(x => x.ParkingSpaceCount * 24);
+                
                 int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) 
                     && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
-
+                TimeSpan filterRange = filterParameters!.ToDate - filterParameters.FromDate;
+                int totalAvailableSpaceHours = totalParkingSpaceCount * filterRange.Days * 24;
                 if (totalParkingSpaceCount > 0)
                 {
                     //var avdt = totalOccupiedParkingSpotHours / totalParkingSpaceCount * 24;
