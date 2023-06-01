@@ -32,6 +32,8 @@ namespace ABMVantage.Data.EntityModels.SQL
 
         [Column("NoOfReservations")]
         public int NoOfReservations { get; set; }
+        [Column("TotalTicketValue")]
+        public decimal TotalTicketValue { get; set; }
     }
 
 
