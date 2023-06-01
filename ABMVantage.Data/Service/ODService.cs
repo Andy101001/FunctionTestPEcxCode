@@ -3,6 +3,7 @@
     using ABMVantage.Data.DataAccess;
     using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Models.DashboardModels;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System;
@@ -100,24 +101,22 @@
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < toDate
+                      x.OccupancyEntryDateTimeUtc <= toDate
                       )).ToList();
-             
-                var start = fromDate;
-                var clockQuery = from offset in Enumerable.Range(0, 24)
-                                 select start.AddMinutes(60 * offset);
-                foreach (var time in clockQuery)
-                {
-                    DateTime tempTime = time.AddHours(1);
-                    var fResult = result.FindAll(x => TimeSpan.Compare(x.OccupancyEntryDateTimeUtc!.Value.TimeOfDay, time.TimeOfDay) > 0
-                    && TimeSpan.Compare(x.OccupancyExitDateTimeUtc!.Value.TimeOfDay, tempTime.TimeOfDay) < 0);
 
-                    occCurrent.Add(new OccCurrent()
-                    {
-                        Time = time.ToString("hh:mm tt"),
-                        NoOfOccupiedParking = (fResult != null && fResult.Count() > 0) ? fResult.Count() : 0, 
-                    });
-                }
+                //Group by Hour
+                var gResult = result.GroupBy(x => new { x.OccupancyEntryDateTimeUtc.Value.Hour }).Select(g =>
+                 new OccCurrent
+                 {
+                     MonthInt= g.Key.Hour,
+                     Time = GetHourAMPM(g.Key.Hour),
+                    NoOfOccupiedParking= g.Count()
+                    
+                 }).ToList();
+
+                occCurrent = gResult.OrderBy(x => x.MonthInt).ToList();
+
+               
             }
             catch (Exception ex)
             {
@@ -242,6 +241,13 @@
             }
 
             return yearlyOccupancy;
+        }
+        private string GetHourAMPM(int hour)
+        {
+            string hourAMPM = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {hour}:00:00.000";
+
+            var dt = DateTime.Parse(hourAMPM);
+            return dt.ToString("hh:mm tt");
         }
     }
 }

@@ -16,6 +16,7 @@
     {
         public string Time { get; set; }
         public Int32 NoOfOccupiedParking { get; set; }
+        public int MonthInt { get; set; }
     }
 
     public class AvgMonthlyOccVsDuration
