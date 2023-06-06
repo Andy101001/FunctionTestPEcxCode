@@ -36,7 +36,34 @@ namespace ABMVantage.Data.EntityModels.SQL
         public decimal TotalTicketValue { get; set; }
     }
 
+    [Table("ReservationsSpanningHour")]
+    public class ReservationSpanningHourSQL
+    {
+        [Key]
+        [Column("Id")]
+        public int Id { get; set; }
 
+        [Column("FacilityId")]
+        public string? FacilityId { get; set; }
+
+        [Column("LevelId")]
+        public string? LevelId { get; set; }
+
+        [Column("ProductId")]
+        public int ProductId { get; set; }
+
+        [Column("ProductName")]
+        public string? ProductName { get; set; }
+
+        [Column("BeginningOfHour")]
+        public DateTime BeginningOfHour { get; set; }
+
+        [Column("NoOfReservations")]
+        public int NoOfReservations { get; set; }
+
+    }
+
+    /*
     [Table("ReservationAvgTicket")]
     public class ReservationAvgTicketSQL
     {
@@ -59,4 +86,5 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("Total")]
         public decimal Total { get; set; }
     }
+    */
 }

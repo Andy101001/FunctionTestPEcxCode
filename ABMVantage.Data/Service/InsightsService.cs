@@ -130,12 +130,12 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
                 //Requirement is only for 1 DAY
-                filterParameters.ToDate = filterParameters.FromDate.AddDays(1);
+                filterParameters!.ToDate = filterParameters.FromDate.AddDays(1);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                var result = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
                         && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate));
-
+                
                 //Group by Product Name and Hour
                 var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.TimeOfDay }).Select(g =>
                  new ReservationsForProductAndHour
@@ -144,7 +144,7 @@
                      Hour = g.Key.TimeOfDay,
                      ReservationCount = g.Sum(x => x.NoOfReservations)
                  }).OrderBy(x => x.Hour).ToList();
-
+                
                 //Group by Again for the UI Specifications
                 var fResult = from ReservationsForProductAndHour res in gResult
                                 group res by res.Hour into hourlyGroup 
@@ -154,6 +154,7 @@
                               Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product! })
                           };
                 //dashboardDailyReservationCountByHour.ReservationsByHour = fResult.OrderBy(x => x.ReservationDateTime).ToList();
+                
                  dashboardDailyReservationCountByHour.ReservationsByHour = fResult;
             }
             catch (Exception ex)

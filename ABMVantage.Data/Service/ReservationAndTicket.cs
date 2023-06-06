@@ -75,7 +75,7 @@ namespace ABMVantage.Data.Service
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                reservationsByDay = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                reservationsByDay = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
@@ -117,7 +117,7 @@ namespace ABMVantage.Data.Service
                         new ReservationAndTicketGroupedResult
                         {
                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Max(x => x.NoOfReservations)
+                            NoOfReservations = g.Sum(x => x.NoOfReservations)
                         }).ToList();
 
 
