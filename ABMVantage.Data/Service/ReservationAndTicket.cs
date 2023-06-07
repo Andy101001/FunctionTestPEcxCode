@@ -35,7 +35,7 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                var estDateTime = DateTime.UtcNow.AddHours(-4);
+                var estDateTime = DateTime.UtcNow.AddHours(-4); //The from date is being converted to the current hour EST. This is a temporary hack until we decide how we are doing to manage date times.
 
                 //Requirement:  show the next 6 hours of reservations
                 parameters.FromDate= new(estDateTime.Year, estDateTime.Month, estDateTime.Day, estDateTime.Hour, 0,0);
@@ -182,7 +182,8 @@ namespace ABMVantage.Data.Service
         public async Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
         {
             IList<ResAvgTicketValue> resAvgTicketValue = null;
-            var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0);
+            var currentDateTimeEst = DateTime.UtcNow.AddHours(-4);
+            var fromDate = new DateTime(currentDateTimeEst.Year, currentDateTimeEst.Month, currentDateTimeEst.Day, currentDateTimeEst.Hour, 0, 0);
             var toDate = fromDate.AddDays(1);
             try
             {
