@@ -63,9 +63,8 @@ namespace ABMVantage.Data.EntityModels.SQL
 
     }
 
-    /*
-    [Table("ReservationAvgTicket")]
-    public class ReservationAvgTicketSQL
+    [Table("ReservationsSpanningMonth")]
+    public class ReservationSpanningMonthSQL
     {
         [Key]
         [Column("Id")]
@@ -80,11 +79,14 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("ProductId")]
         public int ProductId { get; set; }
 
-        [Column("ReservedEntryDateTimeUtc")]
-        public DateTime ReservedEntryDateTimeUtc { get; set; }
+        [Column("ProductName")]
+        public string? ProductName { get; set; }
 
-        [Column("Total")]
-        public decimal Total { get; set; }
+        [Column("BeginningOfMonth")]
+        public DateTime BeginningOfMonth { get; set; }
+
+        [Column("NoOfReservations")]
+        public int NoOfReservations { get; set; }
+
     }
-    */
 }

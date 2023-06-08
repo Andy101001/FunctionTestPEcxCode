@@ -29,7 +29,7 @@ namespace ABMVantage.Data.DataAccess
             //Reservations
             modelBuilder.Entity<ReservationSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<ReservationSpanningHourSQL>().HasKey(c => c.Id);
-            //modelBuilder.Entity<ReservationAvgTicketSQL>().HasKey(c => c.Id);
+            modelBuilder.Entity<ReservationSpanningMonthSQL>().HasKey(c => c.Id);
             
             //Occupancy and Duration
             modelBuilder.Entity<OccupancyVsDurationSQL>().HasKey(c => c.Id);
@@ -61,7 +61,7 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<ReservationSQL> ReservationsSQLData { get; set; }
         public DbSet<ReservationSpanningHourSQL> ReserationsSpanningHourSQLData { get; set; }
         
-        //public DbSet<ReservationAvgTicketSQL> ReservationAvgTicketSQLData { get; set; }
+        public DbSet<ReservationSpanningMonthSQL> ReservationsSpanningMonthSQLData { get; set; }
 
         //Occupancy
         public DbSet<OccupancyRevenueSQLData> OccupancyRevenueSQLData { get; set; }
