@@ -104,32 +104,34 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Requirement: next 7 days of reservations (including current day) 
+                //Requirement: next
                 var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
                 var toDate = fromDate.AddMonths(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-                var currentYearResult = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var currentYearResult = sqlContext.ReservationsSpanningMonthSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId) && x.BeginningOfHour >= fromDate && x.BeginningOfHour <= toDate)
-                   .GroupBy(x => new { x.BeginningOfHour.Year, x.BeginningOfHour.Month }).Select(g =>
+                   && products!.Contains(x.ProductId) && x.BeginningOfMonth >= fromDate && x.BeginningOfMonth <= toDate)
+                   .Select(x =>
                         new ReservationAndTicketGroupedResult
                         {
-                            FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Sum(x => x.NoOfReservations)
-                        }).ToList();
+                            FirstDayOfMonth = x.BeginningOfMonth,
+                            NoOfReservations = x.NoOfReservations
+                        }
+                   ).ToList();
 
 
-                var previousYearResult = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var previousYearResult = sqlContext.ReservationsSpanningMonthSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId) && x.BeginningOfHour>=fromDate.AddYears(-1) && x.BeginningOfHour<=toDate.AddYears(-1))
-                   .GroupBy(x => new { x.BeginningOfHour.Year, x.BeginningOfHour.Month }).Select(g =>
+                   && products!.Contains(x.ProductId) && x.BeginningOfMonth >=fromDate.AddYears(-1) && x.BeginningOfMonth <=toDate.AddYears(-1))
+                 .Select(x =>
                         new ReservationAndTicketGroupedResult
                         {
-                            FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                            NoOfReservations = g.Max(x => x.NoOfReservations)
-                        }).ToList();
+                            FirstDayOfMonth = x.BeginningOfMonth,
+                            NoOfReservations = x.NoOfReservations
+                        }
+                   ).ToList();
 
                 reservationsByMonthList = currentYearResult.Select(x => new ReservationsByMonth
                 {
@@ -150,27 +152,6 @@ namespace ABMVantage.Data.Service
                     Month = x.FirstDayOfMonth.ToString("MMM")
                 }));
 
-
-/*
-                DateTime dt = new DateTime(parameters!.ToDate.Year, 1, 1);
-                DateTime dtTo = dt.AddYears(-1);
-                List<DateTime> fiscals = new List<DateTime>() { dt, dtTo };
-                fiscals.ForEach(fiscalDate =>
-                {
-                    for (var m = fiscalDate.Month; m <= 12; m++)
-                    {
-                        var matchFound = result.FirstOrDefault(x => x.Year == fiscalDate.Year && x.Month == m);
-                        reservationsByMonthList.Add(new ReservationsByMonth
-                        {
-                            Fiscal = fiscalDate.Year == parameters!.ToDate.Year ? "CURRENT" : "PREVIOUS",
-                            Year = fiscalDate.Year,
-                            NoOfReservations = matchFound != null ? matchFound.NoOfReservations : 0,
-                            Month = fiscalDate.ToString("MMM")
-                        });
-                        fiscalDate = fiscalDate.AddMonths(1);
-                    }
-                });
-                */
             }
             catch (Exception ex)
             {
