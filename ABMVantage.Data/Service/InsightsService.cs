@@ -8,6 +8,8 @@
     using ABMVantage.Data.Models.DashboardModels;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
+    using StackExchange.Redis;
     using System;
     using System.Buffers.Text;
     using System.Threading.Tasks;
@@ -84,6 +86,14 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+
+                //ADO Item: 3983 Dated: 06/09/2023
+                //Description: Data on tile to reflect the previous 24 hours based on from date selected.
+                //ex.From date = 11 / 1 / 2023 then the value on the card should be 10 / 31 / 2023(midnight to midnight)
+
+                filterParameters!.ToDate = filterParameters!.FromDate.Date;
+                filterParameters!.FromDate = filterParameters!.FromDate.Date.AddDays(-1);
+               
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
