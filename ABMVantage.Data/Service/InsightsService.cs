@@ -178,10 +178,18 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                //Charan
-                // show data for 7 months of data based on 'Start Date' filter.Full months of data should be shown regardless of date selected.
+
+                //Charan Dated:06/09/2023
+                // Time frame should look at most 12 months based on date range selected.
+                //If less than 12 months is selected then only show those months.
                 var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
-                filterParameters.ToDate = filterParameters.FromDate.AddMonths(7);
+                if ((filterParameters.ToDate.Subtract(filterParameters!.FromDate).TotalDays) > (12*30))
+                {
+                    //adding 11 month + 1 current date month
+                    filterParameters.ToDate = filterParameters!.FromDate.AddMonths(11);
+                }
+
+                int monthInDateInetval = Convert.ToInt32((filterParameters.ToDate - filterParameters!.FromDate).TotalDays / 12);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
@@ -197,14 +205,33 @@
                      BudgetedRevenue = g.Sum(x => x.BudgetedRevenue)
                  }).ToList();
 
+                var diff = Enumerable.Range(0, Int32.MaxValue)
+                     .Select(e => filterParameters!.FromDate.AddMonths(e))
+                     .TakeWhile(e => e <= filterParameters.ToDate)
+                     .Select(e => new { e.Date});
+
                 var fResult = from RevenueAndBudgetForMonth rnb in gResult
                                 select new RevenueAndBudget
                                 {
                                     Date = new DateTime(rnb.Year, rnb.Month, 1),
                                     Revenue = rnb.Revenue,
                                     BudgetedRevenue = rnb.BudgetedRevenue
-                                    };
-                dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget = fResult.OrderBy(x => x.Date);
+                                 };
+                dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget = fResult.OrderBy(x => x.Date).ToList();
+
+                foreach (var item in diff)
+                {
+                    if (!(dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget.Where(x => x.Date.Month == item.Date.Month).Count()>0))
+                    {
+                        dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget.Add(new RevenueAndBudget
+                        {
+
+                            Date = item.Date,
+                            BudgetedRevenue=0,
+                            Revenue=0
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {

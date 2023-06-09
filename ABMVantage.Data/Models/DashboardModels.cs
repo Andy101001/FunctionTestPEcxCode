@@ -38,7 +38,7 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class DashboardMonthlyRevenueAndBudget
     {
-        public IEnumerable<RevenueAndBudget> MonthlyRevenueAndBudget { get; set; } = new List<RevenueAndBudget>();
+        public IList<RevenueAndBudget> MonthlyRevenueAndBudget { get; set; } = new List<RevenueAndBudget>();
     }
 
     public class RevenueAndBudgetForMonth
