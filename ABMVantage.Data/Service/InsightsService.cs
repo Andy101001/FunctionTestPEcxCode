@@ -108,9 +108,14 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
+                //Calculation is confirmed to be based on last 24 hours based on from date (looking backward)
+                //ADO Item:3982
+                filterParameters.ToDate = new DateTime(filterParameters.FromDate.Year, filterParameters.FromDate.Month, filterParameters.FromDate.Day);
+                filterParameters.FromDate = filterParameters.ToDate.AddDays(-1);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                          && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters.ToDate));
+                          && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters!.ToDate));
 
                 totalTransactionsCount = result.Count();
             }
