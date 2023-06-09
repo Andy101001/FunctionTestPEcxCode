@@ -39,7 +39,8 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-               // filterParameters.ToDate = filterParameters.FromDate.AddMonths(6);
+                var fromDate = filterParameters!.FromDate.AddDays(-1);
+                var toDate = filterParameters.FromDate;
 
                 
 
@@ -47,7 +48,7 @@
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
-                    && (x.Date >= filterParameters!.FromDate && x.Date < filterParameters.ToDate));
+                    && (x.Date >= fromDate && x.Date < toDate));
 
                 var sql= result.ToQueryString();
 
@@ -58,7 +59,7 @@
                 int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) 
                     && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
-                TimeSpan filterRange = filterParameters!.ToDate - filterParameters.FromDate;
+                TimeSpan filterRange = toDate - fromDate;
                 int totalAvailableSpaceHours = totalParkingSpaceCount * filterRange.Days * 24;
                 if (totalParkingSpaceCount > 0)
                 {
