@@ -331,6 +331,12 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
                 filterParameters!.FromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
+                
+                //ADO Item: 4018
+                //Description: AC8: If the end user inputs a date range exceeding 13 months, the chart should display 13 months of data
+                //starting from the selected start date. For example, if the user selects a date range of > 13 months,
+                //the chart should only display data for the first 13 months of the selected range.
+
                 filterParameters.ToDate= filterParameters!.FromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
