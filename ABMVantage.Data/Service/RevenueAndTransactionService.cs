@@ -73,8 +73,9 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Requirement is only to get last 24 Hours of DATA from Start Date
-                parameters.ToDate = parameters.FromDate.AddDays(1);
+                //Requirement is only to get last 13 Hours of DATA from Start Date
+                //ADO Item: 4008
+                parameters.ToDate = parameters.FromDate.AddHours(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
@@ -248,9 +249,10 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Only filter Past 7 Months of Data
+                //ADO Item: 4003
+                //13 months based on from date
                 var fromDate = new DateTime(parameters.FromDate.Year, parameters.FromDate.Month, 1);
-                var toDate = fromDate.AddMonths(7);
+                var toDate = fromDate.AddMonths(13);
  
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 revenueBudgetList = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
