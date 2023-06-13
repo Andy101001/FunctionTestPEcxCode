@@ -150,28 +150,66 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
-                        && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate));
-                
-                //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new { x.ProductName, x.BeginningOfHour.TimeOfDay }).Select(g =>
-                 new ReservationsForProductAndHour
-                 {
-                     Product = g.Key.ProductName,
-                     Hour = g.Key.TimeOfDay,
-                     ReservationCount = g.Sum(x => x.NoOfReservations)
-                 }).OrderBy(x => x.Hour).ToList();
-                
+                        && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate)).ToList();
+
+
+                //Create a nested grouping by time of day and product
+                var resultWithNestedGroupingByTimeOfDayAndProduct = result.GroupBy(x => x.BeginningOfHour).Select(g =>
+                new HourlyReservationCount
+                {
+                    ReservationDateTime = g.Key,
+                    Data = g.GroupBy(x => x.ProductName).Select(sg => new ReservationsByProduct { Product = sg.Key ?? string.Empty, NoOfReservations = sg.Sum(x => x.NoOfReservations) })
+                });
+
+                var resultWithGroupingAndZerosForMissingData = new List<HourlyReservationCount>();
+                var hoursInDay = Enumerable.Range(0, 24).Select(x => TimeSpan.FromHours(x));
+                foreach (var hour in hoursInDay)
+                {
+                    var resultItem = resultWithNestedGroupingByTimeOfDayAndProduct.Where(x => x.ReservationDateTime.TimeOfDay == hour).FirstOrDefault();
+                    if (resultItem == null)
+                    {
+                        resultItem = new HourlyReservationCount
+                        {
+                            ReservationDateTime = new DateTime() + hour,
+                            Data = filterParameters.Products.Select(x => new ReservationsByProduct { NoOfReservations = 0, Product = x.Name }),
+                        };
+                    }
+                    else
+                    {
+                        var reservationsByProduct = resultItem.Data.ToList();
+                        foreach(var product in filterParameters.Products)
+                        {
+                            var reservationByProduct = reservationsByProduct.Where(x => x.Product == product.Name).FirstOrDefault();
+                            if (reservationByProduct == null)
+                            {
+                                reservationsByProduct.Add(new ReservationsByProduct {  Product = product.Name, NoOfReservations = 0 });
+                            }
+                        }
+                        resultItem.Data = reservationsByProduct;
+                    }
+                    resultWithGroupingAndZerosForMissingData.Add(resultItem);
+
+                }
+
+
+                /*
                 //Group by Again for the UI Specifications
-                var fResult = from ReservationsForProductAndHour res in gResult
+                var resultWithGroupingForUI = from ReservationsForProductAndHour res in resultByProductNameAndTimeOfDay
                                 group res by res.Hour into hourlyGroup 
                           select new HourlyReservationCount
                           {
                               ReservationDateTime =  new DateTime() + hourlyGroup.Key,
                               Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product! })
                           };
+
+                */
+
+
+
+
                 //dashboardDailyReservationCountByHour.ReservationsByHour = fResult.OrderBy(x => x.ReservationDateTime).ToList();
-                
-                 dashboardDailyReservationCountByHour.ReservationsByHour = fResult;
+
+                dashboardDailyReservationCountByHour.ReservationsByHour = resultWithGroupingAndZerosForMissingData;
             }
             catch (Exception ex)
             {
