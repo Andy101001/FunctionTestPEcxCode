@@ -332,7 +332,7 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
                 filterParameters!.FromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
                 
-                //ADO Item: 4018
+                //ADO Item: 4018, 3993
                 //Description: AC8: If the end user inputs a date range exceeding 13 months, the chart should display 13 months of data
                 //starting from the selected start date. For example, if the user selects a date range of > 13 months,
                 //the chart should only display data for the first 13 months of the selected range.
@@ -381,6 +381,12 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
+
+                //ADO:3996 Insights - Avg Ticket Value
+                //The visual will look back 13 months based on the month of the current day (inclusive of the current month).
+
+                filterParameters!.ToDate= new DateTime(filterParameters!.FromDate.Year, filterParameters!.ToDate.Month, 1);
+                filterParameters!.FromDate = filterParameters!.ToDate.AddMonths(-13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsAverageMonthlyTicketValueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
