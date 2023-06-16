@@ -281,9 +281,13 @@
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
-                //should show data for 6 months based on the 'Start Date' filter. Full months of data should be shown regardless of date selected. 
+                //If more than a 6 month date range is given, then this api should return
+                //Full months of data should be shown regardless of date selected. 
                 var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
-                var toDate = fromDate.AddMonths(6);
+                var toDate = new DateTime(filterParameters.ToDate.Year, filterParameters.ToDate.Month, 1).AddMonths(1);
+                var monthlyInterval = (toDate.Year - fromDate.Year) * 12 + (toDate.Month - fromDate.Month);
+                toDate = monthlyInterval < 6 ? toDate : fromDate.AddMonths(6);
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
                 int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
