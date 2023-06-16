@@ -191,24 +191,6 @@
 
                 }
 
-
-                /*
-                //Group by Again for the UI Specifications
-                var resultWithGroupingForUI = from ReservationsForProductAndHour res in resultByProductNameAndTimeOfDay
-                                group res by res.Hour into hourlyGroup 
-                          select new HourlyReservationCount
-                          {
-                              ReservationDateTime =  new DateTime() + hourlyGroup.Key,
-                              Data = hourlyGroup.Select(x => new ReservationsByProduct { NoOfReservations = x.ReservationCount, Product = x.Product! })
-                          };
-
-                */
-
-
-
-
-                //dashboardDailyReservationCountByHour.ReservationsByHour = fResult.OrderBy(x => x.ReservationDateTime).ToList();
-
                 dashboardDailyReservationCountByHour.ReservationsByHour = resultWithGroupingAndZerosForMissingData;
             }
             catch (Exception ex)
@@ -375,36 +357,65 @@
                 //Description: AC8: If the end user inputs a date range exceeding 13 months, the chart should display 13 months of data
                 //starting from the selected start date. For example, if the user selects a date range of > 13 months,
                 //the chart should only display data for the first 13 months of the selected range.
+                //If the user selects a date range less than 13 months, then the lesser date range should be selected.
 
-                filterParameters.ToDate= filterParameters!.FromDate.AddMonths(13);
+                var fromDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
+                var toDate = new DateTime(filterParameters.ToDate.Year, filterParameters.ToDate.Month, 1).AddMonths(1);
+                var monthlyInterval = (toDate.Year - fromDate.Year) * 12 + (toDate.Month - fromDate.Month);
+                toDate = monthlyInterval < 13 ? toDate : fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.InsightsMonthlyTransactionsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                      && (x.FirstDayOfMonth >= filterParameters!.FromDate && x.FirstDayOfMonth <= filterParameters.ToDate));
-
-                var sql = result.ToQueryString();
-
-                //Group by Product Name and Hour
-                var gResult = result.GroupBy(x => new {x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month, x.ProductName }).Select(g =>
+                var transactionsByProductNameAndMonth = sqlContext.InsightsMonthlyTransactionsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                      && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)).Select(g =>
                  new TransactionsByMonthAndProduct
                  {
-                     Year = g.Key.Year,
-                     Month = g.Key.Month,
-                     ParkingProduct = g.Key.ProductName,
-                     TransactionCount = g.Sum( x => x.TransactionCount)
+                     Year = g.FirstDayOfMonth.Year,
+                     Month = g.FirstDayOfMonth.Month,
+                     ParkingProduct = g.ProductName,
+                     TransactionCount = g.TransactionCount
                  }).ToList();
 
-                var fResults = from TransactionsByMonthAndProduct cnt in gResult
-                              group cnt by new { cnt.Year, cnt.Month } into monthlyGroup
+
+                var resultWithZerosForMissingData = new List<TransactionCountForMonth>();
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
+                {
+
+                    var transactionCountForMonth = new TransactionCountForMonth { Date = new DateTime(monthStart.Year, monthStart.Month, 1) };
+                    
+                    var transactionsForMonth = transactionsByProductNameAndMonth.Where(x => x.Year == monthStart.Year && x.Month == monthStart.Month).OrderBy(x => x.ParkingProduct);
+                    
+                    if (!transactionsForMonth.Any())
+                    {
+                        transactionCountForMonth.Data = filterParameters.Products.Select(x => new TransactionsForProduct { Product = x.Name, NoOfTransactions = 0 }).ToList();
+                    }
+                    else
+                    {
+                        foreach (var product in filterParameters.Products)
+                        {
+                            var item = transactionsForMonth.Where(x => x.ParkingProduct == product.Name).Select(x => new TransactionsForProduct{ NoOfTransactions = x.TransactionCount, Product = product.Name  }).FirstOrDefault();
+                            if (item == null)
+                            {
+                                item = new TransactionsForProduct { NoOfTransactions = 0, Product = product.Name  };
+
+                            }
+                            transactionCountForMonth.Data.Add(item);
+                        }
+                    }
+                    resultWithZerosForMissingData.Add(transactionCountForMonth);
+                }
+
+
+                    /*var transactionsByMonth = from TransactionsByMonthAndProduct cnt in transactionsByProductNameAndMonth
+                               group cnt by new { cnt.Year, cnt.Month } into monthlyGroup
                               select new TransactionCountForMonth
                               {
                                   Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1),
                                   Data = monthlyGroup.Select(x => new TransactionsForProduct { NoOfTransactions = x.TransactionCount, Product = x.ParkingProduct })
-                              };
+                              };*/
 
-             
 
-                dashboardMonthlyTransactionCount.MonthlyTransactions = fResults.OrderBy(x => x.Date);
+
+                dashboardMonthlyTransactionCount.MonthlyTransactions = resultWithZerosForMissingData;
             }
             catch (Exception ex)
             {

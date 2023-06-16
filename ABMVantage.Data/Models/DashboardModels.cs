@@ -98,7 +98,7 @@ namespace ABMVantage.Data.Models.DashboardModels
     {
         public DateTime Date { get; set; }
         public string Month { get { return this.Date.ToString("MMM yyyy"); } }
-        public IEnumerable<TransactionsForProduct> Data { get; set; } = new List<TransactionsForProduct>();
+        public List<TransactionsForProduct> Data { get; set; } = new List<TransactionsForProduct>();
     }
 
     public class TransactionsForProduct
