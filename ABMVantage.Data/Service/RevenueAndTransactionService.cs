@@ -152,6 +152,7 @@
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 //Requirement: show 7 days data
+                //Revenue & Transactions: Revenue: 3998 
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
@@ -160,9 +161,10 @@
                     && products!.Contains(x.ProductId)
                      && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
 
-                revenueByDayList = result.GroupBy(x => new { Day = x.TransactionDate.Date }).Select(g =>
+                revenueByDayList = result.GroupBy(x => new {Day = x.TransactionDate.Date, Produt = x.ProductName}).Select(g =>
                           new RevenueByDay
                           {
+                              Product=g.Key.Produt,
                               Day = g.Key.Day,
                               WeekDay = g.Key.Day.DayOfWeek.ToString(),
                               Revenue = g.Sum(x => x.Amount)
@@ -240,7 +242,7 @@
             return revenueByProductList;
         }
 
-        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam parameters)
+        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam parameters)    
         {
             IList<RevenueBudget> revenueBudgetList = new List<RevenueBudget>();
             try
