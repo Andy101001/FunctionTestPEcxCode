@@ -116,7 +116,7 @@ namespace ABMVantage.Data.Models.DashboardModels
     {
         public DateTime Date { get; set; }
         public string Month { get { return this.Date.ToString("MMM yyyy"); } }
-        public IEnumerable<TicketValueAverage> Data { get; set; } = new List<TicketValueAverage>();
+        public List<TicketValueAverage> Data { get; set; } = new List<TicketValueAverage>();
 
     }
 

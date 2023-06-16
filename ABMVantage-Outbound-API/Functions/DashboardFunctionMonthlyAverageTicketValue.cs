@@ -43,7 +43,7 @@
             try
             {
                 //var result = await _ticketService.AverageTicketValuePerYear(filterParameters);
-                var result = await _dashboardService.AverageTicketValuePerYear(filterParameters);
+                var result = await _dashboardService.GetMonthlyAverageTicketValue(filterParameters);
 
                 return new OkObjectResult(result);
             }
