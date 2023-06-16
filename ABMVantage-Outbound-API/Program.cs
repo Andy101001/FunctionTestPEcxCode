@@ -1,28 +1,25 @@
-﻿using ABMVantage_Outbound_API.Configuration;
+﻿using ABMVantage.Data.Configuration;
+using ABMVantage.Data.DataAccess;
+using ABMVantage.Data.Interfaces;
+using ABMVantage.Data.Repository;
+using ABMVantage.Data.Service;
+using ABMVantage.Data.Tools;
+using ABMVantage_Outbound_API.Configuration;
 using ABMVantage_Outbound_API.DataAccess;
 using ABMVantage_Outbound_API.Services;
+using AutoFixture;
 using Azure.Identity;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Configurations;
 using Microsoft.OpenApi.Models;
-using AutoFixture;
-using System.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ABMVantage.Data.Interfaces;
-using ABMVantage.Data.Tools;
-using ABMVantage.Data.Repository;
-using System.Configuration;
-using ABMVantage.Data.Service;
 using StackExchange.Redis;
-using ABMVantage.Data.Configuration;
-using ABMVantage.Data.DataAccess;
+using System.Reflection;
 
 namespace ABMVantage_Outbound_API
 {
@@ -60,7 +57,9 @@ namespace ABMVantage_Outbound_API
             ConfigureFunctionsWorkerDefaults(builder =>
             {
                 builder.UseDefaultWorkerMiddleware();
-                
+
+                builder.Services.AddHttpClient();
+
                 //Read security settings from configuration or local settings
                 builder.Services.AddOptions<SecuritySettings>().Configure<IConfiguration>((settings, configuration) =>
                 {
@@ -155,6 +154,7 @@ namespace ABMVantage_Outbound_API
                 var multiplexer = ConnectionMultiplexer.Connect(redisSettings.ConntecitonString);
                 s.AddSingleton<IConnectionMultiplexer>(multiplexer);
                 s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
+                s.AddScoped<ISingleTicketEVChargesService, SingleTicketEVChargesService>();
 
 
                 s.AddOptions();
@@ -248,7 +248,6 @@ namespace ABMVantage_Outbound_API
                 var dashboardFunctionSettings = s.BuildServiceProvider().GetRequiredService<IOptions<DashboardFunctionSettings>>().Value;
                 var sqlSettingsVTG = s.BuildServiceProvider().GetRequiredService<IOptions<SqlSettings_VTG>>().Value;
 
-
                 if (insightsServiceSettings != null)
                 {
                     s.AddScoped<InsightsServiceSettings, InsightsServiceSettings>(sp =>
@@ -315,10 +314,7 @@ namespace ABMVantage_Outbound_API
                             }
                         }
                     });
-
                 }
-
-
             });
     }
 }
