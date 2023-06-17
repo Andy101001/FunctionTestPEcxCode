@@ -144,7 +144,8 @@
 
         public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam parameters)
         {
-            IList<RevenueByDay> revenueByDayList = new List<RevenueByDay>();
+
+            List<RevenueByDay> revenueByDayWithZerosWhereThereIsNoData= new List<RevenueByDay>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -161,20 +162,31 @@
                     && products!.Contains(x.ProductId)
                      && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
 
-                revenueByDayList = result.GroupBy(x => new {Day = x.TransactionDate.Date, Produt = x.ProductName}).Select(g =>
+                var revenueByDayList = result.GroupBy(x => x.TransactionDate.Date).Select(g =>
                           new RevenueByDay
                           {
-                              Product=g.Key.Produt,
-                              Day = g.Key.Day,
-                              WeekDay = g.Key.Day.DayOfWeek.ToString(),
+                              Day = g.Key,
+                              WeekDay = g.Key.DayOfWeek.ToString(),
                               Revenue = g.Sum(x => x.Amount)
                           }).OrderBy(x=>x.Day).ToList();
+
+                for (DateTime day = parameters.FromDate.Date; day < parameters.ToDate.Date; day = day.AddDays(1))
+                {
+                    var revenueByDay = revenueByDayList.Where(x => x.Day == day).FirstOrDefault();
+                    if (revenueByDay == null) 
+                    {
+                        revenueByDay = new RevenueByDay { Day = day, Revenue = 0, WeekDay = day.DayOfWeek.ToString() };
+                    }
+                    revenueByDayWithZerosWhereThereIsNoData.Add(revenueByDay);
+
+
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-             return revenueByDayList;
+             return revenueByDayWithZerosWhereThereIsNoData;
         }
 
         public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam parameters)
