@@ -69,8 +69,9 @@
                             WeekDay = date.DayOfWeek.ToString(),
                             NoOfTransactions = 0
                         };
-                        dailyTransactionsWithZerosWhereThereIsNoData.Add(item);
+                        
                     }
+                    dailyTransactionsWithZerosWhereThereIsNoData.Add(item);
                 }
             }
             catch (Exception ex)
