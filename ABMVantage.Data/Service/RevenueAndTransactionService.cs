@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -55,7 +56,7 @@
                             TransactionDate= g.Key.TransactionDate,
                             WeekDay = g.Key.DayOfWeek.ToString(),
                             NoOfTransactions = Convert.ToDecimal(g.Count())
-                        }).OrderBy(x => x.TransactionDate).ToList();
+                        }).ToList();
             }
             catch (Exception ex)
             {
@@ -66,7 +67,7 @@
 
         public async Task<IEnumerable<CurrentTransaction>> GetTransacionByHours(FilterParam parameters)
         {
-            IList<CurrentTransaction> transactionsByHoursList = new List<CurrentTransaction>();
+            var transactionsByHourWithZerosWhereThereIsNoData = new List<CurrentTransaction>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -83,32 +84,40 @@
                   && products!.Contains(x.ProductId)
                   && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
-                var result1 = result.GroupBy(x => new { Hour = new DateTime(x.TransactionDate.Year, x.TransactionDate.Month, x.TransactionDate.Day, x.TransactionDate.Hour, 0,0) }).Select(g =>
+                var transactionsByHoursList = result.GroupBy(x => new DateTime(x.TransactionDate.Year, x.TransactionDate.Month, x.TransactionDate.Day, x.TransactionDate.Hour, 0, 0)).Select(g =>
                           new CurrentTransaction
                           {
-                              TimeOfDay = g.Key.Hour.TimeOfDay,
-                              NoOfTransactions = Convert.ToDecimal(g.Count())
+                              TimeOfDay = g.Key.TimeOfDay,
+                              NoOfTransactions = Convert.ToDecimal(g.Count()),
+                              Time = g.Key.ToString("hh:mm tt")
 
                           }).ToArray();
 
-                transactionsByHoursList = result1.GroupBy(x => new { x.TimeOfDay }).Select(g =>
-                      new CurrentTransaction
-                      {
-                          TimeOfDay = g.Key.TimeOfDay,
-                          Time = DateTime.Today.Add(g.Key.TimeOfDay).ToString("hh:mm tt"),
-                          NoOfTransactions = g.Sum(x => x.NoOfTransactions)
-                      }).OrderBy(x=>x.TimeOfDay).ToList();
+                for (DateTime beginningOfHour = parameters.FromDate; beginningOfHour < parameters.ToDate; beginningOfHour = beginningOfHour.AddHours(1))
+                {
+                    var item = transactionsByHoursList.Where(x => x.TimeOfDay == beginningOfHour.TimeOfDay).FirstOrDefault();
+                    if (item == null)
+                    {
+                        item = new CurrentTransaction
+                        {
+                            TimeOfDay = beginningOfHour.TimeOfDay,
+                            Time = beginningOfHour.ToString("hh:mm tt"),
+                            NoOfTransactions = 0
+                        };
+                    }
+                    transactionsByHourWithZerosWhereThereIsNoData.Add(item);
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return transactionsByHoursList;
+            return transactionsByHourWithZerosWhereThereIsNoData;
         }
 
         public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam parameters)
         {
-            IList<BudgetVariance> budgetVariance = new List<BudgetVariance>();
+            var budgetVarianceWithZerosForNoData = new List<BudgetVariance>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -120,26 +129,33 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-                budgetVariance = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var budgetVariance = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId) && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth<= toDate)
+                   && products!.Contains(x.ProductId) && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)
                    .GroupBy(x => x.FirstDayOfMonth).Select(g =>
                        new BudgetVariance
                        {
                            FirstDayOfMonth = g.Key,
                            Month = g.Key.ToString("MMM"),
-                           BgtVariance = ((g.Sum(x => x.Revenue)-g.Sum(x=>x.BudgetedRevenue))/ g.Sum(x => x.BudgetedRevenue)),
+                           BgtVariance = ((g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue)) / g.Sum(x => x.BudgetedRevenue)),
                        }
-                       ).OrderBy(x => x.FirstDayOfMonth).ToList();
+                       ).OrderBy(x => x.FirstDayOfMonth).ToArray();
 
-
-
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
+                {
+                    var item = budgetVariance.Where(x => x.FirstDayOfMonth == monthStart).FirstOrDefault();
+                    if (item == null)
+                    {
+                        item = new BudgetVariance { BgtVariance = 0, FirstDayOfMonth = monthStart, Month = monthStart.ToString("MMM") };
+                    }
+                    budgetVarianceWithZerosForNoData.Add(item);
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return budgetVariance;
+            return budgetVarianceWithZerosForNoData;
         }
 
         public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam parameters)
@@ -191,7 +207,7 @@
 
         public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam parameters)
         {
-            IList<MonthlyRevenue> monthlyRevenueList = new List<MonthlyRevenue>();
+            var monthlyRevenueWithZerosWhereThereIsNoData = new List<MonthlyRevenue>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -199,13 +215,16 @@
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
                 //Requirement is to fetch only 13 months of Data
-                parameters.ToDate = parameters.FromDate.AddMonths(13);
+                var fromDate = new DateTime(parameters!.FromDate.Year, parameters!.FromDate.Month, 1);
+                var toDate = new DateTime(parameters.ToDate.Year, parameters.ToDate.Month, 1).AddMonths(1);
+                var monthlyInterval = (toDate.Year - fromDate.Year) * 12 + (toDate.Month - fromDate.Month);
+                toDate = monthlyInterval < 13 ? toDate : fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                monthlyRevenueList = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var monthlyRevenue = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
+                  && x.TransactionDate >= fromDate && x.TransactionDate < toDate)
                     .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
                       new MonthlyRevenue
                       {
@@ -213,13 +232,22 @@
                           Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key.Month),
                           Revenue = g.Sum(x => x.Amount)
                       }).ToList();
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
+                {
+                    var item = monthlyRevenue.FirstOrDefault(x => x.FirstDayOfMonth == monthStart);
+                    if (item == null)
+                    {
+                        item = new MonthlyRevenue { FirstDayOfMonth = monthStart, PreviousYearRevenue = null, Revenue = 0, Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthStart.Month) };
+                    }
+                    monthlyRevenueWithZerosWhereThereIsNoData.Add(item);
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
-            return monthlyRevenueList.OrderBy(x => x.FirstDayOfMonth);
+            return monthlyRevenueWithZerosWhereThereIsNoData;
         }
           
         public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam parameters)
@@ -256,7 +284,7 @@
 
         public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam parameters)    
         {
-            IList<RevenueBudget> revenueBudgetList = new List<RevenueBudget>();
+            var revenueBudgetWithZerosForNoDataMonths = new List<RevenueBudget>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -267,9 +295,9 @@
                 //13 months based on from date
                 var fromDate = new DateTime(parameters.FromDate.Year, parameters.FromDate.Month, 1);
                 var toDate = fromDate.AddMonths(13);
- 
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                revenueBudgetList = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var revenueBudgetList = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                  && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                  && products!.Contains(x.ProductId)
                  && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)
@@ -281,12 +309,22 @@
                               BudgetedRevenue = g.Sum(x => x.BudgetedRevenue),
                               Revenue = g.Sum(x => x.Revenue)
                           }).OrderBy(x => x.FirstDayOfMonth).ToList();
+                
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
+                {
+                    var revenueBudget = revenueBudgetList.Where(x => x.FirstDayOfMonth == monthStart).FirstOrDefault();
+                    if (revenueBudget == null)
+                    {
+                        revenueBudget = new RevenueBudget { FirstDayOfMonth = monthStart, Month = monthStart.ToString("MMM"), BudgetedRevenue = 0, Revenue = 0 };
+                    }
+                    revenueBudgetWithZerosForNoDataMonths.Add(revenueBudget);
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return revenueBudgetList;
+            return revenueBudgetWithZerosForNoDataMonths;
 
         }
 
