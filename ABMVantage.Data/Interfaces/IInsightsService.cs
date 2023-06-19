@@ -12,6 +12,6 @@ namespace ABMVantage.Data.Interfaces
         Task<DashboardMonthlyRevenueAndBudget> GetMonthlyRevenueAndBudget(FilterParam filterParameters);
         Task<DashboardMonthlyParkingOccupancy> GetMonthlyParkingOccupancyAsync(FilterParam filterParameters);
         Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(FilterParam filterParameters);
-        Task<DashboardMonthlyAverageTicketValue> AverageTicketValuePerYear(FilterParam filterParameter);
+        Task<DashboardMonthlyAverageTicketValue> GetMonthlyAverageTicketValue(FilterParam filterParameter);
     }
 }
