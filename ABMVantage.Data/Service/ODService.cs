@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
 
@@ -188,7 +189,7 @@
 
         public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam filterParameters)
         {
-            List<YearlyOccupancy> yearlyOccupancy = new List<YearlyOccupancy>();
+            List<YearlyOccupancy> yearlyOccupancyWithZerosWhereThereIsNoData = new List<YearlyOccupancy>();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -196,7 +197,7 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
                 var toDate = filterParameters!.FromDate;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2978
-                
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
 
@@ -204,53 +205,58 @@
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
-                         new YearlyOccupancyGroupedResult
+                         new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Count()
+                             Occupancy = g.Count(),
+                             Fiscal = "CURRENT",
+                             Year = g.Key.Year,
+                             Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
                          }).ToArray();
 
                 var previousYearResults = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                             && (x.OccupancyEntryDateTimeUtc >= fromDate.AddYears(-1) && x.OccupancyExitDateTimeUtc != null &&
-                            x.OccupancyEntryDateTimeUtc < toDate.AddYears(-1)         
+                            x.OccupancyEntryDateTimeUtc < toDate.AddYears(-1)
                          )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
-                         new YearlyOccupancyGroupedResult
+                         new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Count()
+                             Occupancy = g.Count(),
+                             Fiscal = "PREVIOUS",
+                             Year = g.Key.Year,
+                             Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
                          }).ToArray();
 
-                yearlyOccupancy = currentYearResult.Select(x => new YearlyOccupancy {FirstDayOfMonth = x.FirstDayOfMonth, Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "CURRENT" }).ToList();
-                yearlyOccupancy.AddRange(previousYearResults.Select(x => new YearlyOccupancy { FirstDayOfMonth = x.FirstDayOfMonth, Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.ToString("MMM"), Occupancy = x.Occupancy, Fiscal = "PREVIOUS" }).ToList());
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
+                {
+                    var currentYearOccupancy = currentYearResult.FirstOrDefault(x => x.FirstDayOfMonth == monthStart);
+                    if (currentYearOccupancy == null)
+                    {
+                        currentYearOccupancy = new YearlyOccupancy { FirstDayOfMonth = monthStart, Occupancy = 0, Fiscal = "CURRENT", Year = monthStart.Year, Month = monthStart.ToString("MMM") };
+                    }
+                    yearlyOccupancyWithZerosWhereThereIsNoData.Add(currentYearOccupancy);
+                }
+            
+                for (DateTime monthStart = fromDate.AddYears(-1); monthStart < toDate.AddYears(-1); monthStart = monthStart.AddMonths(1))
+                {
+                    var previousYearOccupancy = previousYearResults.FirstOrDefault(x => x.FirstDayOfMonth == monthStart);
+                    if (previousYearOccupancy == null)
+                    {
+                        previousYearOccupancy = new YearlyOccupancy { FirstDayOfMonth = monthStart, Occupancy = 0, Fiscal = "PREVIOUS", Year = monthStart.Year, Month = monthStart.ToString("MMM") };
+                    }
+                    yearlyOccupancyWithZerosWhereThereIsNoData.Add(previousYearOccupancy);
+                }
+
 
                 
-                /*
-                DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
-                DateTime dtTo = dt.AddYears(-1);
-                List<DateTime> fiscals = new List<DateTime>() { dt, dtTo };
-                fiscals.ForEach(fiscalDate =>
-                {
-                    for (var m = fiscalDate.Month; m <= 12; m++)
-                    {
-                        var matchFound = result.FirstOrDefault(x => x.Year == fiscalDate.Year && x.Month == m);
-                        yearlyOccupancy.Add(new YearlyOccupancy
-                        {
-                            Fiscal = fiscalDate.Year == filterParameters!.ToDate.Year ? "CURRENT" : "PREVIOUS",
-                            Year = fiscalDate.Year,
-                            Occupancy = matchFound != null ? matchFound.NoOfVehicles : 0,
-                            Month = fiscalDate.ToString("MMM")
-                        });
-                        fiscalDate = fiscalDate.AddMonths(1);
-                    }
-                });
-                */
+
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
-            return yearlyOccupancy.OrderBy(x => x.FirstDayOfMonth);
+            return yearlyOccupancyWithZerosWhereThereIsNoData;
         }
         private string GetHourAMPM(int hour)
         {
