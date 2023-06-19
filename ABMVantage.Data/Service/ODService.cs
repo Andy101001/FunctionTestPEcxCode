@@ -137,7 +137,7 @@
 
         public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam filterParameters)
         {
-            List<AvgMonthlyOccVsDuration> avgMonthlyOccVsDurationList = new List<AvgMonthlyOccVsDuration>();
+            List<AvgMonthlyOccVsDuration> avgMonthlyOccVsDurationWithZerosWhereThereIsNoData = new List<AvgMonthlyOccVsDuration>();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -155,35 +155,35 @@
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
                              Duration = g.Key.Duration,
                              Year = g.Key.Year,
-                             Month = new DateTime (g.Key.Year, g.Key.Month, 1).ToString("MMM"),
+                             Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
                              NoOfVehicles = g.Count()
                          }).ToList();
 
-                avgMonthlyOccVsDurationList = result.Select(x => new AvgMonthlyOccVsDuration {FirstDayOfMonth = x.FirstDayOfMonth, Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year  }).ToList();
+                var avgMonthlyOccVsDuration = result.Select(x => new AvgMonthlyOccVsDuration { FirstDayOfMonth = x.FirstDayOfMonth, Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year }).ToList();
 
-                /*List<string> durations = new List<string>() { "0 - 60 MINS", "1 - 3 HOURS", "4 - 8 HOURS", "9 - 12 HOURS", "GREATER THAN 12 HOURS" };
-                DateTime dt = new DateTime(filterParameters!.ToDate.Year, 1, 1);
-                for(var m = dt.Month; m <= 12; m++)
+                //Add Zeros where there is no data
+
+                string[] durations = new string[] { "0 - 60 MINS", "1 - 3 HOURS", "4 - 8 HOURS", "9 - 12 HOURS", "GREATER THAN 12 HOURS" };
+
+                for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
                 {
-                    foreach(var duration in durations)
+                    foreach (var duration in durations)
                     {
-                        var matchFound = result.FirstOrDefault(x => x.Year == dt.Year && x.Month == m && x.Duration == duration);
-                        avgMonthlyOccVsDurationList.Add(new AvgMonthlyOccVsDuration {
-                            Duration = duration, 
-                            Year = dt.Year,
-                            NoOfVehicles = matchFound != null ? matchFound.NoOfVehicles : 0,
-                            Month = dt.ToString("MMM")
-                        });
+                        var item = avgMonthlyOccVsDuration.FirstOrDefault(x => x.FirstDayOfMonth == monthStart && x.Duration == duration);
+                        if (item == null)
+                        {
+                            item = new AvgMonthlyOccVsDuration { FirstDayOfMonth = monthStart, Duration = duration, Month = monthStart.ToString("MMM"), NoOfVehicles = 0 };
+                        }
+                        avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.Add(item);
                     }
-                    dt = dt.AddMonths(1);
-                }*/
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
-            return avgMonthlyOccVsDurationList.OrderBy(x=>x.FirstDayOfMonth);
+            return avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.OrderBy(x=>x.FirstDayOfMonth);
         }
 
         public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam filterParameters)
