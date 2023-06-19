@@ -88,13 +88,13 @@
 
         public async Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam filterParameters)
         {
-            List<OccCurrent> occCurrent = new List<OccCurrent>();
+            var resultByHourWithZeroes = new List<OccCurrent>();
             try
             {
                 //Requirement expressed by Arjun and captured in story 2976 the data is from the 24 hours preceding the start date
                 var toDate = filterParameters.FromDate;
                 var fromDate = toDate.AddDays(-1);
-                    
+
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
@@ -106,25 +106,33 @@
                       )).ToList();
 
                 //Group by Hour
-                var gResult = result.GroupBy(x => new { x.OccupancyEntryDateTimeUtc.Value.Hour }).Select(g =>
+                var resultByHour = result.GroupBy(x => new DateTime(x.OccupancyEntryDateTimeUtc.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month, x.OccupancyEntryDateTimeUtc.Value.Day, x.OccupancyEntryDateTimeUtc.Value.Hour, 0,0)).Select(g =>
                  new OccCurrent
                  {
-                     MonthInt= g.Key.Hour,
-                     Time = GetHourAMPM(g.Key.Hour),
-                    NoOfOccupiedParking= g.Count()
-                    
+                     MonthInt = g.Key.Hour,
+                     Time = g.Key.ToString("hh:mm tt"),
+                     NoOfOccupiedParking = g.Count()
+
                  }).ToList();
 
-                occCurrent = gResult.OrderBy(x => x.MonthInt).ToList();
+                for (DateTime beginningOfHour = fromDate; beginningOfHour < toDate; beginningOfHour = beginningOfHour.AddHours(1))
+                {
+                    var resultItem = resultByHour.FirstOrDefault(x => x.MonthInt == beginningOfHour.Hour);
+                    if (resultItem  == null)
+                    {
+                        resultItem = new OccCurrent { MonthInt = beginningOfHour.Hour, Time = beginningOfHour.ToString("hh:mm tt"), NoOfOccupiedParking = 0};
+                    }
+                    resultByHourWithZeroes.Add(resultItem);
+                }
 
-               
+
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
-            return occCurrent;
+            return resultByHourWithZeroes;
         }
 
         public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam filterParameters)
