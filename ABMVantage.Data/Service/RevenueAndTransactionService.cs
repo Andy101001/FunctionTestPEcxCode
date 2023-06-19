@@ -34,7 +34,7 @@
 
         public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam parameters)
         {
-            IList<DailyTransaction> dailyTransactionsList = new List<DailyTransaction>();
+            var dailyTransactionsWithZerosWhereThereIsNoData = new List<DailyTransaction>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -50,19 +50,34 @@
                   && products!.Contains(x.ProductId)
                   && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate).AsEnumerable();
 
-                dailyTransactionsList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek, TransactionDate = x.TransactionDate.Date }).Select(g =>
+                var dailyTransactionsList = result.GroupBy(x => new { x.TransactionDate.DayOfWeek, TransactionDate = x.TransactionDate.Date }).Select(g =>
                         new DailyTransaction
                         {
                             TransactionDate= g.Key.TransactionDate,
                             WeekDay = g.Key.DayOfWeek.ToString(),
                             NoOfTransactions = Convert.ToDecimal(g.Count())
                         }).ToList();
+
+                for (DateTime date = parameters.FromDate; date < parameters.ToDate; date = date.AddDays(1))
+                {
+                    var item = dailyTransactionsList.Where(x => x.TransactionDate == date.Date).FirstOrDefault();
+                    if (item == null)
+                    {
+                        item = new DailyTransaction
+                        {
+                            TransactionDate = date.Date,
+                            WeekDay = date.DayOfWeek.ToString(),
+                            NoOfTransactions = 0
+                        };
+                        dailyTransactionsWithZerosWhereThereIsNoData.Add(item);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return dailyTransactionsList;
+            return dailyTransactionsWithZerosWhereThereIsNoData;
         }
 
         public async Task<IEnumerable<CurrentTransaction>> GetTransacionByHours(FilterParam parameters)
