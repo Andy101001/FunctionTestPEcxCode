@@ -194,14 +194,14 @@
                     && products!.Contains(x.ProductId)
                      && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
 
-                var revenueByDayList = result.GroupBy(x => x.TransactionDate.Date).Select(g =>
+                var revenueByDayList = result.GroupBy(x => new { Day = x.TransactionDate.Date, Product = x.ProductName }).Select(g =>
                           new RevenueByDay
                           {
                               //Product=g.Key.Produt,
                               Day = g.Key.Day,
                               WeekDay = g.Key.Day.DayOfWeek.ToString(),
                               //Revenue = g.Sum(x => x.Amount),
-                              Data=new List<Data> { new Data { Product = g.Key.Produt, Revenue = g.Sum(x => x.Amount) } }
+                              Data=new List<Data> { new Data { Product = g.Key.Product, Revenue = g.Sum(x => x.Amount) } }
                           }).OrderBy(x=>x.Day).ToList();
 
                 for (DateTime day = parameters.FromDate.Date; day < parameters.ToDate.Date; day = day.AddDays(1))
