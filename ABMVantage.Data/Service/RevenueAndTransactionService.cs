@@ -164,10 +164,11 @@
                 revenueByDayList = result.GroupBy(x => new {Day = x.TransactionDate.Date, Produt = x.ProductName}).Select(g =>
                           new RevenueByDay
                           {
-                              Product=g.Key.Produt,
+                              //Product=g.Key.Produt,
                               Day = g.Key.Day,
                               WeekDay = g.Key.Day.DayOfWeek.ToString(),
-                              Revenue = g.Sum(x => x.Amount)
+                              //Revenue = g.Sum(x => x.Amount),
+                              Data=new List<Data> { new Data { Product = g.Key.Produt, Revenue = g.Sum(x => x.Amount) } }
                           }).OrderBy(x=>x.Day).ToList();
             }
             catch (Exception ex)
