@@ -45,7 +45,7 @@
                 //var result = await _occupancyService.GetDailyAverageOccupancy(filterParameters);
                 var result = await _dashboardService.GetDailyAverageOccupancy(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyAverageOccupancy)}");
-                return new OkObjectResult(new { averageDailyOccupancyInteger = result.AverageDailyOccupancyInteger, averageDailyOccupancyPercentage = result.AverageDailyOccupancyPercentage });
+                return new OkObjectResult(new { averageDailyOccupancyInteger = result.AverageDailyOccupancyInteger, averageDailyOccupancyPercentage = result.AverageDailyOccupancyPercentage, displayTimeFrameText =result.displayTimeFrameText});
             }
             catch (ArgumentException ae)
             {

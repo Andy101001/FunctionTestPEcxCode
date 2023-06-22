@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
 
 
-    public class DailyAverageOccupancy
+    public class DailyAverageOccupancy: ModelBase
     {
         [JsonProperty("averageDailyOccupancyInteger")]
         public int AverageDailyOccupancyInteger { get; set; }

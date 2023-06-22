@@ -45,7 +45,7 @@
                 //var result = await _dailyTransactionCountService.GetDailyTransactiontCountAsync(filterParameters);
                 var result = await _dashboardService.GetDailyTransactiontCountAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTransactionCount)}");
-                return new OkObjectResult(new { totalTransactions = result });
+                return new OkObjectResult(result);
             }
             catch (ArgumentException ae)
             {

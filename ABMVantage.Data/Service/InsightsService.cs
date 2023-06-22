@@ -44,8 +44,9 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
                 var fromDate = filterParameters!.FromDate.AddDays(-1);
                 var toDate = filterParameters.FromDate;
+                dailyAverageOccupancy.FromDate = fromDate;
+                dailyAverageOccupancy.ToDate = toDate;
 
-                
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
@@ -79,9 +80,10 @@
             return dailyAverageOccupancy;
         }
 
-        public async Task<double> GetDailyTotalRevenueAsync(FilterParam filterParameters)
+        public async Task<Revenue> GetDailyTotalRevenueAsync(FilterParam filterParameters)
         {
-            double totalRevenue = 0;
+            var revenue = new Revenue { TotalRevenue = 0 };
+            
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -94,25 +96,29 @@
 
                 filterParameters!.ToDate = filterParameters!.FromDate.Date;
                 filterParameters!.FromDate = filterParameters!.FromDate.Date.AddDays(-1);
-               
+
+                revenue.FromDate = filterParameters!.FromDate;
+                revenue.ToDate = filterParameters!.ToDate;
+
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                          && (x.Day >= filterParameters!.FromDate && x.Day <= filterParameters.ToDate));
 
-                totalRevenue = result.Sum(x => x.TotalRevenue);
+                revenue.TotalRevenue = result.Sum(x => x.TotalRevenue);
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return totalRevenue;
+            return revenue;
 
         }
 
-        public async Task<int> GetDailyTransactiontCountAsync(FilterParam filterParameters)
+        public async Task<Transaction> GetDailyTransactiontCountAsync(FilterParam filterParameters)
         {
-            int totalTransactionsCount = 0;
+            //int totalTransactionsCount = 0;
+            var trasaction = new Transaction { totalTransactions = 0 };
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -124,17 +130,21 @@
                 filterParameters.ToDate = new DateTime(filterParameters.FromDate.Year, filterParameters.FromDate.Month, filterParameters.FromDate.Day);
                 filterParameters.FromDate = filterParameters.ToDate.AddDays(-1);
 
+                trasaction.FromDate = filterParameters!.FromDate;
+                trasaction.ToDate = filterParameters!.ToDate;
+               
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
                           && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters!.ToDate));
 
-                totalTransactionsCount = result.Count();
+                trasaction.totalTransactions = result.Count();
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return totalTransactionsCount;
+            return trasaction;
         }
         
         public async Task<DashboardDailyReservationCountByHour> GetHourlyReservationsByProduct(FilterParam filterParameters)

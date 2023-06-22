@@ -45,7 +45,7 @@
                 //var result = await _transactionService.GetDailyTotalRevenueAsync(filterParameters);
                 var result = await _dashboardService.GetDailyTotalRevenueAsync(filterParameters);
                 _logger.LogInformation($"Executed function {nameof(DashboardFunctionDailyTotalRevenue)}");
-                return new OkObjectResult(new { totalRevenue = result });
+                return new OkObjectResult(new { totalRevenue = result.TotalRevenue, displayTimeFrameText=result.displayTimeFrameText });
             }
             catch (ArgumentException ae)
             {
