@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Models.DashboardModels
 {
-    public class DashboardDailyReservationCountByHour
+    public class DashboardDailyReservationCountByHour:ModelBase
     {
         public DashboardDailyReservationCountByHour()
         {
             ReservationsByHour = new List<HourlyReservationCount>();
         }
         public IEnumerable<HourlyReservationCount> ReservationsByHour { get; set; }
+
     }
 
     public class ReservationsForProductAndHour
@@ -36,7 +37,7 @@ namespace ABMVantage.Data.Models.DashboardModels
         public int NoOfReservations { get; set; }
     }
 
-    public class DashboardMonthlyRevenueAndBudget
+    public class DashboardMonthlyRevenueAndBudget:ModelBase
     {
         public IList<RevenueAndBudget> MonthlyRevenueAndBudget { get; set; } = new List<RevenueAndBudget>();
     }
@@ -58,7 +59,7 @@ namespace ABMVantage.Data.Models.DashboardModels
         public DateTime Date { get; set; }
     }
 
-    public class DashboardMonthlyParkingOccupancy
+    public class DashboardMonthlyParkingOccupancy:ModelBase
     {
         public IEnumerable<ParkingOccupancy> MonthlyParkingOccupancy { get; set; } = new List<ParkingOccupancy>();
     }
@@ -81,7 +82,7 @@ namespace ABMVantage.Data.Models.DashboardModels
         public decimal PreviousYearOccupancyPercentage { get; set; }
     }
 
-    public class DashboardMonthlyTransactionCount
+    public class DashboardMonthlyTransactionCount:ModelBase
     {
         public IEnumerable<TransactionCountForMonth> MonthlyTransactions { get; set; } = new List<TransactionCountForMonth>();
     }
@@ -107,7 +108,7 @@ namespace ABMVantage.Data.Models.DashboardModels
         public int NoOfTransactions { get; set; }
     }
 
-    public class DashboardMonthlyAverageTicketValue
+    public class DashboardMonthlyAverageTicketValue:ModelBase
     {
         public IEnumerable<AverageTicketValueForMonth> Response { get; set; } = new List<AverageTicketValueForMonth>();
     }

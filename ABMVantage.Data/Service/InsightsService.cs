@@ -159,6 +159,8 @@
                 //Requirement is only for 1 DAY
                 filterParameters!.ToDate = filterParameters.FromDate.AddDays(1);
 
+               
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
                         && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate)).ToList();
@@ -208,6 +210,10 @@
             {
                 string error = ex.Message;
             }
+            //UI date rage display
+            dashboardDailyReservationCountByHour.FromDate = filterParameters!.FromDate;
+            dashboardDailyReservationCountByHour.ToDate = filterParameters!.ToDate;
+
             return dashboardDailyReservationCountByHour;
         }
 
@@ -279,6 +285,9 @@
             {
                 string error = ex.Message;
             }
+            //UI date rage display
+            dashboardMonthlyRevenueAndBudget.FromDate = filterParameters!.FromDate;
+            dashboardMonthlyRevenueAndBudget.ToDate = filterParameters!.ToDate;
             return dashboardMonthlyRevenueAndBudget;
         }
 
@@ -356,6 +365,11 @@
             {
                 string error = ex.Message;
             }
+
+            //UI date rage display
+            dashboardMonthlyParkingOccupancy.FromDate = filterParameters!.FromDate;
+            dashboardMonthlyParkingOccupancy.ToDate = filterParameters!.ToDate;
+
             return dashboardMonthlyParkingOccupancy;
         }
         public async Task<DashboardMonthlyTransactionCount> GetMonthlyTransactionCountAsync(FilterParam filterParameters)
@@ -436,6 +450,11 @@
             {
                 string error = ex.Message;
             }
+
+            //UI date rage display
+            dashboardMonthlyTransactionCount.FromDate = filterParameters!.FromDate;
+            dashboardMonthlyTransactionCount.ToDate = filterParameters!.ToDate;
+
             return dashboardMonthlyTransactionCount;
         }
         public async Task<DashboardMonthlyAverageTicketValue> GetMonthlyAverageTicketValue(FilterParam filterParameters)
@@ -498,6 +517,11 @@
             {
                 string error = ex.Message;
             }
+
+            //UI date rage display
+            dashboardMonthlyAverageTicketValue.FromDate = filterParameters!.FromDate;
+            dashboardMonthlyAverageTicketValue.ToDate = filterParameters!.ToDate;
+
             return dashboardMonthlyAverageTicketValue;
         }
     }
