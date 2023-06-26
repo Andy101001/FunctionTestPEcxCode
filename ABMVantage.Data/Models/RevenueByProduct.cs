@@ -20,7 +20,7 @@
         public TimeSpan TimeOfDay { get; set; }
     }
 
-    public class DailyTransaction:ModelBase
+    public class DailyTransaction
     {
         public string? WeekDay { get; set; }
         public decimal NoOfTransactions { get; set; }
@@ -96,4 +96,41 @@
 
     }
 
+    public class DailyTransactionList:ModelBase
+    {
+       public IList<DailyTransaction> Transactions { get; set; }
+    }
+
+    public class CurrentTransactionList : ModelBase
+    {
+        public List<CurrentTransaction> CurrentTransactions { get; set; }
+    }
+
+    public class BudgetVarianceList:ModelBase
+    {
+        public IList<BudgetVariance> Variances { get; set;}
+    }
+    public class RevenueByDayList:ModelBase
+    {
+        public IList<RevenueByDay> RevenuList { get; set; }
+    }
+    public class MonthlyRevenueList : ModelBase
+    {
+        public IList<MonthlyRevenue> MonthRevenues { get; set; }
+    }
+    public class RevenueByProductList:ModelBase
+    {
+        public IList<RevenueByProduct> RevenueByProducts { get; set; }
+    }
+    
+
+    public class RevenueBudgetList:ModelBase
+    {
+        public IList<RevenueBudget> RevenueBudgets { get; set; }
+    }
+
+    public class CurrentAndPreviousYearMonthlyTransactionList:ModelBase
+    {
+        public IList<CurrentAndPreviousYearMonthlyTransaction> PreviousYearMonthly { get; set; }
+    }
 }

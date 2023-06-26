@@ -9,6 +9,7 @@
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Globalization;
     using System.Linq;
@@ -33,9 +34,10 @@
 
         #region Public Methods
 
-        public async Task<IEnumerable<DailyTransaction>> GetTransactonByDays(FilterParam parameters)
+        public async Task<DailyTransactionList> GetTransactonByDays(FilterParam parameters)
         {
-            var dailyTransactionsWithZerosWhereThereIsNoData = new List<DailyTransaction>();
+            var trans = new DailyTransactionList();
+            trans.Transactions = new List<DailyTransaction>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -72,7 +74,7 @@
                         };
                         
                     }
-                    dailyTransactionsWithZerosWhereThereIsNoData.Add(item);
+                    trans.Transactions.Add(item);
                 }
             }
             catch (Exception ex)
@@ -82,15 +84,17 @@
 
 
             //UI date rage display
-            //dailyTransactionsWithZerosWhereThereIsNoData.FromDate = filterParameters!.FromDate;
-            //dailyTransactionsWithZerosWhereThereIsNoData.ToDate = filterParameters!.ToDate;
+            trans.FromDate = parameters!.FromDate;
+            trans.ToDate = parameters!.ToDate;
 
-            return dailyTransactionsWithZerosWhereThereIsNoData;
+            return trans;
         }
 
-        public async Task<IEnumerable<CurrentTransaction>> GetTransacionByHours(FilterParam parameters)
+        public async Task<CurrentTransactionList> GetTransacionByHours(FilterParam parameters)
         {
-            var transactionsByHourWithZerosWhereThereIsNoData = new List<CurrentTransaction>();
+            var transactions = new CurrentTransactionList();
+
+            transactions.CurrentTransactions = new List<CurrentTransaction>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -128,19 +132,25 @@
                             NoOfTransactions = 0
                         };
                     }
-                    transactionsByHourWithZerosWhereThereIsNoData.Add(item);
+                    transactions.CurrentTransactions.Add(item);
                 }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return transactionsByHourWithZerosWhereThereIsNoData;
+
+            //UI date rage display
+            transactions.FromDate = parameters!.FromDate;
+            transactions.ToDate = parameters!.ToDate;
+
+            return transactions;
         }
 
-        public async Task<IEnumerable<BudgetVariance>> GetBudgetVsActualVariance(FilterParam parameters)
+        public async Task<BudgetVarianceList> GetBudgetVsActualVariance(FilterParam parameters)
         {
-            var budgetVarianceWithZerosForNoData = new List<BudgetVariance>();
+            var budgetAndVariance = new BudgetVarianceList();
+            budgetAndVariance.Variances = new List<BudgetVariance>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -171,20 +181,27 @@
                     {
                         item = new BudgetVariance { BgtVariance = 0, FirstDayOfMonth = monthStart, Month = monthStart.ToString("MMM") };
                     }
-                    budgetVarianceWithZerosForNoData.Add(item);
+                    budgetAndVariance.Variances.Add(item);
                 }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return budgetVarianceWithZerosForNoData;
+
+            //UI date rage display
+            budgetAndVariance.FromDate = parameters!.FromDate;
+            budgetAndVariance.ToDate = parameters!.ToDate;
+
+
+            return budgetAndVariance;
         }
 
-        public async Task<IEnumerable<RevenueByDay>> GetRevenueByDays(FilterParam parameters)
+        public async Task<RevenueByDayList> GetRevenueByDays(FilterParam parameters)
         {
+            var revenuList = new RevenueByDayList();
 
-            List<RevenueByDay> revenueByDayWithZerosWhereThereIsNoData= new List<RevenueByDay>();
+            revenuList.RevenuList = new List<RevenueByDay>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -208,10 +225,6 @@
                               Day = g.Key.Day,
                               Revenue = g.Sum(x => x.Amount)
                           }).ToList();
-
-
-
-
 
                 for (DateTime day = parameters.FromDate.Date; day < parameters.ToDate.Date; day = day.AddDays(1))
                 {
@@ -240,7 +253,7 @@
                         }
                     }
 
-                    revenueByDayWithZerosWhereThereIsNoData.Add(revenueByDay);
+                    revenuList.RevenuList.Add(revenueByDay);
 
 
                 }
@@ -249,12 +262,20 @@
             {
                 string error = ex.Message;
             }
-             return revenueByDayWithZerosWhereThereIsNoData;
+
+            //UI date rage display
+            revenuList.FromDate = parameters!.FromDate;
+            revenuList.ToDate = parameters!.ToDate;
+
+
+            return revenuList;
         }
 
-        public async Task<IEnumerable<MonthlyRevenue>> GetRevenueByMonths(FilterParam parameters)
+        public async Task<MonthlyRevenueList> GetRevenueByMonths(FilterParam parameters)
         {
-            var monthlyRevenueWithZerosWhereThereIsNoData = new List<MonthlyRevenue>();
+            var monthsRevenue = new MonthlyRevenueList();
+
+            monthsRevenue.MonthRevenues = new List<MonthlyRevenue>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -286,7 +307,7 @@
                     {
                         item = new MonthlyRevenue { FirstDayOfMonth = monthStart, PreviousYearRevenue = null, Revenue = 0, Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthStart.Month) };
                     }
-                    monthlyRevenueWithZerosWhereThereIsNoData.Add(item);
+                    monthsRevenue.MonthRevenues.Add(item);
                 }
             }
             catch (Exception ex)
@@ -294,12 +315,18 @@
                 string error = ex.Message;
             }
 
-            return monthlyRevenueWithZerosWhereThereIsNoData;
+            //UI date rage display
+            monthsRevenue.FromDate = parameters!.FromDate;
+            monthsRevenue.ToDate = parameters!.ToDate;
+
+
+            return monthsRevenue;
         }
           
-        public async Task<IEnumerable<RevenueByProduct>> GetRevenueByProductByDays(FilterParam parameters)
+        public async Task<RevenueByProductList> GetRevenueByProductByDays(FilterParam parameters)
         {
-            IList<RevenueByProduct> revenueByProductList = new List<RevenueByProduct>();
+            var revenueProducts = new RevenueByProductList();
+            revenueProducts.RevenueByProducts = new List<RevenueByProduct>();
 
             try
             {
@@ -311,7 +338,7 @@
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                revenueByProductList = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                revenueProducts.RevenueByProducts = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     //&& (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
                     && x.RevenueDate >= parameters.FromDate && x.RevenueDate <= parameters.ToDate)
@@ -326,12 +353,18 @@
             {
                 string error = ex.Message;
             }
-            return revenueByProductList;
+
+            //UI date rage display
+            revenueProducts.FromDate = parameters!.FromDate;
+            revenueProducts.ToDate = parameters!.ToDate;
+
+            return revenueProducts;
         }
 
-        public async Task<IEnumerable<RevenueBudget>> GetRevenueVsBudget(FilterParam parameters)    
+        public async Task<RevenueBudgetList> GetRevenueVsBudget(FilterParam parameters)    
         {
-            var revenueBudgetWithZerosForNoDataMonths = new List<RevenueBudget>();
+            var revenuBudget =new RevenueBudgetList();
+            revenuBudget.RevenueBudgets = new List<RevenueBudget>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -364,20 +397,26 @@
                     {
                         revenueBudget = new RevenueBudget { FirstDayOfMonth = monthStart, Month = monthStart.ToString("MMM"), BudgetedRevenue = 0, Revenue = 0 };
                     }
-                    revenueBudgetWithZerosForNoDataMonths.Add(revenueBudget);
+                    revenuBudget.RevenueBudgets.Add(revenueBudget);
                 }
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return revenueBudgetWithZerosForNoDataMonths;
+
+            //UI date rage display
+            revenuBudget.FromDate = parameters!.FromDate;
+            revenuBudget.ToDate = parameters!.ToDate;
+
+            return revenuBudget;
 
         }
 
-        public async Task<IEnumerable<CurrentAndPreviousYearMonthlyTransaction>> GetTransactonMonths(FilterParam inputFilter)
+        public async Task<CurrentAndPreviousYearMonthlyTransactionList> GetTransactonMonths(FilterParam inputFilter)
         {
-            var result = new List<CurrentAndPreviousYearMonthlyTransaction>();
+            var transactions = new CurrentAndPreviousYearMonthlyTransactionList();
+            transactions.PreviousYearMonthly = new List<CurrentAndPreviousYearMonthlyTransaction>();
             
             try
             {
@@ -406,14 +445,19 @@
                     var previousYearResult = previousYearResults.FirstOrDefault(x => x.Year == monthStart.Year - 1 && x.MonthAsInt == monthStart.Month);
                     data.NoOfTransactions = currentYearResult?.NoOfTransactions ?? 0;
                     data.PreviousYearNoOfTransactions = previousYearResult?.NoOfTransactions ?? 0;
-                    result.Add(data);
+                    transactions.PreviousYearMonthly.Add(data);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"{nameof(GetTransactonMonths)} has an error! : {ex.Message}");
             }
-            return result;
+
+            //UI date rage display
+            transactions.FromDate = inputFilter!.FromDate;
+            transactions.ToDate = inputFilter!.ToDate;
+
+            return transactions;
         }
 
         private async Task<IList<MonthlyTransaction>> GetTransactonByMonth(FilterParam parameters)
