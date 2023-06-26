@@ -235,7 +235,9 @@
                 toDate = monthlyInterval < 12 ? toDate : fromDate.AddMonths(12);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                var result = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
+                && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null || !levels.Any())
+                && products!.Contains(x.ProductId)
                        && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate)).ToList();
 
                 var resultWithZerosForMissingData = new List<RevenueAndBudget>();
@@ -255,30 +257,6 @@
          
                 }
 
-                /*
-                //Group by Year and Month
-                var gResult = result.GroupBy(x => new { x.FirstDayOfMonth.Year, x.FirstDayOfMonth.Month }).Select(g =>
-                 new RevenueAndBudgetForMonth
-                 {
-                     Year = g.Key.Year,
-                     Month = g.Key.Month,
-                     Revenue = g.Sum(x => x.Revenue),
-                     BudgetedRevenue = g.Sum(x => x.BudgetedRevenue)
-                 }).ToList();
-
-                var diff = Enumerable.Range(0, Int32.MaxValue)
-                     .Select(e => filterParameters!.FromDate.AddMonths(e))
-                     .TakeWhile(e => e <= filterParameters.ToDate)
-                     .Select(e => new { e.Date});
-
-                var fResult = from RevenueAndBudgetForMonth rnb in gResult
-                                select new RevenueAndBudget
-                                {
-                                    Date = new DateTime(rnb.Year, rnb.Month, 1),
-                                    Revenue = rnb.Revenue,
-                                    BudgetedRevenue = rnb.BudgetedRevenue
-                                 };
-                */
                 dashboardMonthlyRevenueAndBudget.MonthlyRevenueAndBudget = resultWithZerosForMissingData;
             }
             catch (Exception ex)
