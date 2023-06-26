@@ -37,6 +37,7 @@ namespace ABMVantage.Data.DataAccess
 
             //Revenue and Transactions
             modelBuilder.Entity<RevenueTransactionSQL>().HasKey(c => c.Id);
+            modelBuilder.Entity<RevenueSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueRevenueVsBudgetSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenuebydaySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueBudgetVsActualVarianceSQL>().HasKey(c => c.Id);
@@ -69,6 +70,8 @@ namespace ABMVantage.Data.DataAccess
         
         //Revenue and Transactions
         public DbSet<RevenueTransactionSQL> RevenueTransactionSQLData { get; set; }
+        //Revenue
+        public DbSet<RevenueSQL> RevenueSQLData { get; set; }
         public DbSet<RevenueRevenueVsBudgetSQL> RevenueRevenueVsBudgetSQLData { get; set; }
         
         //Removing this sql table because it has bad data. Replacing this table with RevenueTransactionSQL which has the same data without a bad join.

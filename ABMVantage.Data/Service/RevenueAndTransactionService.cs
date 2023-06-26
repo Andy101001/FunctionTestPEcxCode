@@ -146,14 +146,14 @@
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
                 var budgetVariance = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null || !levels.Any())
                    && products!.Contains(x.ProductId) && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)
                    .GroupBy(x => x.FirstDayOfMonth).Select(g =>
                        new BudgetVariance
                        {
                            FirstDayOfMonth = g.Key,
                            Month = g.Key.ToString("MMM"),
-                           BgtVariance = ((g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue)) / g.Sum(x => x.BudgetedRevenue)),
+                           BgtVariance = g.Sum(x => x.BudgetedRevenue) > 0 ? ((g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue)) / g.Sum(x => x.BudgetedRevenue)) : 0,
                        }
                        ).OrderBy(x => x.FirstDayOfMonth).ToArray();
 
@@ -189,28 +189,50 @@
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                var result = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                    /*&& (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)*/
                     && products!.Contains(x.ProductId)
-                     && x.TransactionDate >= parameters.FromDate && x.TransactionDate < parameters.ToDate).AsEnumerable();
+                     && x.RevenueDate >= parameters.FromDate && x.RevenueDate < parameters.ToDate).AsEnumerable();
 
-                var revenueByDayList = result.GroupBy(x => new { Day = x.TransactionDate.Date, Product = x.ProductName }).Select(g =>
-                          new RevenueByDay
+                var revenueByDayList = result.GroupBy(x => new { Day = x.RevenueDate.Date, Product = x.ProductName }).Select(g =>
+                          new RevenueByDayAndProduct
                           {
-                              //Product=g.Key.Produt,
+                              Product = g.Key.Product,
                               Day = g.Key.Day,
-                              WeekDay = g.Key.Day.DayOfWeek.ToString(),
-                              //Revenue = g.Sum(x => x.Amount),
-                              Data=new List<Data> { new Data { Product = g.Key.Product, Revenue = g.Sum(x => x.Amount) } }
-                          }).OrderBy(x=>x.Day).ToList();
+                              Revenue = g.Sum(x => x.Amount)
+                          }).ToList();
+
+
+
+
 
                 for (DateTime day = parameters.FromDate.Date; day < parameters.ToDate.Date; day = day.AddDays(1))
                 {
-                    var revenueByDay = revenueByDayList.Where(x => x.Day == day).FirstOrDefault();
-                    if (revenueByDay == null) 
+                    var itemsForDay = revenueByDayList.Where(x => x.Day == day);
+                    RevenueByDay revenueByDay = new RevenueByDay();
+                    if (!itemsForDay.Any()) 
                     {
-                        revenueByDay = new RevenueByDay { Day = day, Revenue = 0, WeekDay = day.DayOfWeek.ToString() };
+                        revenueByDay = new RevenueByDay { Day = day, WeekDay = day.DayOfWeek.ToString(), Data = parameters.Products.Select(x => new Data { Product  = x.Name, Revenue = 0}).ToList() };
                     }
+                    else
+                    {
+                        revenueByDay.Day = day;
+                        revenueByDay.WeekDay = day.DayOfWeek.ToString();
+                        revenueByDay.Data = new List<Data>();
+                        foreach (var product in parameters.Products)
+                        {
+                            var item = itemsForDay.Where(x => x.Product == product.Name).FirstOrDefault();
+                            if (item == null)
+                            {
+                                revenueByDay.Data.Add(new Data { Product = product.Name, Revenue = 0 });
+                            }
+                            else
+                            {
+                                revenueByDay.Data.Add(new Data { Product = item.Product, Revenue = item.Revenue });
+                            }
+                        }
+                    }
+
                     revenueByDayWithZerosWhereThereIsNoData.Add(revenueByDay);
 
 
@@ -239,11 +261,11 @@
                 toDate = monthlyInterval < 13 ? toDate : fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var monthlyRevenue = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                  && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                var monthlyRevenue = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                  //&& (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                   && products!.Contains(x.ProductId)
-                  && x.TransactionDate >= fromDate && x.TransactionDate < toDate)
-                    .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month }).Select(g =>
+                  && x.RevenueDate >= fromDate && x.RevenueDate < toDate)
+                    .GroupBy(x => new { x.RevenueDate.Year, x.RevenueDate.Month }).Select(g =>
                       new MonthlyRevenue
                       {
                           FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
@@ -282,10 +304,10 @@
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                revenueByProductList = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                revenueByProductList = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                    //&& (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId)
-                    && x.TransactionDate >= parameters.FromDate && x.TransactionDate <= parameters.ToDate)
+                    && x.RevenueDate >= parameters.FromDate && x.RevenueDate <= parameters.ToDate)
                         .GroupBy(x => new { x.ProductName }).Select(g =>
                           new RevenueByProduct
                           {
@@ -316,7 +338,7 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var revenueBudgetList = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                 && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                 && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null || !levels.Any())
                  && products!.Contains(x.ProductId)
                  && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)
                     .GroupBy(x => x.FirstDayOfMonth).Select(g =>

@@ -35,6 +35,32 @@ namespace ABMVantage.Data.EntityModels.SQL
         public string ProductName { get; set; }
     }
 
+    [Table("Revenue")]
+    public class RevenueSQL
+    {
+        [Key]
+        [Column("Id")]
+        public int Id { get; set; }
+
+        [Column("FacilityId")]
+        public string? FacilityId { get; set; }
+
+        [Column("LevelId")]
+        public string? LevelId { get; set; }
+
+        [Column("ParkingProductId")]
+        public int ProductId { get; set; }
+
+        [Column("RevenueDate")]
+        public DateTime RevenueDate { get; set; }
+
+        [Column("Amount")]
+        public decimal Amount { get; set; }
+
+        [Column("ProductName")]
+        public string ProductName { get; set; }
+    }
+
 
     [Table("RevenueRevenueVsBudget")]
     public class RevenueRevenueVsBudgetSQL
