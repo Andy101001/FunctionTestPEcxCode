@@ -73,11 +73,21 @@
     public class RevenueByDay
     {
         public string? WeekDay { get; set; }
+
+        public DateTime Day { get; internal set; }
+        public string Product { get; internal set; }
+        public IList<Data> Data { get; set; }
+    }
+
+    public class RevenueByDayAndProduct
+    {
+ 
         public decimal? Revenue { get; set; }
         public DateTime Day { get; internal set; }
         public string Product { get; internal set; }
-        public IList<Data> Data { get; internal set; }
     }
+       
+
 
     public class Data
     {

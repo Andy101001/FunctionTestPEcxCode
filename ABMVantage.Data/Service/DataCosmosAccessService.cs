@@ -345,8 +345,8 @@ namespace ABMVantage.Data.Service
                 var finalRestut = result.GroupBy(x => new { x.TransactionId.Value.DayOfWeek }).Select(g =>
                   new RevenueByDay
                   {
-                      WeekDay = g.Key.DayOfWeek.ToString(),
-                      Revenue = g.Sum(x => x.Revenue)
+                     // WeekDay = g.Key.DayOfWeek.ToString(),
+                      //Revenue = g.Sum(x => x.Revenue)
                   }
                   );
 
