@@ -20,7 +20,7 @@
         public TimeSpan TimeOfDay { get; set; }
     }
 
-    public class DailyTransaction
+    public class DailyTransaction:ModelBase
     {
         public string? WeekDay { get; set; }
         public decimal NoOfTransactions { get; set; }

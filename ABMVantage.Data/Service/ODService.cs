@@ -5,6 +5,7 @@
     using ABMVantage.Data.Models;
     using ABMVantage.Data.Models.DashboardModels;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -27,9 +28,9 @@
             _sqlDataContextVTG = sqlDataContextVTG;
         }
 
-        public async Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam filterParameters)
+        public async Task<OccRevenueByProductList> GetTotalOccRevenue(FilterParam filterParameters)
         {
-            IEnumerable<OccRevenueByProduct> occRevenueByProductList = new List<OccRevenueByProduct>();
+            var occRevenueByProductList = new OccRevenueByProductList();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -39,7 +40,7 @@
                 var fromDate = toDate.AddDays(-1);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                occRevenueByProductList = sqlContext.OccupancyRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                occRevenueByProductList.OccRevenueByProduc = sqlContext.OccupancyRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                       && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) &&
                             (x.ProductId == null || products!.Contains(x.ProductId.Value!)))
                             .GroupBy(x => new { x.ProductName }).Select(g =>
@@ -48,18 +49,26 @@
                                      Product = g.Key.ProductName!,
                                      Revenue = g.Sum(x => x.Amount)
                                  }).ToList();
+
+                //UI display text for date range
+                occRevenueByProductList.ToDate = toDate;
+                occRevenueByProductList.FromDate = fromDate;
+
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
+           
+
+            
             return occRevenueByProductList;
         }
 
-        public async Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam filterParameters)
+        public async Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam filterParameters)
         {
-            List<OccWeeklyOccByDuration> occWeeklyOccByDuration = new List<OccWeeklyOccByDuration>();
+            var occWeeklyOccByDuration = new OccWeeklyOccByDurationList();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -69,7 +78,7 @@
                 var fromDate = toDate.AddDays(-1);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                occWeeklyOccByDuration = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                occWeeklyOccByDuration.OccWeeklyOccByDurations = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.Duration }).Select(g =>
@@ -78,6 +87,10 @@
                      Duration = g.Key.Duration!,
                      TotalWeeklyOccupancy = g.Count()
                  }).OrderBy(x => x.Duration).ToList();
+
+                //UI display text for date range
+                occWeeklyOccByDuration.ToDate = toDate;
+                occWeeklyOccByDuration.FromDate = fromDate;
             }
             catch (Exception ex)
             {
@@ -87,9 +100,9 @@
             return occWeeklyOccByDuration;
         }
 
-        public async Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam filterParameters)
+        public async Task<OccCurrentList> GetOccCurrent(FilterParam filterParameters)
         {
-            var resultByHourWithZeroes = new List<OccCurrent>();
+            var resultByHourWithZeroes = new OccCurrentList();
             try
             {
                 //Requirement expressed by Arjun and captured in story 2976 the data is from the 24 hours preceding the start date
@@ -123,9 +136,12 @@
                     {
                         resultItem = new OccCurrent { MonthInt = beginningOfHour.Hour, Time = beginningOfHour.ToString("hh:mm tt"), NoOfOccupiedParking = 0};
                     }
-                    resultByHourWithZeroes.Add(resultItem);
+                    resultByHourWithZeroes.OccCurrents.Add(resultItem);
                 }
 
+                //UI display text for date range
+                resultByHourWithZeroes.ToDate = toDate;
+                resultByHourWithZeroes.FromDate = fromDate;
 
             }
             catch (Exception ex)
@@ -136,9 +152,9 @@
             return resultByHourWithZeroes;
         }
 
-        public async Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam filterParameters)
+        public async Task<AvgMonthlyOccVsDurationList> GetAvgMonthlyOccVsDuration(FilterParam filterParameters)
         {
-            List<AvgMonthlyOccVsDuration> avgMonthlyOccVsDurationWithZerosWhereThereIsNoData = new List<AvgMonthlyOccVsDuration>();
+            var avgMonthlyOccVsDurationWithZerosWhereThereIsNoData = new AvgMonthlyOccVsDurationList();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -175,21 +191,25 @@
                         {
                             item = new AvgMonthlyOccVsDuration { FirstDayOfMonth = monthStart, Duration = duration, Month = monthStart.ToString("MMM"), NoOfVehicles = 0 };
                         }
-                        avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.Add(item);
+                        avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.AvgMonthlyOccVsDurations.Add(item);
                     }
                 }
+                //UI display text for date range
+                avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.ToDate = toDate;
+                avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.FromDate = fromDate;
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
 
-            return avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.OrderBy(x=>x.FirstDayOfMonth);
+            avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.AvgMonthlyOccVsDurations.OrderBy(x => x.FirstDayOfMonth);
+            return avgMonthlyOccVsDurationWithZerosWhereThereIsNoData;
         }
 
-        public async Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam filterParameters)
+        public async Task<YearlyOccupancyList> GetYearlyOccupancy(FilterParam filterParameters)
         {
-            List<YearlyOccupancy> yearlyOccupancyWithZerosWhereThereIsNoData = new List<YearlyOccupancy>();
+           var yearlyOccupancyWithZerosWhereThereIsNoData = new YearlyOccupancyList();
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -234,7 +254,7 @@
                     {
                         currentYearOccupancy = new YearlyOccupancy { FirstDayOfMonth = monthStart, Occupancy = 0, Fiscal = "CURRENT", Year = monthStart.Year, Month = monthStart.ToString("MMM") };
                     }
-                    yearlyOccupancyWithZerosWhereThereIsNoData.Add(currentYearOccupancy);
+                    yearlyOccupancyWithZerosWhereThereIsNoData.YearlyOccupancies.Add(currentYearOccupancy);
                 }
             
                 for (DateTime monthStart = fromDate.AddYears(-1); monthStart < toDate.AddYears(-1); monthStart = monthStart.AddMonths(1))
@@ -244,11 +264,13 @@
                     {
                         previousYearOccupancy = new YearlyOccupancy { FirstDayOfMonth = monthStart, Occupancy = 0, Fiscal = "PREVIOUS", Year = monthStart.Year, Month = monthStart.ToString("MMM") };
                     }
-                    yearlyOccupancyWithZerosWhereThereIsNoData.Add(previousYearOccupancy);
+                    yearlyOccupancyWithZerosWhereThereIsNoData.YearlyOccupancies.Add(previousYearOccupancy);
                 }
 
+                //UI display text for date range
+                yearlyOccupancyWithZerosWhereThereIsNoData.ToDate = toDate;
+                yearlyOccupancyWithZerosWhereThereIsNoData.FromDate = fromDate;
 
-                
 
             }
             catch (Exception ex)

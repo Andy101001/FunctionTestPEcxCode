@@ -1,6 +1,7 @@
 ﻿using ABMVantage.Data.DataAccess;
 using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
@@ -26,9 +27,10 @@ namespace ABMVantage.Data.Service
 
         #region Public Methods
 
-        public async Task<IEnumerable<ReservationsByHour>> GetHourlyReservations(FilterParam parameters)
+        public async Task<ReservationsByHourList> GetHourlyReservations(FilterParam parameters)
         {
-            IList<ReservationsByHour> reservationsByHourList = new List<ReservationsByHour>();
+            var reservationsByHourList = new ReservationsByHourList();
+            reservationsByHourList.ReservationsByHours = new List<ReservationsByHour>();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -43,7 +45,7 @@ namespace ABMVantage.Data.Service
                 parameters.ToDate = estDateTime.AddHours(5);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                reservationsByHourList = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                reservationsByHourList.ReservationsByHours = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour < parameters.ToDate).ToList()
                     .Select(g =>
@@ -58,12 +60,15 @@ namespace ABMVantage.Data.Service
             {
                 string error = ex.Message;
             }
+            //to show UI Data for date range text
+            reservationsByHourList.FromDate = parameters.FromDate;
+            reservationsByHourList.ToDate = parameters.ToDate;
             return reservationsByHourList;
         }
 
-        public async Task<IEnumerable<ReservationsByDay>> GetDailyReservations(FilterParam parameters)
+        public async Task<ReservationsByDayList> GetDailyReservations(FilterParam parameters)
         {
-            IList<ReservationsByDay> reservationsByDay = new List<ReservationsByDay>();
+            var reservationsByDay = new ReservationsByDayList();
             try
             {
                 var levels = parameters.ParkingLevels.Select(x => x.Id).ToList();
@@ -75,7 +80,7 @@ namespace ABMVantage.Data.Service
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                reservationsByDay = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                reservationsByDay.ReservationsByDays = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
@@ -91,12 +96,16 @@ namespace ABMVantage.Data.Service
                 string error = ex.Message;
             }
 
+            //to show UI Data for date range text
+            reservationsByDay.FromDate = parameters.FromDate;
+            reservationsByDay.ToDate = parameters.ToDate;
+           
             return reservationsByDay;
         }
 
-        public async Task<IEnumerable<ReservationsByMonth>> GetMonthlyReservations(FilterParam parameters)
+        public async Task<ReservationsByMonthList> GetMonthlyReservations(FilterParam parameters)
         {
-            List<ReservationsByMonth> reservationsByMonthList = new List<ReservationsByMonth>(); 
+            var reservationsByMonthList = new ReservationsByMonthList(); 
 
             try
             {
@@ -133,7 +142,7 @@ namespace ABMVantage.Data.Service
                         }
                    ).ToList();
 
-                reservationsByMonthList = currentYearResult.Select(x => new ReservationsByMonth
+                reservationsByMonthList.ReservationsByMonths = currentYearResult.Select(x => new ReservationsByMonth
                 {
                     FirstDayOfMonth = x.FirstDayOfMonth,
                     Fiscal = "CURRENT",
@@ -142,7 +151,7 @@ namespace ABMVantage.Data.Service
                     Month = x.FirstDayOfMonth.ToString("MMM")
                 }).ToList();
 
-                reservationsByMonthList.AddRange(previousYearResult.Select(x => new ReservationsByMonth
+                var previousYear = previousYearResult.Select(x => new ReservationsByMonth
                 {
 
                     FirstDayOfMonth = x.FirstDayOfMonth,
@@ -150,19 +159,25 @@ namespace ABMVantage.Data.Service
                     Year = x.FirstDayOfMonth.Year,
                     NoOfReservations = x.NoOfReservations,
                     Month = x.FirstDayOfMonth.ToString("MMM")
-                }));
+                });
+                reservationsByMonthList.ReservationsByMonths.Concat(previousYear).OrderBy(x => x.FirstDayOfMonth);
 
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-            return reservationsByMonthList.OrderBy(x=>x.FirstDayOfMonth);
+
+            //to show UI Data for date range text
+            reservationsByMonthList.FromDate = parameters.FromDate;
+            reservationsByMonthList.ToDate = parameters.ToDate;
+
+            return reservationsByMonthList;
         }
 
-        public async Task<IEnumerable<ResAvgTicketValue>> GetReservationsAvgTkt(FilterParam parameters)
+        public async Task<ResAvgTicketValueList> GetReservationsAvgTkt(FilterParam parameters)
         {
-            IList<ResAvgTicketValue> resAvgTicketValue = null;
+            ResAvgTicketValueList resAvgTicketValue = null;
             var currentDateTimeEst = DateTime.UtcNow.AddHours(-4);
             var fromDate = new DateTime(currentDateTimeEst.Year, currentDateTimeEst.Month, currentDateTimeEst.Day, currentDateTimeEst.Hour, 0, 0);
             var toDate = fromDate.AddDays(1);
@@ -187,7 +202,7 @@ namespace ABMVantage.Data.Service
 
 
 
-                resAvgTicketValue = result.ToList();
+                resAvgTicketValue.ResAvgTicketValues = result.ToList();
                 /*var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
                     new ResAvgTicketValue    
                     {
@@ -201,6 +216,10 @@ namespace ABMVantage.Data.Service
             {
                 string error = ex.Message;
             }
+
+            //to show UI Data for date range text
+            resAvgTicketValue.FromDate = parameters.FromDate;
+            resAvgTicketValue.ToDate = parameters.ToDate;
 
             return resAvgTicketValue;
         }

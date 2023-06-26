@@ -5,10 +5,10 @@ namespace ABMVantage.Data.Interfaces
 {
     public interface IODService
     {
-        Task<IEnumerable<OccRevenueByProduct>> GetTotalOccRevenue(FilterParam inputFilter);
-        Task<IEnumerable<OccWeeklyOccByDuration>> GetWeeklyOccByDuration(FilterParam inputFilter);
-        Task<IEnumerable<OccCurrent>> GetOccCurrent(FilterParam inputFilter);
-        Task<IEnumerable<AvgMonthlyOccVsDuration>> GetAvgMonthlyOccVsDuration(FilterParam inputFilter);
-        Task<IEnumerable<YearlyOccupancy>> GetYearlyOccupancy(FilterParam inputFilter);
+        Task<OccRevenueByProductList> GetTotalOccRevenue(FilterParam inputFilter);
+        Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam inputFilter);
+        Task<OccCurrentList> GetOccCurrent(FilterParam inputFilter);
+        Task<AvgMonthlyOccVsDurationList> GetAvgMonthlyOccVsDuration(FilterParam inputFilter);
+        Task<YearlyOccupancyList> GetYearlyOccupancy(FilterParam inputFilter);
     }
 }

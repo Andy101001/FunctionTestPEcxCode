@@ -7,7 +7,7 @@
     }
 
     public class OccWeeklyOccByDuration
-    {        
+    {
         public string Duration { get; set; }
         public decimal TotalWeeklyOccupancy { get; set; }
     }
@@ -54,4 +54,29 @@
         public int NoOfVehicles { get; set; }
         public DateTime FirstDayOfMonth { get; internal set; }
     }
+
+    public class OccRevenueByProductList : ModelBase
+    {
+        public IList<OccRevenueByProduct> OccRevenueByProduc { get; set; }
+    }
+    public class OccWeeklyOccByDurationList : ModelBase
+    {
+        public IList<OccWeeklyOccByDuration> OccWeeklyOccByDurations { get; set; }
+    }
+    public class OccCurrentList : ModelBase
+    {
+        public IList<OccCurrent> OccCurrents { get; set; }
+    }
+
+    public class AvgMonthlyOccVsDurationList : ModelBase
+    {
+        public IList<AvgMonthlyOccVsDuration> AvgMonthlyOccVsDurations { get; set; }
+    }
+
+    public class YearlyOccupancyList : ModelBase
+    {
+        public IList<YearlyOccupancy> YearlyOccupancies { get; set; }
+    }
 }
+
+   

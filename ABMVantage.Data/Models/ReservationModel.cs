@@ -26,4 +26,25 @@
         public string? Time { get; set; }
         public DateTime Hour { get; internal set; }
     }
+
+    public class ReservationsByHourList:ModelBase
+    {
+        public IList<ReservationsByHour> ReservationsByHours { get; set; }
+    }
+
+    public class ReservationsByDayList : ModelBase
+    {
+        public IList<ReservationsByDay> ReservationsByDays { get; set; }
+    }
+    public class ReservationsByMonthList : ModelBase
+    {
+        public IList<ReservationsByMonth> ReservationsByMonths { get; set; }
+    }
+
+    public class ResAvgTicketValueList : ModelBase
+    {
+        public IList<ResAvgTicketValue> ResAvgTicketValues { get; set; }
+    }
+
+    //
 }

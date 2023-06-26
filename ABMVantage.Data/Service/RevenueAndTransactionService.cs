@@ -3,6 +3,7 @@
     using ABMVantage.Data.DataAccess;
     using ABMVantage.Data.Interfaces;
     using ABMVantage.Data.Models;
+    using ABMVantage.Data.Models.DashboardModels;
     using Microsoft.Azure.Cosmos.Serialization.HybridRow;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -78,6 +79,12 @@
             {
                 string error = ex.Message;
             }
+
+
+            //UI date rage display
+            //dailyTransactionsWithZerosWhereThereIsNoData.FromDate = filterParameters!.FromDate;
+            //dailyTransactionsWithZerosWhereThereIsNoData.ToDate = filterParameters!.ToDate;
+
             return dailyTransactionsWithZerosWhereThereIsNoData;
         }
 
