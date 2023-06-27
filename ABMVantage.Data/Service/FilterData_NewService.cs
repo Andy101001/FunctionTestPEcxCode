@@ -29,8 +29,8 @@ namespace ABMVantage.Data.Service
         public async Task<FilterData> GetFiltersData(ServiceLocations request)
         {
             var result = new FilterData();
-            try
-            {
+            //try
+            //{
                 var custBuList = request.BUs.Select(x => x.Bu).ToArray();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
@@ -42,11 +42,11 @@ namespace ABMVantage.Data.Service
                 result.Levels = levels;
                 result.Products = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).Select(l => new ProductData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, LevelId = l.LevelId, Level = l.Level, Id = l.ProductId, Name = l.ProductName!}).ToList().Distinct();
                 
-            }
-            catch (Exception ex)
+            //}
+            /*catch (Exception ex)
             {
                 string error = ex.Message;
-            }
+            }*/
             return result;
         }
         #endregion
