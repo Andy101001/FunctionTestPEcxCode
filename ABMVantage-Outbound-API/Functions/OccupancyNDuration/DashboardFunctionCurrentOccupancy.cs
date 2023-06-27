@@ -50,7 +50,7 @@
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionCurrentOccupancy)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new { response = result });
+            return new OkObjectResult(new { APIResponse = result });
         }
     }
 }

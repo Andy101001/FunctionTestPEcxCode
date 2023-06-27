@@ -46,7 +46,7 @@
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionHourlyReservations)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new { response = result });
+            return new OkObjectResult(new { APIResponse = result });
         }
     }
 }

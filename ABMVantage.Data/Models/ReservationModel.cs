@@ -29,21 +29,21 @@
 
     public class ReservationsByHourList:ModelBase
     {
-        public IList<ReservationsByHour> ReservationsByHours { get; set; }
+        public IList<ReservationsByHour> ReservationsByHours { get; set; } = new List<ReservationsByHour>();
     }
 
     public class ReservationsByDayList : ModelBase
     {
-        public IList<ReservationsByDay> ReservationsByDays { get; set; }
+        public IList<ReservationsByDay> ReservationsByDays { get; set; } = new List<ReservationsByDay>();
     }
     public class ReservationsByMonthList : ModelBase
     {
-        public IList<ReservationsByMonth> ReservationsByMonths { get; set; }
+        public IList<ReservationsByMonth> ReservationsByMonths { get; set; } = new List<ReservationsByMonth>();
     }
 
     public class ResAvgTicketValueList : ModelBase
     {
-        public IList<ResAvgTicketValue> ResAvgTicketValues { get; set; }
+        public IList<ResAvgTicketValue> ResAvgTicketValues { get; set; } = new List<ResAvgTicketValue>();
     }
 
     //
