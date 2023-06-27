@@ -41,8 +41,8 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 occRevenueByProductList.OccRevenueByProduc = sqlContext.OccupancyRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) &&
-                            (x.ProductId == null || products!.Contains(x.ProductId.Value!)))
+                      && levels!.Contains(x.LevelId!) &&
+                            products!.Contains(x.ProductId.Value!))
                             .GroupBy(x => new { x.ProductName }).Select(g =>
                                  new OccRevenueByProduct
                                  {
@@ -79,6 +79,8 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 occWeeklyOccByDuration.OccWeeklyOccByDurations = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                    && levels!.Contains(x.LevelId!)
+                    //&& products!.Contains(x.ProductId!.Value)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.Duration }).Select(g =>
@@ -115,6 +117,8 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                    && levels!.Contains(x.LevelId!)
+                    //&& products!.Contains(x.ProductId!.Value)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc <= toDate
                       )).ToList();
@@ -164,6 +168,8 @@
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                    && levels!.Contains(x.LevelId!)
+                    //&& products!.Contains(x.ProductId!.Value)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
                       )).GroupBy(x => new { x.Duration, x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
@@ -209,7 +215,7 @@
 
         public async Task<YearlyOccupancyList> GetYearlyOccupancy(FilterParam filterParameters)
         {
-           var yearlyOccupancyWithZerosWhereThereIsNoData = new YearlyOccupancyList();
+           var yearlyOccupancyWithZerosWhereThereIsNoData = new YearlyOccupancyList { YearlyOccupancies = new List<YearlyOccupancy>()};
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -224,6 +230,8 @@
                 var currentYearResult = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
+                      && levels.Contains(x.LevelId!)
+                      //&& products.Contains(x.ProductId!.Value)
                       )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
                          new YearlyOccupancy
                          {

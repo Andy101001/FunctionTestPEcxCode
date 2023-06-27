@@ -50,7 +50,7 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                    && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId)
                     && (x.Date >= fromDate && x.Date < toDate));
 
@@ -102,7 +102,7 @@
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
                          && (x.Day >= filterParameters!.FromDate && x.Day <= filterParameters.ToDate));
 
                 revenue.TotalRevenue = result.Sum(x => x.TotalRevenue);
@@ -135,7 +135,7 @@
                
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && levels!.Contains(x.LevelId!) && products!.Contains(x.ProductId)
                           && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters!.ToDate));
 
                 trasaction.totalTransactions = result.Count();
@@ -162,7 +162,7 @@
                
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.LevelId == string.Empty || x.LevelId == null || levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
                         && (x.BeginningOfHour >= filterParameters!.FromDate && x.BeginningOfHour < filterParameters.ToDate)).ToList();
 
 
@@ -236,7 +236,7 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueAndBudgetSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
-                && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null || !levels.Any())
+                && levels!.Contains(x.LevelId!)
                 && products!.Contains(x.ProductId)
                        && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate)).ToList();
 
@@ -289,7 +289,7 @@
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
                 int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                && levels!.Contains(x.LevelId!)
                 && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
 
 
@@ -451,7 +451,7 @@
                var fromDate = toDate.AddMonths(-13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.InsightsAverageMonthlyTicketValueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                var result = sqlContext.InsightsAverageMonthlyTicketValueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && levels!.Contains(x.LevelId!) && products!.Contains(x.ProductId)
                      && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate)).ToList();
 
                 var resultWithNestedMonthAndProductGrouping = from InsightsAverageMonthlyTicketValueSQL data in result

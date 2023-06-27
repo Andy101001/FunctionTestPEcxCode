@@ -46,7 +46,7 @@ namespace ABMVantage.Data.Service
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByHourList.ReservationsByHours = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                    && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour < parameters.ToDate).ToList()
                     .Select(g =>
                             new ReservationsByHour
@@ -81,7 +81,7 @@ namespace ABMVantage.Data.Service
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 reservationsByDay.ReservationsByDays = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                    && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
                     .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
                         new ReservationsByDay
@@ -120,7 +120,7 @@ namespace ABMVantage.Data.Service
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
                 var currentYearResult = sqlContext.ReservationsSpanningMonthSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                   && levels!.Contains(x.LevelId!)
                    && products!.Contains(x.ProductId) && x.BeginningOfMonth >= fromDate && x.BeginningOfMonth <= toDate)
                    .Select(x =>
                         new ReservationAndTicketGroupedResult
@@ -189,7 +189,7 @@ namespace ABMVantage.Data.Service
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                   && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
+                   && levels!.Contains(x.LevelId!)
                    && products!.Contains(x.ProductId)
                    && x.BeginningOfHour >= fromDate && x.BeginningOfHour < toDate).Select(r =>
                    new ResAvgTicketValue

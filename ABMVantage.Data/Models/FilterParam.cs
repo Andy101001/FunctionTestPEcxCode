@@ -49,7 +49,7 @@
     {
         public string FacilityId { get; set; }
         public string FacilityName { get; set; }
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public string Level { get; set; }
     }
 
