@@ -47,7 +47,7 @@
             _logger.LogInformation($"Executed function {nameof(DashboardFunctionRevenueVsBudget)}");
 
             //Just to make out json as required to UI
-            return new OkObjectResult(new { yearlyOccupancy = result });
+            return new OkObjectResult(new { APIResponse = result });
         }
     }
 }

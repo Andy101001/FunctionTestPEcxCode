@@ -177,7 +177,7 @@ namespace ABMVantage.Data.Service
 
         public async Task<ResAvgTicketValueList> GetReservationsAvgTkt(FilterParam parameters)
         {
-            ResAvgTicketValueList resAvgTicketValue = null;
+            ResAvgTicketValueList resAvgTicketValue = new ResAvgTicketValueList();
             var currentDateTimeEst = DateTime.UtcNow.AddHours(-4);
             var fromDate = new DateTime(currentDateTimeEst.Year, currentDateTimeEst.Month, currentDateTimeEst.Day, currentDateTimeEst.Hour, 0, 0);
             var toDate = fromDate.AddDays(1);

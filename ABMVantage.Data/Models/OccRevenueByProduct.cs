@@ -65,17 +65,17 @@
     }
     public class OccCurrentList : ModelBase
     {
-        public IList<OccCurrent> OccCurrents { get; set; }
+        public IList<OccCurrent> OccCurrents { get; set; } = new List<OccCurrent>();
     }
 
     public class AvgMonthlyOccVsDurationList : ModelBase
     {
-        public IList<AvgMonthlyOccVsDuration> AvgMonthlyOccVsDurations { get; set; }
+        public IList<AvgMonthlyOccVsDuration> AvgMonthlyOccVsDurations { get; set; } = new List<AvgMonthlyOccVsDuration>();
     }
 
     public class YearlyOccupancyList : ModelBase
     {
-        public IList<YearlyOccupancy> YearlyOccupancies { get; set; }
+        public IList<YearlyOccupancy> YearlyOccupancies { get; set; } = new List<YearlyOccupancy>();
     }
 }
 
