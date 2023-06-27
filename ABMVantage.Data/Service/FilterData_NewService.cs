@@ -29,8 +29,8 @@ namespace ABMVantage.Data.Service
         public async Task<FilterData> GetFiltersData(ServiceLocations request)
         {
             var result = new FilterData();
-            //try
-            //{
+            try
+            {
                 var custBuList = request.BUs.Select(x => x.Bu).ToArray();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
@@ -38,15 +38,15 @@ namespace ABMVantage.Data.Service
                 result.Facilities = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList();
                 var levels = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).Select(l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, Id = l.LevelId, Level = l.Level }).Distinct().ToList();
                 var firstFacility = result.Facilities.FirstOrDefault();
-                levels.Insert(0, new LevelData { FacilityId = firstFacility.Id, FacilityName = firstFacility.Name, Id = null, Level = "Show items with no associated Level" });
+                levels.Insert(0, new LevelData { FacilityId = firstFacility.Id, FacilityName = string.Empty, Id = null, Level = "Show items with no associated Level" });
                 result.Levels = levels;
                 result.Products = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).Select(l => new ProductData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, LevelId = l.LevelId, Level = l.Level, Id = l.ProductId, Name = l.ProductName!}).ToList().Distinct();
                 
-            //}
-            /*catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 string error = ex.Message;
-            }*/
+            }
             return result;
         }
         #endregion
