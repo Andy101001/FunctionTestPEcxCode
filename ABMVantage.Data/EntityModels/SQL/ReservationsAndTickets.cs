@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels.SQL
 {
-    [Table("Reservation")]
+    [Table("RptReservationsByHour")]
     public class ReservationSQL
     {
         [Key]
@@ -36,7 +36,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         public decimal TotalTicketValue { get; set; }
     }
 
-    [Table("ReservationsSpanningHour")]
+    [Table("RptReservationsSpanningHour")]
     public class ReservationSpanningHourSQL
     {
         [Key]
@@ -63,7 +63,7 @@ namespace ABMVantage.Data.EntityModels.SQL
 
     }
 
-    [Table("ReservationsSpanningMonth")]
+    [Table("RptReservationsSpanningMonth")]
     public class ReservationSpanningMonthSQL
     {
         [Key]

@@ -183,7 +183,7 @@
                     {
                         resultItem = new HourlyReservationCount
                         {
-                            ReservationDateTime = new DateTime() + hour,
+                            ReservationDateTime = filterParameters.FromDate + hour,
                             Data = filterParameters.Products.Select(x => new ReservationsByProduct { NoOfReservations = 0, Product = x.Name }),
                         };
                     }
@@ -372,14 +372,16 @@
                 toDate = monthlyInterval < 13 ? toDate : fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var transactionsByProductNameAndMonth = sqlContext.InsightsMonthlyTransactionsSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
-                      && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth <= toDate)).Select(g =>
+                var transactionsByProductNameAndMonth = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
+                      && (x.TransactionDate >= fromDate && x.TransactionDate <= toDate))
+                    .GroupBy(x => new { x.TransactionDate.Year, x.TransactionDate.Month, x.ProductId })
+                    .Select(g =>
                  new TransactionsByMonthAndProduct
                  {
-                     Year = g.FirstDayOfMonth.Year,
-                     Month = g.FirstDayOfMonth.Month,
-                     ParkingProduct = g.ProductName,
-                     TransactionCount = g.TransactionCount
+                     Year = g.Key.Year,
+                     Month = g.Key.Month,
+                     ParkingProductId = g.Key.ProductId,
+                     TransactionCount = g.Count()
                  }).ToList();
 
 
@@ -389,7 +391,7 @@
 
                     var transactionCountForMonth = new TransactionCountForMonth { Date = new DateTime(monthStart.Year, monthStart.Month, 1) };
                     
-                    var transactionsForMonth = transactionsByProductNameAndMonth.Where(x => x.Year == monthStart.Year && x.Month == monthStart.Month).OrderBy(x => x.ParkingProduct);
+                    var transactionsForMonth = transactionsByProductNameAndMonth.Where(x => x.Year == monthStart.Year && x.Month == monthStart.Month);
                     
                     if (!transactionsForMonth.Any())
                     {
@@ -399,7 +401,7 @@
                     {
                         foreach (var product in filterParameters.Products)
                         {
-                            var item = transactionsForMonth.Where(x => x.ParkingProduct == product.Name).Select(x => new TransactionsForProduct{ NoOfTransactions = x.TransactionCount, Product = product.Name  }).FirstOrDefault();
+                            var item = transactionsForMonth.Where(x => x.ParkingProductId == product.Id).Select(x => new TransactionsForProduct{ NoOfTransactions = x.TransactionCount, Product = product.Name  }).FirstOrDefault();
                             if (item == null)
                             {
                                 item = new TransactionsForProduct { NoOfTransactions = 0, Product = product.Name  };

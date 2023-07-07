@@ -89,7 +89,7 @@ namespace ABMVantage.Data.Models.DashboardModels
 
     public class TransactionsByMonthAndProduct
     {
-        public string? ParkingProduct { get; set; }
+        public int ParkingProductId { get; set; }
         public int Year { get; set; }
         public int Month { get; set; }
         public int TransactionCount { get; set; }

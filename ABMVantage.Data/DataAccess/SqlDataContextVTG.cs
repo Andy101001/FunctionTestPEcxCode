@@ -22,7 +22,7 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<InsightsAverageDialyOccupanySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsTotalRevenueSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsMonthlyTransactionSQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<InsightsMonthlyRevenueAndBudgetSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<InsightsMonthlyRevenueAndBudgetSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsMonthlyParkingOccupancySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsAverageMonthlyTicketValueSQL>().HasKey(c => c.Id);
 
@@ -40,7 +40,7 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<RevenueSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueRevenueVsBudgetSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenuebydaySQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<RevenueBudgetVsActualVarianceSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<RevenueBudgetVsActualVarianceSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RevenueAndBudgetSQL>().HasKey(c => c.Id);
 
             //Other
@@ -51,7 +51,7 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<InsightsAverageDialyOccupanySQL> InsightsAverageDialyOccupanySQLData { get; set; }
         public DbSet<InsightsTotalRevenueSQL> InsightsTotalRevenueSQLData { get; set; }
         public DbSet<InsightsMonthlyTransactionSQL> InsightsMonthlyTransactionsSQLData { get; set; }
-        public DbSet<InsightsMonthlyRevenueAndBudgetSQL> InsightsMonthlyRevenueAndBudgetSQLData { get; set; }
+        //public DbSet<InsightsMonthlyRevenueAndBudgetSQL> InsightsMonthlyRevenueAndBudgetSQLData { get; set; }
         public DbSet<InsightsMonthlyParkingOccupancySQL> InsightsMonthlyParkingOccupancySQLData { get; set; }
         public DbSet<InsightsAverageMonthlyTicketValueSQL> InsightsAverageMonthlyTicketValueSQLData { get; set; }
 
@@ -60,7 +60,7 @@ namespace ABMVantage.Data.DataAccess
 
         //Reservation and Tickets
         public DbSet<ReservationSQL> ReservationsSQLData { get; set; }
-        public DbSet<ReservationSpanningHourSQL> ReserationsSpanningHourSQLData { get; set; }
+        public DbSet<ReservationSpanningHourSQL> ReservationsSpanningHourSQLData { get; set; }
         
         public DbSet<ReservationSpanningMonthSQL> ReservationsSpanningMonthSQLData { get; set; }
 
@@ -76,7 +76,7 @@ namespace ABMVantage.Data.DataAccess
         
         //Removing this sql table because it has bad data. Replacing this table with RevenueTransactionSQL which has the same data without a bad join.
         //public DbSet<RevenuebydaySQL> RevenuebydaySQLData { get; set; }
-        public DbSet<RevenueBudgetVsActualVarianceSQL> RevenueBudgetVsActualVarianceSQLData { get; set; }
+        //public DbSet<RevenueBudgetVsActualVarianceSQL> RevenueBudgetVsActualVarianceSQLData { get; set; }
 
         public DbSet<RevenueAndBudgetSQL> RevenueAndBudgetSQLData { get; set; }
 

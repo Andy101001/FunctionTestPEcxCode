@@ -4,7 +4,7 @@
     {
         public int? NoOfReservations { get; set; }
         public string Time { get; set; }
-        public object BeginningOfHour { get; internal set; }
+        public DateTime BeginningOfHour { get; internal set; }
     }
     public class ReservationsByDay
     {
