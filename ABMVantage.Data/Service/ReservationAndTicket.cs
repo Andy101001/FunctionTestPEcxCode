@@ -42,10 +42,10 @@ namespace ABMVantage.Data.Service
                 //Requirement:  show the next 6 hours of reservations
                 parameters.FromDate= new(estDateTime.Year, estDateTime.Month, estDateTime.Day, estDateTime.Hour, 0,0);
                 // it has to add 5 next hours to show 6 record in including 1 one current hour.
-                parameters.ToDate = estDateTime.AddHours(5);
+                parameters.ToDate = parameters.FromDate.AddHours(5);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                reservationsByHourList.ReservationsByHours = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId) && x.BeginningOfHour>= parameters.FromDate && x.BeginningOfHour < parameters.ToDate).ToList()
                     .Select(g =>
@@ -55,6 +55,20 @@ namespace ABMVantage.Data.Service
                                 Time = g.BeginningOfHour.ToString("hh:mm tt"),
                                 NoOfReservations = g.NoOfReservations
                             }).OrderBy(x => x.BeginningOfHour).ToList();
+                for (var dateAndTime = parameters.FromDate; dateAndTime < parameters.ToDate; dateAndTime = dateAndTime.AddHours(1))
+                {
+                    var reservationsCount = result.FirstOrDefault(x => x.BeginningOfHour == dateAndTime);
+                    if (reservationsCount == null)
+                    {
+                        reservationsCount = new ReservationsByHour
+                        {
+                            BeginningOfHour = dateAndTime,
+                            Time = dateAndTime.ToString("hh:mm tt"),
+                            NoOfReservations = 0
+                        };
+                    }
+                    reservationsByHourList.ReservationsByHours.Add(reservationsCount);
+                }
             }
             catch (Exception ex)
             {
@@ -80,16 +94,30 @@ namespace ABMVantage.Data.Service
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                reservationsByDay.ReservationsByDays = sqlContext.ReserationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.ReservationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
-                    && products!.Contains(x.ProductId) && x.BeginningOfHour>=parameters.FromDate && x.BeginningOfHour<=parameters.ToDate).ToList()
-                    .GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
+                    && products!.Contains(x.ProductId) && x.BeginningOfHour >= parameters.FromDate && x.BeginningOfHour <= parameters.ToDate).ToList();
+                    var groupedResult= result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
                         new ReservationsByDay
                         {
                             Date = g.Key.Date, 
                             WeekDay = g.Key.Date.DayOfWeek.ToString(),
                             NoOfReservations = g.Max(x => x.NoOfReservations),
                         }).OrderBy(x =>x.Date).ToList();
+                for (var day = parameters.FromDate; day <= parameters.ToDate; day = day.AddDays(1))
+                {
+                    var reservationsCount = groupedResult.FirstOrDefault(x => x.Date == day);
+                    if (reservationsCount == null)
+                    {
+                        reservationsCount = new ReservationsByDay
+                        {
+                            Date = day,
+                            WeekDay = day.DayOfWeek.ToString(),
+                            NoOfReservations = 0
+                        };
+                    }
+                    reservationsByDay.ReservationsByDays.Add(reservationsCount);
+                }
             }
             catch (Exception ex)
             {

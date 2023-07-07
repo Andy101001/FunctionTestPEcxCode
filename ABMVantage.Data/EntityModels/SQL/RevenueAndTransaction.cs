@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ABMVantage.Data.EntityModels.SQL
 {
 
-    [Table("RevenueTransaction")]
+    [Table("RptTransactionDetail")]
     public class RevenueTransactionSQL
     {
         [Key]
@@ -22,20 +22,14 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("LevelId")]
         public string? LevelId { get; set; }
 
-        [Column("ProductId")]
+        [Column("ParkingProductId")]
         public int ProductId { get; set; }
 
         [Column("TransactionDate")]
         public DateTime TransactionDate { get; set; }
-
-        [Column("Amount")]
-        public decimal Amount { get; set; }
-
-        [Column("ProductName")]
-        public string ProductName { get; set; }
     }
 
-    [Table("Revenue")]
+    [Table("RptRevenueDetail")]
     public class RevenueSQL
     {
         [Key]
@@ -62,7 +56,7 @@ namespace ABMVantage.Data.EntityModels.SQL
     }
 
 
-    [Table("RevenueRevenueVsBudget")]
+    [Table("RptRevenueAndBudgetByMonth")]
     public class RevenueRevenueVsBudgetSQL
     {
         [Key]
@@ -95,7 +89,7 @@ namespace ABMVantage.Data.EntityModels.SQL
     }
 
 
-    [Table("Revenuebyday")]
+    [Table("RptRevenueForDay")]
     public class RevenuebydaySQL
     {
         [Key]
@@ -124,7 +118,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         public decimal BudgetedRevenue { get; set; }
     }
 
-    [Table("RevenueBudgetVsActualVariance")]
+    /*[Table("RevenueBudgetVsActualVariance")]
     public class RevenueBudgetVsActualVarianceSQL
     {
         [Key]
@@ -148,6 +142,6 @@ namespace ABMVantage.Data.EntityModels.SQL
 
         [Column("MonthId")]
         public int MonthId { get; set; }
-    }
+    }*/
 
 }

@@ -195,7 +195,7 @@
                         var item = avgMonthlyOccVsDuration.FirstOrDefault(x => x.FirstDayOfMonth == monthStart && x.Duration == duration);
                         if (item == null)
                         {
-                            item = new AvgMonthlyOccVsDuration { FirstDayOfMonth = monthStart, Duration = duration, Month = monthStart.ToString("MMM"), NoOfVehicles = 0 };
+                            item = new AvgMonthlyOccVsDuration { FirstDayOfMonth = monthStart, Duration = duration, Year = monthStart.Year, Month = monthStart.ToString("MMM"), NoOfVehicles = 0 };
                         }
                         avgMonthlyOccVsDurationWithZerosWhereThereIsNoData.AvgMonthlyOccVsDurations.Add(item);
                     }

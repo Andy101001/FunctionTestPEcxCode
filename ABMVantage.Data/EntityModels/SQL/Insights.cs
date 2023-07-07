@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ABMVantage.Data.EntityModels.SQL
 {
-    [Table("InsightsAverageDialyOccupany")]
+    [Table("RptOccupancyAverageForDay")]
     public class InsightsAverageDialyOccupanySQL
     {
         [Key]
@@ -29,7 +29,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         public DateTime? Date { get; set; }
     }
 
-    [Table("InsightsAverageMonthlyTicketValue")]
+    [Table("RptTicketAverageValueByMonthAndProduct")]
     public class InsightsAverageMonthlyTicketValueSQL
     {
         [Key]
@@ -55,7 +55,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         public decimal AverageTicketValue { get; set; }
     }
 
-    [Table("InsightsMonthlyParkingOccupancy")]
+    [Table("RptOccupancyAverageForMonth")]
     public class InsightsMonthlyParkingOccupancySQL
     {
         [Key]
@@ -84,7 +84,8 @@ namespace ABMVantage.Data.EntityModels.SQL
         public int NoOFDaysInMonth { get; set; }
     }
 
-    [Table("InsightsMonthlyRevenueAndBudget")]
+    /*
+    [Table("RptRevenueAndBudgetByMonth")]
     public class InsightsMonthlyRevenueAndBudgetSQL
     {
         [Key]
@@ -112,6 +113,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("BudgetedRevenue")]
         public decimal BudgetedRevenue { get; set; }
     }
+    */
 
     [Table("InsightsMonthlyTransaction")]
     public class InsightsMonthlyTransactionSQL

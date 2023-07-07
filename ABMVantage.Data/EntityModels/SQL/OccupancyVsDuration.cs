@@ -38,7 +38,8 @@ namespace ABMVantage.Data.EntityModels.SQL
         public DateTime? OccupancyExitDateTimeUtc { get; set; }
     }
 
-    [Table("OccupancyRevenue")]
+    
+    [Table("RptSpaceChangeWithDuration")]
     public class OccupancyRevenueSQLData
     {
         [Key]
@@ -60,4 +61,5 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("Amount")]
         public double Amount { get; set; }
     }
+    
 }
