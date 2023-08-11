@@ -422,7 +422,16 @@
             {
                 var currentYearFilter = inputFilter;
                 currentYearFilter.FromDate = new DateTime(inputFilter.FromDate.Year, inputFilter.FromDate.Month, 1);
-                currentYearFilter.ToDate = currentYearFilter.FromDate.AddMonths(13);
+
+                //https://dev.azure.com/abm-ss/ABMVantage/_workitems/edit/2693/
+                //bug # 4018 Dated: 08/11/2023
+                // show data only in selected date range, if month>13 then take only 13 months of data from fromDate.
+                var monthlyInterval = (currentYearFilter.ToDate.Year - currentYearFilter.FromDate.Year) * 12 + (currentYearFilter.ToDate.Month - currentYearFilter.FromDate.Month);
+                
+                currentYearFilter.ToDate = monthlyInterval < 13 ? currentYearFilter.ToDate : currentYearFilter.FromDate.AddMonths(12);
+
+                //currentYearFilter.ToDate = currentYearFilter.FromDate.AddMonths(13);
+
                 var previousyearFilter = new FilterParam
                 {
                     CustomerId = currentYearFilter.CustomerId,
@@ -437,7 +446,7 @@
                 var currentYearResults = await GetTransactonByMonth(currentYearFilter);
                 var previousYearResults = await GetTransactonByMonth(previousyearFilter);
 
-                for (DateTime monthStart = currentYearFilter.FromDate; monthStart < currentYearFilter.ToDate; monthStart = monthStart.AddMonths(1))
+                for (DateTime monthStart = currentYearFilter.FromDate; monthStart <= currentYearFilter.ToDate; monthStart = monthStart.AddMonths(1))
                 {
                     var data = new CurrentAndPreviousYearMonthlyTransaction();
                     data.Month = monthStart.ToString("MMM");
@@ -447,15 +456,16 @@
                     data.PreviousYearNoOfTransactions = previousYearResult?.NoOfTransactions ?? 0;
                     transactions.PreviousYearMonthly.Add(data);
                 }
+
+
+                //UI date rage display
+                transactions.FromDate = currentYearFilter!.FromDate;
+                transactions.ToDate = currentYearFilter!.ToDate;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"{nameof(GetTransactonMonths)} has an error! : {ex.Message}");
             }
-
-            //UI date rage display
-            transactions.FromDate = inputFilter!.FromDate;
-            transactions.ToDate = inputFilter!.ToDate;
 
             return transactions;
         }
@@ -469,7 +479,7 @@
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
                 //to show 13 month of data, it 12 month to from date and 1 current month is alrady included.
-                parameters.ToDate = parameters.FromDate.AddMonths(13);
+                //parameters.ToDate = parameters.FromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 transactionsByMonth = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
