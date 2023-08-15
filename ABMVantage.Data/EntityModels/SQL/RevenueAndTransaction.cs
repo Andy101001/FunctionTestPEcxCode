@@ -57,7 +57,7 @@ namespace ABMVantage.Data.EntityModels.SQL
 
 
     [Table("RptRevenueAndBudgetByMonth")]
-    public class RevenueRevenueVsBudgetSQL
+    public class RevenueAndBudgetSQL
     {
         [Key]
         [Column("Id")]
@@ -72,8 +72,8 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("ProductId")]
         public int ProductId { get; set; }
 
-        [Column("TransactionDate")]
-        public DateTime TransactionDate { get; set; }
+        [Column("FirstDayOfMonth")]
+        public DateTime FirstDayOfMonth { get; set; }
 
         [Column("Revenue")]
         public decimal Revenue { get; set; }
@@ -81,11 +81,6 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("BudgetedRevenue")]
         public decimal BudgetedRevenue { get; set; }
 
-        [Column("Year")]
-        public int Year { get; set; }
-
-        [Column("Month")]
-        public int Month { get; set; }
     }
 
 
