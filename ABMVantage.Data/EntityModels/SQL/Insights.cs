@@ -84,36 +84,6 @@ namespace ABMVantage.Data.EntityModels.SQL
         public int NoOFDaysInMonth { get; set; }
     }
 
-    /*
-    [Table("RptRevenueAndBudgetByMonth")]
-    public class InsightsMonthlyRevenueAndBudgetSQL
-    {
-        [Key]
-        [Column("Id")]
-        public int Id { get; set; }
-
-        [Column("FacilityId")]
-        public string? FacilityId { get; set; }
-
-        [Column("LevelId")]
-        public string? LevelId { get; set; }
-
-        [Column("ProductId")]
-        public int ProductId { get; set; }
-
-        [Column("ProductName")]
-        public string? ProductName { get; set; }
-
-        [Column("FirstDayOfMonth")]
-        public DateTime FirstDayOfMonth { get; set; }
-
-        [Column("Revenue")]
-        public decimal Revenue { get; set; }
-
-        [Column("BudgetedRevenue")]
-        public decimal BudgetedRevenue { get; set; }
-    }
-    */
 
     [Table("InsightsMonthlyTransaction")]
     public class InsightsMonthlyTransactionSQL
