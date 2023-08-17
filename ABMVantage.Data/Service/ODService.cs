@@ -221,13 +221,20 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                var toDate = filterParameters!.FromDate;
+               
+                //Bug: 5395 Dated: 08/17/2022
+                var toDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1);
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2978
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
 
-                var currentYearResult = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var currentYearResult2 = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                x.OccupancyEntryDateTimeUtc < toDate
+                && levels.Contains(x.LevelId!))).ToList();
+
+
+        var currentYearResult = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                       && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
                       x.OccupancyEntryDateTimeUtc < toDate
                       && levels.Contains(x.LevelId!)
