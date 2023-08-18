@@ -45,6 +45,8 @@ namespace ABMVantage.Data.DataAccess
 
             //Other
             modelBuilder.Entity<FacilityLevelProductSQL>().HasKey(c => c.Id);
+            modelBuilder.Entity<RptDataReferesh>().HasKey(c => c.Id);
+            
         }
 
         //Insights
@@ -76,6 +78,9 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<RevenueAndBudgetSQL> RevenueAndBudgetSQLData { get; set; }
 
         public DbSet<FacilityLevelProductSQL> FacilityLevelProductSQLData { get; set; }
+
+        //RptDataReferesh
+        public DbSet<RptDataReferesh> RptDataRefereshSQlData { get; set; }
 
 
 

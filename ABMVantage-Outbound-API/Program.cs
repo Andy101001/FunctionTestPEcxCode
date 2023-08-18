@@ -155,6 +155,10 @@ namespace ABMVantage_Outbound_API
                 s.AddSingleton<IConnectionMultiplexer>(multiplexer);
                 s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
                 s.AddScoped<ISingleTicketEVChargesService, SingleTicketEVChargesService>();
+                //RefereshService
+                s.AddScoped<IDataRefereshService, DataRefereshService>();
+
+                
 
 
                 s.AddOptions();
