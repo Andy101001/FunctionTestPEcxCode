@@ -21,10 +21,15 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("ChartName")]
         public string ChartName { get; set; }
 
+        [Column("ChartKeyName")]
+        public string ChartKeyName { get; set; }
+
         [Column("PageName")]
         public string PageName { get; set; }
 
         [Column("DataRefreshDate")]
         public DateTime DataRefreshDate { get; set; }
+
+        
     }
 }

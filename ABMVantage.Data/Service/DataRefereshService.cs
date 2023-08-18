@@ -39,7 +39,8 @@ namespace ABMVantage.Data.Service
                 {
                     ChartName = x.ChartName.Trim(),
                     DataRefreshDate=x.DataRefreshDate,
-                    PageName=x.PageName.Trim()
+                    PageName=x.PageName.Trim(),
+                    ChartKeyName=x.ChartKeyName.Trim(),
                 }).ToList();
                 
             }
