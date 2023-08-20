@@ -52,17 +52,15 @@
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
                     && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId)
-                    && (x.Date >= fromDate && x.Date < toDate));
+                    && x.Date >= fromDate && x.Date < toDate).ToArray();
 
-                var sql= result.ToQueryString();
+                //var sql= result.ToQueryString();
 
-                var data=result.ToList();
+                //var data=result.ToList();
 
                 int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
                 
-                int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!) 
-                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) 
-                    && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
+                int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
                 TimeSpan filterRange = toDate - fromDate;
                 int totalAvailableSpaceHours = totalParkingSpaceCount * filterRange.Days * 24;
                 if (totalParkingSpaceCount > 0)
