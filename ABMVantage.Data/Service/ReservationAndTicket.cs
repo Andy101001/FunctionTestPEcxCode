@@ -133,7 +133,7 @@ namespace ABMVantage.Data.Service
 
         public async Task<ReservationsByMonthList> GetMonthlyReservations(FilterParam parameters)
         {
-            var reservationsByMonthList = new ReservationsByMonthList(); 
+            var reservationsByMonthList = new ReservationsByMonthList();
 
             try
             {
@@ -141,9 +141,9 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Requirement: next
+                //Requirement: The chart accurately displays the number of reservations that have actually started in each month within a static 13-month period (January to January).
                 var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-                var toDate = fromDate.AddMonths(7);
+                var toDate = fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
@@ -161,7 +161,7 @@ namespace ABMVantage.Data.Service
 
                 var previousYearResult = sqlContext.ReservationsSpanningMonthSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null)
-                   && products!.Contains(x.ProductId) && x.BeginningOfMonth >=fromDate.AddYears(-1) && x.BeginningOfMonth <=toDate.AddYears(-1))
+                   && products!.Contains(x.ProductId) && x.BeginningOfMonth >= fromDate.AddYears(-1) && x.BeginningOfMonth <= toDate.AddYears(-1))
                  .Select(x =>
                         new ReservationAndTicketGroupedResult
                         {
@@ -170,25 +170,44 @@ namespace ABMVantage.Data.Service
                         }
                    ).ToList();
 
-                reservationsByMonthList.ReservationsByMonths = currentYearResult.Select(x => new ReservationsByMonth
+                for (var firstDayOfMonth = fromDate; firstDayOfMonth < toDate; firstDayOfMonth = firstDayOfMonth.AddMonths(1))
                 {
-                    FirstDayOfMonth = x.FirstDayOfMonth,
-                    Fiscal = "CURRENT",
-                    Year = x.FirstDayOfMonth.Year,
-                    NoOfReservations = x.NoOfReservations,
-                    Month = x.FirstDayOfMonth.ToString("MMM")
-                }).ToList();
+                    var currentYearReservationsCount = currentYearResult.FirstOrDefault(x => x.FirstDayOfMonth == firstDayOfMonth);
+                    if (currentYearReservationsCount == null)
+                    {
+                        currentYearReservationsCount = new ReservationAndTicketGroupedResult
+                        {
+                            FirstDayOfMonth = firstDayOfMonth,
+                            NoOfReservations = 0
+                        };
+                    }
+                    reservationsByMonthList.ReservationsByMonths.Add(new ReservationsByMonth
+                    {
+                        FirstDayOfMonth = currentYearReservationsCount.FirstDayOfMonth,
+                        Fiscal = "CURRENT",
+                        Year = currentYearReservationsCount.FirstDayOfMonth.Year,
+                        NoOfReservations = currentYearReservationsCount.NoOfReservations,
+                        Month = currentYearReservationsCount.FirstDayOfMonth.ToString("MMM")
+                    });
 
-                var previousYear = previousYearResult.Select(x => new ReservationsByMonth
-                {
-
-                    FirstDayOfMonth = x.FirstDayOfMonth,
-                    Fiscal = "PREVIOUS",
-                    Year = x.FirstDayOfMonth.Year,
-                    NoOfReservations = x.NoOfReservations,
-                    Month = x.FirstDayOfMonth.ToString("MMM")
-                });
-                reservationsByMonthList.ReservationsByMonths.Concat(previousYear).OrderBy(x => x.FirstDayOfMonth);
+                    var previousYearReservationsCount = previousYearResult.FirstOrDefault(x => x.FirstDayOfMonth == firstDayOfMonth);
+                    if (previousYearReservationsCount == null)
+                    {
+                        previousYearReservationsCount = new ReservationAndTicketGroupedResult
+                        {
+                            FirstDayOfMonth = firstDayOfMonth,
+                            NoOfReservations = 0
+                        };
+                    }
+                    reservationsByMonthList.ReservationsByMonths.Add(new ReservationsByMonth
+                    {
+                        FirstDayOfMonth = previousYearReservationsCount.FirstDayOfMonth,
+                        Fiscal = "PREVIOUS",
+                        Year = previousYearReservationsCount.FirstDayOfMonth.Year,
+                        NoOfReservations = previousYearReservationsCount.NoOfReservations,
+                        Month = previousYearReservationsCount.FirstDayOfMonth.ToString("MMM")
+                    });
+                }
 
             }
             catch (Exception ex)
