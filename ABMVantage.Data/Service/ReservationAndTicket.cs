@@ -191,7 +191,7 @@ namespace ABMVantage.Data.Service
                         Month = currentYearReservationsCount.FirstDayOfMonth.ToString("MMM")
                     });
 
-                    var previousYearReservationsCount = previousYearResult.FirstOrDefault(x => x.FirstDayOfMonth == firstDayOfMonth);
+                    var previousYearReservationsCount = previousYearResult.FirstOrDefault(x => x.FirstDayOfMonth == firstDayOfMonth.AddYears(-1));
                     if (previousYearReservationsCount == null)
                     {
                         previousYearReservationsCount = new ReservationAndTicketGroupedResult
