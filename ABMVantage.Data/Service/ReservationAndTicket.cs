@@ -170,7 +170,7 @@ namespace ABMVantage.Data.Service
                         }
                    ).ToList();
 
-                for (var firstDayOfMonth = fromDate; firstDayOfMonth < toDate; firstDayOfMonth = firstDayOfMonth.AddMonths(1))
+                for (var firstDayOfMonth = fromDate; firstDayOfMonth <= toDate; firstDayOfMonth = firstDayOfMonth.AddMonths(1))
                 {
                     var currentYearReservationsCount = currentYearResult.FirstOrDefault(x => x.FirstDayOfMonth == firstDayOfMonth);
                     if (currentYearReservationsCount == null)
