@@ -134,6 +134,10 @@ namespace ABMVantage.Data.Service
         public async Task<ReservationsByMonthList> GetMonthlyReservations(FilterParam parameters)
         {
             var reservationsByMonthList = new ReservationsByMonthList();
+            //Requirement: The chart accurately displays the number of reservations that have actually started in each month within a static 13-month period (January to January).
+            var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var toDate = fromDate.AddMonths(13);
+
 
             try
             {
@@ -141,9 +145,6 @@ namespace ABMVantage.Data.Service
                 var facilities = parameters.Facilities.Select(x => x.Id).ToList();
                 var products = parameters.Products.Select(x => x.Id).ToList();
 
-                //Requirement: The chart accurately displays the number of reservations that have actually started in each month within a static 13-month period (January to January).
-                var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-                var toDate = fromDate.AddMonths(13);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
@@ -216,8 +217,8 @@ namespace ABMVantage.Data.Service
             }
 
             //to show UI Data for date range text
-            reservationsByMonthList.FromDate = parameters.FromDate;
-            reservationsByMonthList.ToDate = parameters.ToDate;
+            reservationsByMonthList.FromDate = fromDate;
+            reservationsByMonthList.ToDate = toDate;
 
             return reservationsByMonthList;
         }
