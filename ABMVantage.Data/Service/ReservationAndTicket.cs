@@ -94,19 +94,21 @@ namespace ABMVantage.Data.Service
                 parameters.ToDate = parameters.FromDate.AddDays(7);
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.ReservationsSpanningHourSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.ReservationsSpanningDaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
-                    && products!.Contains(x.ProductId) && x.BeginningOfHour >= parameters.FromDate && x.BeginningOfHour <= parameters.ToDate).ToList();
-                    var groupedResult= result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
+                    && products!.Contains(x.ProductId) && x.BeginningOfDay >= parameters.FromDate && x.BeginningOfDay <= parameters.ToDate).ToList();
+                    /*var groupedResult= result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
                         new ReservationsByDay
                         {
                             Date = g.Key.Date, 
                             WeekDay = g.Key.Date.DayOfWeek.ToString(),
                             NoOfReservations = g.Max(x => x.NoOfReservations),
-                        }).OrderBy(x =>x.Date).ToList();
-                for (var day = parameters.FromDate; day <= parameters.ToDate; day = day.AddDays(1))
+                        }).OrderBy(x =>x.Date).ToList();*/
+
+                for (var day = parameters.FromDate; day < parameters.ToDate; day = day.AddDays(1))
                 {
-                    var reservationsCount = groupedResult.FirstOrDefault(x => x.Date == day);
+                    var reservationsSpanningDay = result.FirstOrDefault(x => x.BeginningOfDay == day);
+                    var reservationsCount = reservationsSpanningDay != null ? new ReservationsByDay { Date = day, NoOfReservations = reservationsSpanningDay.NoOfReservations, WeekDay = day.DayOfWeek.ToString() } : null;
                     if (reservationsCount == null)
                     {
                         reservationsCount = new ReservationsByDay

@@ -63,6 +63,36 @@ namespace ABMVantage.Data.EntityModels.SQL
 
     }
 
+
+    [Table("RptReservationsSpanningDay")]
+    public class ReservationSpanningDaySQL
+    {
+        [Key]
+        [Column("Id")]
+        public int Id { get; set; }
+
+        [Column("FacilityId")]
+        public string? FacilityId { get; set; }
+
+        [Column("LevelId")]
+        public string? LevelId { get; set; }
+
+        [Column("ProductId")]
+        public int ProductId { get; set; }
+
+        [Column("ProductName")]
+        public string? ProductName { get; set; }
+
+        [Column("BeginningOfDay")]
+        public DateTime BeginningOfDay { get; set; }
+
+        [Column("NoOfReservations")]
+        public int NoOfReservations { get; set; }
+
+    }
+
+
+
     [Table("RptReservationsSpanningMonth")]
     public class ReservationSpanningMonthSQL
     {
