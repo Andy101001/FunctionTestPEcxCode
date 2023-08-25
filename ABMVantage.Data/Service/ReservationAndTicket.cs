@@ -138,7 +138,7 @@ namespace ABMVantage.Data.Service
             var reservationsByMonthList = new ReservationsByMonthList();
             //Requirement: The chart accurately displays the number of reservations that have actually started in each month within a static 13-month period (January to January).
             var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-            var toDate = fromDate.AddMonths(13);
+            var toDate = fromDate.AddMonths(12);
 
 
             try
@@ -220,7 +220,7 @@ namespace ABMVantage.Data.Service
 
             //to show UI Data for date range text
             reservationsByMonthList.FromDate = fromDate;
-            reservationsByMonthList.ToDate = toDate;
+            reservationsByMonthList.ToDate = toDate.AddMicroseconds(-1);
 
             return reservationsByMonthList;
         }
