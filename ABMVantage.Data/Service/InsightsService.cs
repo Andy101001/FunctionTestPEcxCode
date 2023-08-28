@@ -454,34 +454,31 @@
                 var result = sqlContext.InsightsAverageMonthlyTicketValueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && levels!.Contains(x.LevelId!) && products!.Contains(x.ProductId)
                      && (x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate)).ToList();
 
-                //var resultWithNestedMonthAndProductGrouping = from InsightsAverageMonthlyTicketValueSQL data in result
-                //                                              group data by new { data.FirstDayOfMonth.Year, data.FirstDayOfMonth.Month, data.ProductName } into monthlyGroup
-                //                                              select new AverageTicketValueForMonth
-                //                                              {
-                //                                                  Date = new DateTime(monthlyGroup.Key.Year, monthlyGroup.Key.Month, 1), //monthlyGroup.Key.Year.ToString() + monthlyGroup.Key.Month.ToString(),
-                //                                                  Data = monthlyGroup.Select(x => new TicketValueAverage { ParkingProduct = x.ProductName!, AverageTicketValue = Convert.ToInt32(x.AverageTicketValue) }).ToList()
-                //                                              };
-
                 //Bug # 5346 Developer: Charan Verma, Date: 08/28/223
                 //Desc: Appy grup by product and sum of AverageTicketValue
-                var resultWithNestedMonthAndProductGrouping = result.GroupBy(x => new { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.Month, Product=x.ProductName }).Select(g =>
-                       new AverageTicketValueForMonth
+
+                var resultWithNestedMonthAndProductGrouping = result.GroupBy(x => new { Year = x.FirstDayOfMonth.Year, Month = x.FirstDayOfMonth.Month, Product = x.ProductName }).Select(g =>
+                       new 
                        {
                            Date = new DateTime(g.Key.Year, g.Key.Month, 1),
-                           Data= new List<TicketValueAverage> { new TicketValueAverage { 
-                                AverageTicketValue=Convert.ToDouble(g.Sum(x=>x.AverageTicketValue)),
-                                ParkingProduct=g.Key.Product!
-                           } },
-                          
-                       }).ToList();
+                           AverageTicketValue=Convert.ToDouble(g.Sum(x=>x.AverageTicketValue)),
+                           ParkingProduct=g.Key.Product!
+                           } 
+
+                       ).ToList();
+
 
                 var resultWithZerosForMissingData = new List<AverageTicketValueForMonth>();
+
                 for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))
                 {
-                    var averageTicketValueForMonth = resultWithNestedMonthAndProductGrouping.Where(x => x.Date == monthStart).FirstOrDefault();
+                    var averageTicketValueForMonth = resultWithNestedMonthAndProductGrouping.Where(x => x.Date == monthStart).ToList();
+                    var avgTicketValueForMoth = new AverageTicketValueForMonth();
+                    var avgTicketValue = new TicketValueAverage();
+
                     if (averageTicketValueForMonth == null)
                     {
-                        averageTicketValueForMonth = new AverageTicketValueForMonth
+                        avgTicketValueForMoth = new AverageTicketValueForMonth
                         {
                             Date = monthStart,
                             Data = filterParameters.Products.Select(x => new TicketValueAverage { ParkingProduct = x.Name, AverageTicketValue = 0 }).ToList()
@@ -491,27 +488,33 @@
                     {
                         foreach (var product in filterParameters.Products) 
                         {
-                            var ticketValueAverage = averageTicketValueForMonth.Data.Where(x => x.ParkingProduct == product.Name).FirstOrDefault();
+                            var ticketValueAverage = averageTicketValueForMonth.Where(x => x.ParkingProduct == product.Name).FirstOrDefault();
+                            avgTicketValueForMoth.Date = monthStart;
                             if (ticketValueAverage == null)
                             {
-                                ticketValueAverage = new TicketValueAverage { ParkingProduct = product.Name, AverageTicketValue = 0 };
-                                averageTicketValueForMonth.Data.Add(ticketValueAverage);
+                                avgTicketValue = new TicketValueAverage { ParkingProduct = product.Name, AverageTicketValue = 0 };
                             }
+                            else
+                            {
+                                avgTicketValue = new TicketValueAverage { ParkingProduct = product.Name, AverageTicketValue = ticketValueAverage.AverageTicketValue };
+                                
+                            }
+                            avgTicketValueForMoth.Data.Add(avgTicketValue);
                         }
                     }
-                    resultWithZerosForMissingData.Add(averageTicketValueForMonth);
+                    resultWithZerosForMissingData.Add(avgTicketValueForMoth);
                 }
 
                 dashboardMonthlyAverageTicketValue.Response = resultWithZerosForMissingData;
+
+                //UI date rage display
+                dashboardMonthlyAverageTicketValue.FromDate = fromDate;
+                dashboardMonthlyAverageTicketValue.ToDate = toDate;
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-
-            //UI date rage display
-            dashboardMonthlyAverageTicketValue.FromDate = filterParameters!.FromDate;
-            dashboardMonthlyAverageTicketValue.ToDate = filterParameters!.ToDate;
 
             return dashboardMonthlyAverageTicketValue;
         }
