@@ -191,10 +191,10 @@
                          new OccVsDurationGroupedResult
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Duration = g.Key.Duration,
+                             Duration = g.Key.Duration.Trim(),
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM"),
-                             NoOfVehicles = g.Count()
+                             NoOfVehicles =g.Count()
                          }).ToList();
 
                 var avgMonthlyOccVsDuration = result.Select(x => new AvgMonthlyOccVsDuration { FirstDayOfMonth = x.FirstDayOfMonth, Duration = x.Duration, Month = x.Month, NoOfVehicles = x.NoOfVehicles, Year = x.Year }).ToList();
