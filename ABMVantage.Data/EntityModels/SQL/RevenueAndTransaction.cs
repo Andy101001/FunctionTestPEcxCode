@@ -27,6 +27,9 @@ namespace ABMVantage.Data.EntityModels.SQL
 
         [Column("TransactionDate")]
         public DateTime TransactionDate { get; set; }
+
+        [Column("Duration")]
+        public string? Duration { get; set; }
     }
 
     [Table("RptRevenueDetail")]

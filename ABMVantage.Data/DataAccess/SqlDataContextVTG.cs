@@ -35,6 +35,9 @@ namespace ABMVantage.Data.DataAccess
             //Occupancy and Duration
             modelBuilder.Entity<OccupancyVsDurationSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<OccupancyRevenueSQLData>().HasKey(c => c.Id);
+            modelBuilder.Entity<OccupancyDetail>().HasKey(c => c.Id);
+
+            
 
             //Revenue and Transactions
             modelBuilder.Entity<RevenueTransactionSQL>().HasKey(c => c.Id);
@@ -70,7 +73,10 @@ namespace ABMVantage.Data.DataAccess
         //Occupancy
         public DbSet<OccupancyRevenueSQLData> OccupancyRevenueSQLData { get; set; }
         public DbSet<OccupancyVsDurationSQL> OccupancyVsDurationSQLData { get; set; }
-        
+        public DbSet<OccupancyDetail> OccupancyDetailSQLData { get; set; }
+
+
+        //
         //Revenue and Transactions
         public DbSet<RevenueTransactionSQL> RevenueTransactionSQLData { get; set; }
         //Revenue

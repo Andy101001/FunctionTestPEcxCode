@@ -77,12 +77,25 @@
                 var toDate = filterParameters!.FromDate;
                 var fromDate = toDate.AddDays(-1);
 
+                //using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+                //occWeeklyOccByDuration.OccWeeklyOccByDurations = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                //    && levels!.Contains(x.LevelId!)
+                //    //&& products!.Contains(x.ProductId!.Value)
+                //      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
+                //      x.OccupancyEntryDateTimeUtc < toDate
+                //      )).GroupBy(x => new { x.Duration }).Select(g =>
+                // new OccWeeklyOccByDuration
+                // {
+                //     Duration = g.Key.Duration!,
+                //     TotalWeeklyOccupancy = g.Count()
+                // }).OrderBy(x => x.Duration).ToList();
+
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                occWeeklyOccByDuration.OccWeeklyOccByDurations = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                occWeeklyOccByDuration.OccWeeklyOccByDurations = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
-                    //&& products!.Contains(x.ProductId!.Value)
-                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < toDate
+                      && products!.Contains(x.ProductId!)
+                      && (x.TransactionDate>= fromDate && x.TransactionDate != null &&
+                      x.TransactionDate < toDate
                       )).GroupBy(x => new { x.Duration }).Select(g =>
                  new OccWeeklyOccByDuration
                  {
@@ -116,20 +129,22 @@
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+
+                //bug:5723 dated: 08/30/2023
+                var result = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
                     //&& products!.Contains(x.ProductId!.Value)
-                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc <= toDate
-                      )).ToList();
+                      && x.BeginningOfHour >= fromDate && x.BeginningOfHour != null &&
+                      x.BeginningOfHour <= toDate
+                      ).ToList();
 
                 //Group by Hour
-                var resultByHour = result.GroupBy(x => new DateTime(x.OccupancyEntryDateTimeUtc.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month, x.OccupancyEntryDateTimeUtc.Value.Day, x.OccupancyEntryDateTimeUtc.Value.Hour, 0,0)).Select(g =>
+                var resultByHour = result.GroupBy(x => new DateTime(x.BeginningOfHour.Year, x.BeginningOfHour.Month, x.BeginningOfHour.Day, x.BeginningOfHour.Hour, 0,0)).Select(g =>
                  new OccCurrent
                  {
                      MonthInt = g.Key.Hour,
                      Time = g.Key.ToString("hh:mm tt"),
-                     NoOfOccupiedParking = g.Count()
+                     NoOfOccupiedParking = g.Sum(p => p.OccupancyForHour)
 
                  }).ToList();
 
@@ -167,12 +182,12 @@
                 var toDate = filterParameters!.FromDate;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
                     //&& products!.Contains(x.ProductId!.Value)
-                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < toDate
-                      )).GroupBy(x => new { x.Duration, x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc.Value.Month }).Select(g =>
+                      && (x.TransactionDate >= fromDate && x.TransactionDate != null &&
+                      x.TransactionDate < toDate
+                      )).GroupBy(x => new { x.Duration, x.TransactionDate!.Year, x.TransactionDate.Month }).Select(g =>
                          new OccVsDurationGroupedResult
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
