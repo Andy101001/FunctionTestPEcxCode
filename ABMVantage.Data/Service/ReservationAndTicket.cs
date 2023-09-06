@@ -96,18 +96,18 @@ namespace ABMVantage.Data.Service
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.ReservationsSpanningDaySQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
-                    && products!.Contains(x.ProductId) && x.BeginningOfDay >= parameters.FromDate && x.BeginningOfDay <= parameters.ToDate).ToList();
-                    /*var groupedResult= result.GroupBy(x => new { x.ProductId, x.BeginningOfHour.Date }).Select(g =>
+                    && products!.Contains(x.ProductId) && x.BeginningOfDay >= parameters.FromDate && x.BeginningOfDay < parameters.ToDate).ToList();
+                    var groupedResult= result.GroupBy(x => x.BeginningOfDay).Select(g =>
                         new ReservationsByDay
                         {
-                            Date = g.Key.Date, 
-                            WeekDay = g.Key.Date.DayOfWeek.ToString(),
-                            NoOfReservations = g.Max(x => x.NoOfReservations),
-                        }).OrderBy(x =>x.Date).ToList();*/
+                            Date = g.Key, 
+                            WeekDay = g.Key.DayOfWeek.ToString(),
+                            NoOfReservations = g.Sum(x => x.NoOfReservations),
+                        }).OrderBy(x =>x.Date).ToList();
 
                 for (var day = parameters.FromDate; day < parameters.ToDate; day = day.AddDays(1))
                 {
-                    var reservationsSpanningDay = result.FirstOrDefault(x => x.BeginningOfDay == day);
+                    var reservationsSpanningDay = groupedResult.FirstOrDefault(x => x.Date == day);
                     var reservationsCount = reservationsSpanningDay != null ? new ReservationsByDay { Date = day, NoOfReservations = reservationsSpanningDay.NoOfReservations, WeekDay = day.DayOfWeek.ToString() } : null;
                     if (reservationsCount == null)
                     {
