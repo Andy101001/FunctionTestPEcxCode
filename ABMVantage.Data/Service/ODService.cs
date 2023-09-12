@@ -243,35 +243,29 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-
-                var currentYearResult2 = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                x.OccupancyEntryDateTimeUtc < toDate
-                && levels.Contains(x.LevelId!))).ToList();
-
-
-        var currentYearResult = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.OccupancyEntryDateTimeUtc >= fromDate && x.OccupancyExitDateTimeUtc != null &&
-                      x.OccupancyEntryDateTimeUtc < toDate
+                var currentYearResult = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                      && (x.BeginningOfHour >= fromDate && x.BeginningOfHour != null &&
+                      x.BeginningOfHour < toDate
                       && levels.Contains(x.LevelId!)
                       //&& products.Contains(x.ProductId!.Value)
-                      )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
+                      )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupancyForHour }).Select(g =>
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Count(),
+                             Occupancy = g.Sum(s=>s.OccupancyForHour),
                              Fiscal = "CURRENT",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
                          }).ToArray();
 
-                var previousYearResults = sqlContext.OccupancyVsDurationSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                            && (x.OccupancyEntryDateTimeUtc >= fromDate.AddYears(-1) && x.OccupancyExitDateTimeUtc != null &&
-                            x.OccupancyEntryDateTimeUtc < toDate.AddYears(-1)
-                         )).GroupBy(x => new { x.OccupancyEntryDateTimeUtc!.Value.Year, x.OccupancyEntryDateTimeUtc!.Value.Month }).Select(g =>
+                var previousYearResults = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                            && (x.BeginningOfHour >= fromDate.AddYears(-1) && x.BeginningOfHour != null &&
+                            x.BeginningOfHour < toDate.AddYears(-1)
+                         )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupancyForHour }).Select(g =>
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Count(),
+                             Occupancy = g.Sum(s => s.OccupancyForHour),
                              Fiscal = "PREVIOUS",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
