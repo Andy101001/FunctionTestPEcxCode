@@ -247,29 +247,36 @@ namespace ABMVantage.Data.Service
                        Hour = r.BeginningOfHour,
                        NoOfTransactions = (r.TotalTicketValue/r.NoOfReservations),
                        Time = r.BeginningOfHour.ToString("hh:mm tt")
-                   }).OrderBy(x=>x.Hour);
-
-
+                   });
 
 
                 resAvgTicketValue.ResAvgTicketValues = result.ToList();
-                /*var result3 = resAvgTicketValue.GroupBy(x => new { x.Time }).Select(g =>
-                    new ResAvgTicketValue    
+
+                //bug: 5844 desc: if peticular hour is not in ResAvgTicketValues then add 0 count to mssing hour item.
+                for (var dateAndTime = fromDate; dateAndTime < toDate; dateAndTime = dateAndTime.AddHours(1))
+                {
+                    var avgTicketValue = resAvgTicketValue.ResAvgTicketValues.FirstOrDefault(x => x.Hour == dateAndTime);
+                    if (avgTicketValue == null)
                     {
-                       Time = GetHourAMPM(g.Key.Time),
-                       NoOfTransactions = g.Average(x => x.NoOfTransactions)
-                   }
-                );*/
-   
+                        avgTicketValue = new ResAvgTicketValue
+                        {
+                            Hour = dateAndTime,
+                            Time = dateAndTime.ToString("hh:mm tt"),
+                            NoOfTransactions = 0
+                        };
+                        resAvgTicketValue.ResAvgTicketValues.Add(avgTicketValue);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
                 string error = ex.Message;
             }
-
+            resAvgTicketValue.ResAvgTicketValues =resAvgTicketValue.ResAvgTicketValues.OrderBy(x => x.Hour).ToList();
             //to show UI Data for date range text
-            resAvgTicketValue.FromDate = parameters.FromDate;
-            resAvgTicketValue.ToDate = parameters.ToDate;
+            resAvgTicketValue.FromDate = fromDate;
+            resAvgTicketValue.ToDate = toDate;
 
             return resAvgTicketValue;
         }
