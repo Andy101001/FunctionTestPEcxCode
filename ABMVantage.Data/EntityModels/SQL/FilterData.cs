@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ABMVantage.Data.EntityModels.SQL
 {
-    [Table("RPT_FILTER_DATA]")]
+    [Table("RPT_FILTER_DATA")]
     public class FilterDataSQL
     {
         [Key]
