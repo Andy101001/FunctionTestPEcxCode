@@ -36,9 +36,9 @@
         {
             _logger.LogInformation($"Executing function {nameof(DashboardFunctionFiltersData)}");
 
-            var content = await new StreamReader(req.Body).ReadToEndAsync();
+            //var content = await new StreamReader(req.Body).ReadToEndAsync();
 
-           // var content = "{\"userId\": \"Charan.Verma@abm.com\",\"customerId\": 1, \"BUs\": [{\"bu\": \"33852320\"},{\"bu\": \"32227642\"}]}";
+           var content = "{\"userId\": \"Charan.Verma@abm.com\",\"customerId\": 1, \"BUs\": [{\"bu\": \"33852320\"},{\"bu\": \"32227642\"}]}";
 
             ServiceLocations inputFilter = JsonConvert.DeserializeObject<ServiceLocations>(content);
 
