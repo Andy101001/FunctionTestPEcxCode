@@ -35,7 +35,7 @@ namespace ABMVantage.Data.Service
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var rawData = sqlContext.filterDataSQLData;
-                result.Facilities = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList();
+                result.Facilities = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList().Distinct();
                 var levels = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).Select(l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, Id = l.LevelId, Level = l.Level }).Distinct().ToList();
                 var firstFacility = result.Facilities.FirstOrDefault();
                 levels.Insert(0, new LevelData { FacilityId = firstFacility.Id, FacilityName = string.Empty, Id = null, Level = "Show items with no associated Level" });
