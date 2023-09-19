@@ -1,0 +1,197 @@
+{
+  "Value": {
+    "APIResponse": {
+      "YearlyOccupancies": [
+        {
+          "Year": 2021,
+          "Month": "Dec",
+          "Fiscal": "CURRENT",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-12-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Jan",
+          "Fiscal": "CURRENT",
+          "Occupancy": 11614,
+          "FirstDayOfMonth": "2022-01-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Feb",
+          "Fiscal": "CURRENT",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2022-02-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Mar",
+          "Fiscal": "CURRENT",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2022-03-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Apr",
+          "Fiscal": "CURRENT",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2022-04-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "May",
+          "Fiscal": "CURRENT",
+          "Occupancy": 122,
+          "FirstDayOfMonth": "2022-05-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Jun",
+          "Fiscal": "CURRENT",
+          "Occupancy": 1319,
+          "FirstDayOfMonth": "2022-06-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Jul",
+          "Fiscal": "CURRENT",
+          "Occupancy": 3,
+          "FirstDayOfMonth": "2022-07-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Aug",
+          "Fiscal": "CURRENT",
+          "Occupancy": 2127,
+          "FirstDayOfMonth": "2022-08-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Sep",
+          "Fiscal": "CURRENT",
+          "Occupancy": 4605,
+          "FirstDayOfMonth": "2022-09-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Oct",
+          "Fiscal": "CURRENT",
+          "Occupancy": 832,
+          "FirstDayOfMonth": "2022-10-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Nov",
+          "Fiscal": "CURRENT",
+          "Occupancy": 5196,
+          "FirstDayOfMonth": "2022-11-01T00:00:00"
+        },
+        {
+          "Year": 2022,
+          "Month": "Dec",
+          "Fiscal": "CURRENT",
+          "Occupancy": 5579,
+          "FirstDayOfMonth": "2022-12-01T00:00:00"
+        },
+        {
+          "Year": 2020,
+          "Month": "Dec",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2020-12-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Jan",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-01-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Feb",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 16080,
+          "FirstDayOfMonth": "2021-02-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Mar",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 14080,
+          "FirstDayOfMonth": "2021-03-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Apr",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-04-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "May",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-05-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Jun",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-06-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Jul",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-07-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Aug",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-08-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Sep",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 26000,
+          "FirstDayOfMonth": "2021-09-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Oct",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-10-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Nov",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-11-01T00:00:00"
+        },
+        {
+          "Year": 2021,
+          "Month": "Dec",
+          "Fiscal": "PREVIOUS",
+          "Occupancy": 0,
+          "FirstDayOfMonth": "2021-12-01T00:00:00"
+        }
+      ],
+      "ToDate": "2023-01-01T00:00:00",
+      "FromDate": "2021-12-01T00:00:00",
+      "displayTimeFrameText": "Data from 12/1/2021 to 1/1/2023"
+    }
+  },
+  "Formatters": [],
+  "ContentTypes": [],
+  "DeclaredType": null,
+  "StatusCode": 200
+}
