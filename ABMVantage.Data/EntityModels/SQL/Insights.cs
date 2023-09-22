@@ -16,17 +16,17 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("LevelId")]
         public string? LevelId { get; set; }
 
-        [Column("ProductId")]
+        [Column("ParkingProductId")]
         public int ProductId { get; set; }
 
         [Column("ParkingSpaceCount")]
         public int ParkingSpaceCount { get; set; }
 
-        [Column("TotalOccupancy")]
-        public int TotalOccupancy { get; set; }
+        [Column("TotalOccupiedParkingSpotMinutesForDay")]
+        public int TotalOccupancyMinutes { get; set; }
 
-        [Column("Date")]
-        public DateTime? Date { get; set; }
+        [Column("Day")]
+        public DateTime? Day { get; set; }
     }
 
     [Table("RptTicketAverageValueByMonthAndProduct")]
@@ -68,20 +68,20 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("LevelId")]
         public string? LevelId { get; set; }
 
-        [Column("ProductId")]
+        [Column("ParkingProductId")]
         public int ProductId { get; set; }
 
         [Column("ParkingSpaceCount")]
         public int ParkingSpaceCount { get; set; }
 
-        [Column("TotalOccupancy")]
-        public int TotalOccupancy { get; set; }
+        [Column("TotalOccupiedParkingSpotMinutesForMonth")]
+        public long TotalOccupancyInMinutes { get; set; }
 
         [Column("FirstDayOfMonth")]
         public DateTime FirstDayOfMonth { get; set; }
 
-        [Column("NoOFDaysInMonth")]
-        public int NoOFDaysInMonth { get; set; }
+        [Column("NumberOfDaysInMonth")]
+        public int NumberOFDaysInMonth { get; set; }
     }
 
 
