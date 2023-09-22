@@ -28,6 +28,6 @@ namespace ABMVantage.Data.EntityModels.SQL
         public DateTime BeginningOfHour { get; set; }
 
         [Column("OccupiedMinutesForHour")]
-        public int? OccupiedMinutesForHour { get; set; }
+        public int OccupiedMinutesForHour { get; set; }
     }
 }

@@ -138,13 +138,17 @@
                       x.BeginningOfHour <= toDate
                       ).ToList();
 
+                int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                && levels!.Contains(x.LevelId!)
+                && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
+
                 //Group by Hour
                 var resultByHour = result.GroupBy(x => new DateTime(x.BeginningOfHour.Year, x.BeginningOfHour.Month, x.BeginningOfHour.Day, x.BeginningOfHour.Hour, 0,0)).Select(g =>
                  new OccCurrent
                  {
                      MonthInt = g.Key.Hour,
                      Time = g.Key.ToString("hh:mm tt"),
-                     NoOfOccupiedParking = g.Sum(p => p.OccupiedMinutesForHour)
+                     NoOfOccupiedParking = Convert.ToInt32((decimal) g.Sum(p => p.OccupiedMinutesForHour) / (60 * (decimal) totalParkingSpaceCount) * (decimal) totalParkingSpaceCount)
 
                  }).ToList();
 
@@ -243,32 +247,34 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-                var currentYearResult = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                      && (x.BeginningOfHour >= fromDate && x.BeginningOfHour != null &&
-                      x.BeginningOfHour < toDate
+                var currentYearResult = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                      && x.FirstDayOfMonth >= fromDate && x.FirstDayOfMonth < toDate
                       && levels.Contains(x.LevelId!)
-                      //&& products.Contains(x.ProductId!.Value)
-                      )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupiedMinutesForHour }).Select(g =>
+                      && products.Contains(x.ProductId)
+                      ).GroupBy(x => x.FirstDayOfMonth
+                      ).Select(g =>
                          new YearlyOccupancy
                          {
-                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Sum(s=>s.OccupiedMinutesForHour),
+                             FirstDayOfMonth = g.Key,
+                             Occupancy = Convert.ToInt64((decimal) g.Sum(x => x.TotalOccupancyInMinutes) * (decimal) g.Sum(x=> x.ParkingSpaceCount) / ((decimal) g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)) ,
                              Fiscal = "CURRENT",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
                          }).ToArray();
 
-                var previousYearResults = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
-                            && (x.BeginningOfHour >= fromDate.AddYears(-1) && x.BeginningOfHour != null &&
-                            x.BeginningOfHour < toDate.AddYears(-1)
-                         )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupiedMinutesForHour }).Select(g =>
-                         new YearlyOccupancy
-                         {
-                             FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Sum(s => s.OccupiedMinutesForHour),
-                             Fiscal = "PREVIOUS",
-                             Year = g.Key.Year,
-                             Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
+                var previousYearResults = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                      && x.FirstDayOfMonth >= fromDate.AddYears(-1) && x.FirstDayOfMonth < toDate.AddYears(-1)
+                      && levels.Contains(x.LevelId!)
+                      && products.Contains(x.ProductId)
+                      ).GroupBy(x => x.FirstDayOfMonth
+                     ).Select(g =>
+                        new YearlyOccupancy
+                        {
+                            FirstDayOfMonth = g.Key,
+                            Occupancy = Convert.ToInt64((decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)),
+                            Fiscal = "PREVIOUS",
+                            Year = g.Key.Year,
+                            Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
                          }).ToArray();
 
                 for (DateTime monthStart = fromDate; monthStart < toDate; monthStart = monthStart.AddMonths(1))

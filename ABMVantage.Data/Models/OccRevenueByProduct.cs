@@ -33,7 +33,7 @@
         public int Year { get; set; }
         public string Month { get; set; }
         public string Fiscal { get; set; }
-        public int? Occupancy { get; set; }
+        public long? Occupancy { get; set; }
         public DateTime FirstDayOfMonth { get; internal set; }
     }
 
