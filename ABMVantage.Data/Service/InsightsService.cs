@@ -52,13 +52,13 @@
                 var result = sqlContext.InsightsAverageDialyOccupanySQLData.Where(x => facilities!.Contains(x.FacilityId!) 
                     && levels!.Contains(x.LevelId!)
                     && products!.Contains(x.ProductId)
-                    && x.Date >= fromDate && x.Date < toDate).ToArray();
+                    && x.Day >= fromDate && x.Day < toDate).ToArray();
 
                 //var sql= result.ToQueryString();
 
                 //var data=result.ToList();
 
-                int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancy);
+                int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancyMinutes);
                 
                 int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
                 TimeSpan filterRange = toDate - fromDate;
@@ -286,9 +286,11 @@
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
 
-                int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
+                /*int totalParkingSpaceCount = sqlContext.FacilityLevelProductSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                 && levels!.Contains(x.LevelId!)
-                && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);
+                && products!.Contains(x.ProductId)).Sum(x => x.ParkingSpaceCount);*/
+
+
 
 
                 var result = sqlContext.InsightsMonthlyParkingOccupancySQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!) || x.LevelId == string.Empty || x.LevelId == null) && products!.Contains(x.ProductId)
@@ -302,8 +304,8 @@
                      {
                          Year = g.Key.Year,
                          Month =  g.Key.Month,
-                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancy) / ((decimal) (totalParkingSpaceCount * g.First().NoOFDaysInMonth * 24)) * ((decimal) totalParkingSpaceCount)),
-                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancy)) / ((decimal) (totalParkingSpaceCount * g.First().NoOFDaysInMonth * 24)) * 100)
+                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24)) * ((decimal) g.Sum(x => x.ParkingSpaceCount))),
+                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancyInMinutes)) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24)) * 100)
                      });
                 }
 
