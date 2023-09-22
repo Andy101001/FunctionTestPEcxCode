@@ -144,7 +144,7 @@
                  {
                      MonthInt = g.Key.Hour,
                      Time = g.Key.ToString("hh:mm tt"),
-                     NoOfOccupiedParking = g.Sum(p => p.OccupancyForHour)
+                     NoOfOccupiedParking = g.Sum(p => p.OccupiedMinutesForHour)
 
                  }).ToList();
 
@@ -248,11 +248,11 @@
                       x.BeginningOfHour < toDate
                       && levels.Contains(x.LevelId!)
                       //&& products.Contains(x.ProductId!.Value)
-                      )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupancyForHour }).Select(g =>
+                      )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupiedMinutesForHour }).Select(g =>
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Sum(s=>s.OccupancyForHour),
+                             Occupancy = g.Sum(s=>s.OccupiedMinutesForHour),
                              Fiscal = "CURRENT",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
@@ -261,11 +261,11 @@
                 var previousYearResults = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                             && (x.BeginningOfHour >= fromDate.AddYears(-1) && x.BeginningOfHour != null &&
                             x.BeginningOfHour < toDate.AddYears(-1)
-                         )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupancyForHour }).Select(g =>
+                         )).GroupBy(x => new { x.BeginningOfHour!.Year, x.BeginningOfHour!.Month, x.OccupiedMinutesForHour }).Select(g =>
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
-                             Occupancy = g.Sum(s => s.OccupancyForHour),
+                             Occupancy = g.Sum(s => s.OccupiedMinutesForHour),
                              Fiscal = "PREVIOUS",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")

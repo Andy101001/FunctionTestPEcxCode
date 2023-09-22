@@ -68,7 +68,7 @@ namespace ABMVantage.Data.Models.DashboardModels
     {
         public int Month { get; set; }
         public int Year { get; set; }
-        public int OccupancyInteger { get; set; }
+        public long OccupancyInteger { get; set; }
         public decimal OccupancyPercentage { get; set; }
 
     }
@@ -76,9 +76,9 @@ namespace ABMVantage.Data.Models.DashboardModels
     public class ParkingOccupancy
     {
         public string Month { get; set; } = string.Empty;
-        public int OccupancyInteger { get; set; }
+        public long OccupancyInteger { get; set; }
         public decimal OccupancyPercentage { get; set; }
-        public int PreviousYearOccupancyInteger { get; set; }
+        public long PreviousYearOccupancyInteger { get; set; }
         public decimal PreviousYearOccupancyPercentage { get; set; }
     }
 

@@ -21,13 +21,13 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("LevelId")]
         public string? LevelId { get; set; }
 
-        [Column("ParkingProductid")]
-        public string? ProductId { get; set; }
+        [Column("ParkingProductId")]
+        public int ProductId { get; set; }
 
         [Column("BeginningOfHour")]
         public DateTime BeginningOfHour { get; set; }
 
-        [Column("OccupancyForHour")]
-        public int? OccupancyForHour { get; set; }
+        [Column("OccupiedMinutesForHour")]
+        public int? OccupiedMinutesForHour { get; set; }
     }
 }
