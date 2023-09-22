@@ -58,16 +58,16 @@
 
                 //var data=result.ToList();
 
-                int totalOccupiedParkingSpotHours = result.Sum(x => x.TotalOccupancyMinutes);
+                int totalOccupiedParkingSpotMinutes = result.Sum(x => x.TotalOccupancyMinutes);
                 
                 int totalParkingSpaceCount = result.Sum(x => x.ParkingSpaceCount);
                 TimeSpan filterRange = toDate - fromDate;
-                int totalAvailableSpaceHours = totalParkingSpaceCount * filterRange.Days * 24;
+                int totalAvailableSpaceMinutes = totalParkingSpaceCount * filterRange.Days * 24 * 60;
                 if (totalParkingSpaceCount > 0)
                 {
                     //var avdt = totalOccupiedParkingSpotHours / totalParkingSpaceCount * 24;
-                    dailyAverageOccupancy.AverageDailyOccupancyInteger = Convert.ToInt32((decimal) totalOccupiedParkingSpotHours / (decimal) totalAvailableSpaceHours * (decimal) totalParkingSpaceCount);
-                    dailyAverageOccupancy.AverageDailyOccupancyPercentage = Convert.ToInt32((decimal) totalOccupiedParkingSpotHours / (decimal) totalAvailableSpaceHours * 100);
+                    dailyAverageOccupancy.AverageDailyOccupancyInteger = Convert.ToInt32((decimal) totalOccupiedParkingSpotMinutes / (decimal) totalAvailableSpaceMinutes * (decimal) totalParkingSpaceCount);
+                    dailyAverageOccupancy.AverageDailyOccupancyPercentage = Convert.ToInt32((decimal) totalOccupiedParkingSpotMinutes / (decimal) totalAvailableSpaceMinutes * 100);
                 }
             }
             catch (Exception ex)
@@ -304,8 +304,8 @@
                      {
                          Year = g.Key.Year,
                          Month =  g.Key.Month,
-                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24)) * ((decimal) g.Sum(x => x.ParkingSpaceCount))),
-                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancyInMinutes)) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24)) * 100)
+                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)) * ((decimal) g.Sum(x => x.ParkingSpaceCount))),
+                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancyInMinutes)) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)) * 100)
                      });
                 }
 
