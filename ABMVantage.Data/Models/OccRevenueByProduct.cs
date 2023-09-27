@@ -35,6 +35,7 @@
         public string Fiscal { get; set; }
         public long? Occupancy { get; set; }
         public DateTime FirstDayOfMonth { get; internal set; }
+        public int OccupancyPercentage { get; internal set; }
     }
 
     public class YearlyOccupancyGroupedResult
