@@ -304,8 +304,8 @@
                      {
                          Year = g.Key.Year,
                          Month =  g.Key.Month,
-                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)) * ((decimal) g.Sum(x => x.ParkingSpaceCount))),
-                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancyInMinutes)) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.First().NumberOFDaysInMonth * 24 * 60)) * 100)
+                         OccupancyInteger =  Convert.ToInt32((decimal) g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)) * ((decimal) g.Sum(x => x.ParkingSpaceCount))),
+                         OccupancyPercentage = (((decimal)g.Sum(x => x.TotalOccupancyInMinutes)) / ((decimal) (g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)) * 100)
                      });
                 }
 
