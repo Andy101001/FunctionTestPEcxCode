@@ -53,5 +53,10 @@
         public const string GetRevenueByDay = "[dbo].[RevenueByDay]"; //done
         public const string GetRevenueByMonth = "[dbo].[RevenueByMonth]"; //done
 
+        //Charger
+
+        public const string GetEVMicroSitePageLoadValidation = "[dbo].[sp_EV_Micro_Site_Page_Load_Validation]";
+        public const string GetEVMicroSiteFormSubmission = "[dbo].[sp_EV_Micro_Site_Form_Submission]";
+
     }
 }

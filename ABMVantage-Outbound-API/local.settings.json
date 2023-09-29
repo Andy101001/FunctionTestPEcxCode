@@ -37,8 +37,8 @@
 
     },
   "SqlSettings_VTG": {
-    "ConnectionString": "Server=abm-vtg-sql01-dev.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev;Persist Security Info=False;User ID=abmvtgsqldevadmin;Password=K!ya5hNg;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
-    //"ConnectionString": "Server=abm-vtg-sql01-dev2.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev2;Persist Security Info=False;User ID=abmsql01dev2admin;Password=oIp#50QrdbEnLs;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
+    //"ConnectionString": "Server=abm-vtg-sql01-dev.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev;Persist Security Info=False;User ID=abmvtgsqldevadmin;Password=K!ya5hNg;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
+    "ConnectionString": "Server=abm-vtg-sql01-dev2.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev2;Persist Security Info=False;User ID=abmsql01dev2admin;Password=oIp#50QrdbEnLs;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
     "IsSqlDbConnectionOn": true
 
 

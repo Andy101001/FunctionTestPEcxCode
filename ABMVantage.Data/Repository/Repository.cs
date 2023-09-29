@@ -18,6 +18,7 @@ namespace ABMVantage.Data.Repository
         private ReservationsRepository<ReservationsByHour> _reservationRepository;
         private FilterDataRepository<FilterData> _filterDataRepository;
         private TransactionRepository<BudgetVariance> _transactionRepository;
+        private EVChargerRepository<MSPageLoadResponse> _eVChargerRepository;
         private readonly ILogger<Repository> _logger;
         private readonly ILoggerFactory _loggerFactory;
 
@@ -72,6 +73,17 @@ namespace ABMVantage.Data.Repository
                     _transactionRepository = new TransactionRepository<BudgetVariance>(_loggerFactory, dapperContext);
 
                 return _transactionRepository;
+            }
+        }
+
+        public IEVChargerLocationRepository EVChargerRepository
+        {
+            get
+            {
+                if (_eVChargerRepository == null)
+                    _eVChargerRepository = new EVChargerRepository<MSPageLoadResponse>(_loggerFactory, dapperContext);
+
+                return _eVChargerRepository;
             }
         }
 

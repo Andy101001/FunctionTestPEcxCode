@@ -157,8 +157,10 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<ISingleTicketEVChargesService, SingleTicketEVChargesService>();
                 //RefereshService
                 s.AddScoped<IDataRefereshService, DataRefereshService>();
-
                 
+                //EV Charger 
+                s.AddScoped<IEVChargerLocationService, EVChargerLocationService>();
+
 
 
                 s.AddOptions();
