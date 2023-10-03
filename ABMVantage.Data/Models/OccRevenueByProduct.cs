@@ -15,7 +15,7 @@
     public class OccCurrent
     {
         public string Time { get; set; }
-        public int? NoOfOccupiedParking { get; set; }
+        public decimal NoOfOccupiedParking { get; set; }
         public int MonthInt { get; set; }
     }
 
@@ -33,7 +33,7 @@
         public int Year { get; set; }
         public string Month { get; set; }
         public string Fiscal { get; set; }
-        public long? Occupancy { get; set; }
+        public decimal Occupancy { get; set; }
         public DateTime FirstDayOfMonth { get; internal set; }
         public int OccupancyPercentage { get; internal set; }
     }
