@@ -135,7 +135,7 @@
                  {
                      MonthInt = g.Key.Hour,
                      Time = g.Key.ToString("hh:mm tt"),
-                     NoOfOccupiedParking = Convert.ToInt32((decimal) g.Sum(p => p.OccupiedMinutesForHour) / (60 * (decimal) totalParkingSpaceCount) * (decimal) totalParkingSpaceCount)
+                     NoOfOccupiedParking = (decimal) g.Sum(p => p.OccupiedMinutesForHour) / (60 * (decimal) totalParkingSpaceCount) * (decimal) totalParkingSpaceCount
 
                  }).ToList();
 
@@ -248,7 +248,7 @@
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = g.Key,
-                             Occupancy = Convert.ToInt64((decimal) g.Sum(x => x.TotalOccupancyInMinutes) * (decimal) g.Sum(x=> x.ParkingSpaceCount) / ((decimal) g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)) ,
+                             Occupancy = (decimal) g.Sum(x => x.TotalOccupancyInMinutes) * (decimal) g.Sum(x=> x.ParkingSpaceCount) / ((decimal) g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60),
                              OccupancyPercentage = Convert.ToInt32((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60) * 100),
                              Fiscal = "CURRENT",
                              Year = g.Key.Year,
@@ -264,7 +264,7 @@
                         new YearlyOccupancy
                         {
                             FirstDayOfMonth = g.Key,
-                            Occupancy = Convert.ToInt64((decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)),
+                            Occupancy = (decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60),
                             OccupancyPercentage = Convert.ToInt32((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x=> x.NumberOFDaysInMonth) * 24 * 60) * 100),
                             Fiscal = "PREVIOUS",
                             Year = g.Key.Year,
