@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels.SQL
 {
+    /*
     [Table("OccupancyVsDuration")]
     public class OccupancyVsDurationSQL
     {
@@ -61,5 +62,6 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("Amount")]
         public double Amount { get; set; }
     }
+    */
     
 }
