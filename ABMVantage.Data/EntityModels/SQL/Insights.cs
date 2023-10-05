@@ -84,55 +84,57 @@ namespace ABMVantage.Data.EntityModels.SQL
         public int NumberOFDaysInMonth { get; set; }
     }
 
+    /*
+[Table("InsightsMonthlyTransaction")]
+public class InsightsMonthlyTransactionSQL
+{
+    [Key]
+    [Column("Id")]
+    public int Id { get; set; }
 
-    [Table("InsightsMonthlyTransaction")]
-    public class InsightsMonthlyTransactionSQL
-    {
-        [Key]
-        [Column("Id")]
-        public int Id { get; set; }
+    [Column("FacilityId")]
+    public string? FacilityId { get; set; }
 
-        [Column("FacilityId")]
-        public string? FacilityId { get; set; }
+    [Column("LevelId")]
+    public string? LevelId { get; set; }
 
-        [Column("LevelId")]
-        public string? LevelId { get; set; }
+    [Column("ProductId")]
+    public int ProductId { get; set; }
 
-        [Column("ProductId")]
-        public int ProductId { get; set; }
+    [Column("ProductName")]
+    public string? ProductName { get; set; }
 
-        [Column("ProductName")]
-        public string? ProductName { get; set; }
+    [Column("FirstDayOfMonth")]
+    public DateTime FirstDayOfMonth { get; set; }
 
-        [Column("FirstDayOfMonth")]
-        public DateTime FirstDayOfMonth { get; set; }
+    [Column("TransactionCount")]
+    public int TransactionCount { get; set; }
 
-        [Column("TransactionCount")]
-        public int TransactionCount { get; set; }
+}
 
-    }
 
-    [Table("InsightsTotalRevenue")]
-    public class InsightsTotalRevenueSQL
-    {
-        [Key]
-        [Column("Id")]
-        public int Id { get; set; }
+[Table("InsightsTotalRevenue")]
+public class InsightsTotalRevenueSQL
+{
+    [Key]
+    [Column("Id")]
+    public int Id { get; set; }
 
-        [Column("FacilityId")]
-        public string? FacilityId { get; set; }
+    [Column("FacilityId")]
+    public string? FacilityId { get; set; }
 
-        [Column("LevelId")]
-        public string? LevelId { get; set; }
+    [Column("LevelId")]
+    public string? LevelId { get; set; }
 
-        [Column("ProductId")]
-        public int ProductId { get; set; }
+    [Column("ProductId")]
+    public int ProductId { get; set; }
 
-        [Column("Day")]
-        public DateTime Day { get; set; }
+    [Column("Day")]
+    public DateTime Day { get; set; }
 
-        [Column("TotalRevenue")]
-        public double TotalRevenue { get; set; }
+    [Column("TotalRevenue")]
+    public double TotalRevenue { get; set; }
 
-    }
+}
+*/
 }

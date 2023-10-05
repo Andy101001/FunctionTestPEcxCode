@@ -8,6 +8,6 @@ namespace ABMVantage.Data.Models
 {
     public class Revenue:ModelBase
     {
-        public double TotalRevenue { get; set; }
+        public decimal TotalRevenue { get; set; }
     }
 }
