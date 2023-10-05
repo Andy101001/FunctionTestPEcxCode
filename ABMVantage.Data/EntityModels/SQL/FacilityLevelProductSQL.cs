@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.EntityModels.SQL
 {
-    [Table("FacilityLevelProduct")]
+    [Table("RptFacilityLevelProduct")]
     public class FacilityLevelProductSQL
     {
         [Key]
