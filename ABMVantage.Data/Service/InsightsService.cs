@@ -12,6 +12,7 @@
     using StackExchange.Redis;
     using System;
     using System.Buffers.Text;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
     using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -100,10 +101,12 @@
 
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
-                var result = sqlContext.InsightsTotalRevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
-                         && (x.Day >= filterParameters!.FromDate && x.Day <= filterParameters.ToDate));
+                var result = sqlContext.RevenueSQLData.Where(x => facilities!.Contains(x.FacilityId!) && (levels!.Contains(x.LevelId!)) && products!.Contains(x.ProductId)
+                         && (x.RevenueDate >= filterParameters!.FromDate && x.RevenueDate < filterParameters.ToDate)).ToList();
 
-                revenue.TotalRevenue = result.Sum(x => x.TotalRevenue);
+                var csvString = System.String.Join(", ", result.Select(x => x.Id));
+
+                revenue.TotalRevenue = result.Sum(x => x.Amount);
             }
             catch (Exception ex)
             {

@@ -20,8 +20,8 @@ namespace ABMVantage.Data.DataAccess
 
             //Insights
             modelBuilder.Entity<InsightsAverageDialyOccupanySQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<InsightsTotalRevenueSQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<InsightsMonthlyTransactionSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<InsightsTotalRevenueSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<InsightsMonthlyTransactionSQL>().HasKey(c => c.Id);
             //modelBuilder.Entity<InsightsMonthlyRevenueAndBudgetSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsMonthlyParkingOccupancySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsAverageMonthlyTicketValueSQL>().HasKey(c => c.Id);
@@ -55,8 +55,8 @@ namespace ABMVantage.Data.DataAccess
 
         //Insights
         public DbSet<InsightsAverageDialyOccupanySQL> InsightsAverageDialyOccupanySQLData { get; set; }
-        public DbSet<InsightsTotalRevenueSQL> InsightsTotalRevenueSQLData { get; set; }
-        public DbSet<InsightsMonthlyTransactionSQL> InsightsMonthlyTransactionsSQLData { get; set; }
+        //public DbSet<InsightsTotalRevenueSQL> InsightsTotalRevenueSQLData { get; set; }
+        //public DbSet<InsightsMonthlyTransactionSQL> InsightsMonthlyTransactionsSQLData { get; set; }
         //public DbSet<InsightsMonthlyRevenueAndBudgetSQL> InsightsMonthlyRevenueAndBudgetSQLData { get; set; }
         public DbSet<InsightsMonthlyParkingOccupancySQL> InsightsMonthlyParkingOccupancySQLData { get; set; }
         public DbSet<InsightsAverageMonthlyTicketValueSQL> InsightsAverageMonthlyTicketValueSQLData { get; set; }
