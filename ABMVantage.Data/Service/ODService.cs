@@ -30,6 +30,9 @@
 
         public async Task<OccRevenueByProductList> GetTotalOccRevenue(FilterParam filterParameters)
         {
+            throw new NotImplementedException("This needs to be reimplemented if needed as the dependent table is not in sql anymore.");
+
+            /*
             var occRevenueByProductList = new OccRevenueByProductList();
             try
             {
@@ -64,6 +67,7 @@
 
             
             return occRevenueByProductList;
+            */
         }
 
         public async Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam filterParameters)
