@@ -21,7 +21,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         [Column("LevelId")]
         public string? LevelId { get; set; }
 
-        [Column("ProductId")]
+        [Column("ParkingProductId")]
         public int ProductId { get; set; }
         [Column("ProductName")]
         public string ProductName { get; set; }
