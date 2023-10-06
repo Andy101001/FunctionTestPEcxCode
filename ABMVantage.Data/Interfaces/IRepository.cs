@@ -11,5 +11,7 @@ namespace ABMVantage.Data.Interfaces
         FilterDataRepository<FilterData> FilterDataRepository { get; }
 
         ITransactionRepository TransactionRepository { get; }
+
+        IEVChargerLocationRepository EVChargerRepository { get; }
     }
 }

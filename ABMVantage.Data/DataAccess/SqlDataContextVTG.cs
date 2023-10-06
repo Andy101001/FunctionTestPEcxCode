@@ -20,8 +20,8 @@ namespace ABMVantage.Data.DataAccess
 
             //Insights
             modelBuilder.Entity<InsightsAverageDialyOccupanySQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<InsightsTotalRevenueSQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<InsightsMonthlyTransactionSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<InsightsTotalRevenueSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<InsightsMonthlyTransactionSQL>().HasKey(c => c.Id);
             //modelBuilder.Entity<InsightsMonthlyRevenueAndBudgetSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsMonthlyParkingOccupancySQL>().HasKey(c => c.Id);
             modelBuilder.Entity<InsightsAverageMonthlyTicketValueSQL>().HasKey(c => c.Id);
@@ -33,8 +33,8 @@ namespace ABMVantage.Data.DataAccess
             modelBuilder.Entity<ReservationSpanningMonthSQL>().HasKey(c => c.Id);
             
             //Occupancy and Duration
-            modelBuilder.Entity<OccupancyVsDurationSQL>().HasKey(c => c.Id);
-            modelBuilder.Entity<OccupancyRevenueSQLData>().HasKey(c => c.Id);
+            //modelBuilder.Entity<OccupancyVsDurationSQL>().HasKey(c => c.Id);
+            //modelBuilder.Entity<OccupancyRevenueSQLData>().HasKey(c => c.Id);
             modelBuilder.Entity<OccupancyDetail>().HasKey(c => c.Id);
 
             
@@ -55,9 +55,6 @@ namespace ABMVantage.Data.DataAccess
 
         //Insights
         public DbSet<InsightsAverageDialyOccupanySQL> InsightsAverageDialyOccupanySQLData { get; set; }
-        public DbSet<InsightsTotalRevenueSQL> InsightsTotalRevenueSQLData { get; set; }
-        public DbSet<InsightsMonthlyTransactionSQL> InsightsMonthlyTransactionsSQLData { get; set; }
-        //public DbSet<InsightsMonthlyRevenueAndBudgetSQL> InsightsMonthlyRevenueAndBudgetSQLData { get; set; }
         public DbSet<InsightsMonthlyParkingOccupancySQL> InsightsMonthlyParkingOccupancySQLData { get; set; }
         public DbSet<InsightsAverageMonthlyTicketValueSQL> InsightsAverageMonthlyTicketValueSQLData { get; set; }
 
@@ -71,8 +68,8 @@ namespace ABMVantage.Data.DataAccess
         public DbSet<ReservationSpanningMonthSQL> ReservationsSpanningMonthSQLData { get; set; }
 
         //Occupancy
-        public DbSet<OccupancyRevenueSQLData> OccupancyRevenueSQLData { get; set; }
-        public DbSet<OccupancyVsDurationSQL> OccupancyVsDurationSQLData { get; set; }
+        //public DbSet<OccupancyRevenueSQLData> OccupancyRevenueSQLData { get; set; }
+        //public DbSet<OccupancyVsDurationSQL> OccupancyVsDurationSQLData { get; set; }
         public DbSet<OccupancyDetail> OccupancyDetailSQLData { get; set; }
 
 

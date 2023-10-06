@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Models
 {
-    public class Revenue:ModelBase
+    public class MSCharagerInitiateResponse
     {
-        public decimal TotalRevenue { get; set; }
+        public bool IsSuccess { get; set; }
+        public string ErrorMessage { get; set; }
+
     }
 }

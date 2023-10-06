@@ -30,6 +30,9 @@
 
         public async Task<OccRevenueByProductList> GetTotalOccRevenue(FilterParam filterParameters)
         {
+            throw new NotImplementedException("This needs to be reimplemented if needed as the dependent table is not in sql anymore.");
+
+            /*
             var occRevenueByProductList = new OccRevenueByProductList();
             try
             {
@@ -64,6 +67,7 @@
 
             
             return occRevenueByProductList;
+            */
         }
 
         public async Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam filterParameters)
@@ -135,7 +139,7 @@
                  {
                      MonthInt = g.Key.Hour,
                      Time = g.Key.ToString("hh:mm tt"),
-                     NoOfOccupiedParking = Convert.ToInt32((decimal) g.Sum(p => p.OccupiedMinutesForHour) / (60 * (decimal) totalParkingSpaceCount) * (decimal) totalParkingSpaceCount)
+                     NoOfOccupiedParking = Math.Round(g.Sum(p => p.OccupiedMinutesForHour) / (60 * (decimal) totalParkingSpaceCount) * totalParkingSpaceCount,2)
 
                  }).ToList();
 
@@ -248,8 +252,8 @@
                          new YearlyOccupancy
                          {
                              FirstDayOfMonth = g.Key,
-                             Occupancy = Convert.ToInt64((decimal) g.Sum(x => x.TotalOccupancyInMinutes) * (decimal) g.Sum(x=> x.ParkingSpaceCount) / ((decimal) g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)) ,
-                             OccupancyPercentage = Convert.ToInt32((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60) * 100),
+                             Occupancy = Math.Round((decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60), 2),
+                             OccupancyPercentage = Math.Round((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60) * 100,2),
                              Fiscal = "CURRENT",
                              Year = g.Key.Year,
                              Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")
@@ -264,8 +268,8 @@
                         new YearlyOccupancy
                         {
                             FirstDayOfMonth = g.Key,
-                            Occupancy = Convert.ToInt64((decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60)),
-                            OccupancyPercentage = Convert.ToInt32((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x=> x.NumberOFDaysInMonth) * 24 * 60) * 100),
+                            Occupancy = Math.Round((decimal)g.Sum(x => x.TotalOccupancyInMinutes) * (decimal)g.Sum(x => x.ParkingSpaceCount) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60),2),
+                            OccupancyPercentage = Math.Round((decimal)g.Sum(x => x.TotalOccupancyInMinutes) / ((decimal)g.Sum(x => x.ParkingSpaceCount) * g.Min(x => x.NumberOFDaysInMonth) * 24 * 60) * 100, 2),
                             Fiscal = "PREVIOUS",
                             Year = g.Key.Year,
                             Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM")

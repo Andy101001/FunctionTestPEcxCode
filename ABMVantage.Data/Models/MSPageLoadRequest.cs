@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace ABMVantage.Data.Models
 {
-    public class Revenue:ModelBase
+    public class MSPageLoadRequest
     {
-        public decimal TotalRevenue { get; set; }
+        public string QrCode { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
     }
 }
