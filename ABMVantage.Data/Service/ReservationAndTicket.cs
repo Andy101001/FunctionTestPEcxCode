@@ -241,12 +241,14 @@ namespace ABMVantage.Data.Service
                 var result = sqlContext.ReservationsSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                    && levels!.Contains(x.LevelId!)
                    && products!.Contains(x.ProductId)
-                   && x.BeginningOfHour >= fromDate && x.BeginningOfHour < toDate).Select(r =>
+                   && x.BeginningOfHour >= fromDate && x.BeginningOfHour < toDate)
+                    .GroupBy(g => g.BeginningOfHour)
+                    .Select(r =>
                    new ResAvgTicketValue
                    {
-                       Hour = r.BeginningOfHour,
-                       NoOfTransactions = (r.TotalTicketValue/r.NoOfReservations),
-                       Time = r.BeginningOfHour.ToString("hh:mm tt")
+                       Hour = r.Key,
+                       NoOfTransactions = (r.Sum(x => x.TotalTicketValue) /r.Sum(x => x.NoOfReservations)),
+                       Time = r.Key.ToString("hh:mm tt")
                    });
 
 
