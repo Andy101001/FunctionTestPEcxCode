@@ -1,52 +1,56 @@
 {
-    "IsEncrypted": false,
-    "AzureAppConfigEndpoint": null,
+  "IsEncrypted": false,
+  "AzureAppConfigEndpoint": null,
 
-    "SecurityOptions": {
-        "KeyVaultName": "abm-vtg-kv01-dev",
-        "AzureADApplicationId": "Azure AD Application ID",
-        "AzureADCertThumbprint": "Azure AD Certificate Thumbprint",
-        "AzureADDirectoryId": "Azure AD Directory ID",
-        "KeyVaultUri": "https://abm-vtg-kv01-dev.vault.azure.net/"
-    },
+  "SecurityOptions": {
+    "KeyVaultName": "abm-vtg-kv01-dev",
+    "AzureADApplicationId": "Azure AD Application ID",
+    "AzureADCertThumbprint": "Azure AD Certificate Thumbprint",
+    "AzureADDirectoryId": "Azure AD Directory ID",
+    "KeyVaultUri": "https://abm-vtg-kv01-dev.vault.azure.net/"
+  },
 
-    "CosmosSettings": {
-        "EndPoint": "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
-        "AccessKey": "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
-        "EnableMigration": true,
-        "DocumentToCheck": "web-api_index",
-        "DatabaseName": "VantageDB_UI"
-    },
+  "CosmosSettings": {
+    "EndPoint": "https://abm-vtg-cosmos01-dev.documents.azure.com:443/",
+    "AccessKey": "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==",
+    "EnableMigration": true,
+    "DocumentToCheck": "web-api_index",
+    "DatabaseName": "VantageDB_UI"
+  },
 
-    "Values": {
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-        "ServiceBusConnectionString": "Endpoint=sb://abm-vtg-sb01-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gwN1BGC3XZAHkANqJHT2aAc6i9m5lnimr+kgW7hgwmQ="
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ServiceBusConnectionString": "Endpoint=sb://abm-vtg-sb01-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gwN1BGC3XZAHkANqJHT2aAc6i9m5lnimr+kgW7hgwmQ="
 
-    },
-    "Host": { "CORS": "*" },
+  },
+  "Host": { "CORS": "*" },
 
-    "RedisSettings": {
-        "ConntecitonString": "abm-vtg-redis01-dev.redis.cache.windows.net:6380,password=JqWq41UYLfWAkIcrEjbaggzF6LuIggjVuAzCaEGjCzU=,ssl=true,abortConnect=false"
-    },
+  "RedisSettings": {
+    "ConntecitonString": "abm-vtg-redis01-dev.redis.cache.windows.net:6380,password=JqWq41UYLfWAkIcrEjbaggzF6LuIggjVuAzCaEGjCzU=,ssl=true,abortConnect=false"
+  },
 
-    "SqlSettings": {
-        "ConnectionString": "Server=tcp:abm-vtg-syn01-dev.sql.azuresynapse.net,1433;Initial Catalog=abmvtgsyn01dp01;Persist Security Info=False;User ID=sqladminuser;Password=Ez8zD#VcMdM;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
-        "IsSqlDbConnectionOn": true
-
-
-    },
-    "SqlSettings_VTG": {
-        "ConnectionString": "Server=abm-vtg-sql01-dev.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev;Persist Security Info=False;User ID=abmvtgsqldevadmin;Password=K!ya5hNg;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
-        "IsSqlDbConnectionOn": true
+  "SqlSettings": {
+    "ConnectionString": "Server=tcp:abm-vtg-syn01-dev.sql.azuresynapse.net,1433;Initial Catalog=abmvtgsyn01dp01;Persist Security Info=False;User ID=sqladminuser;Password=Ez8zD#VcMdM;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "IsSqlDbConnectionOn": true
 
 
-    },
-    "InsghtsServiceSettings": {
-        "MonthlyTransactionCountInterval": 13
-    },
-    "DashboardFunctionSettings": {
-        "MonthlyTransactionCountInterval": 13,
-        "MinimumValidCalculationDate": "2000-01-01T00:00:00.000Z"
-    }
+  },
+  "SqlSettings_VTG": {
+    "ConnectionString": "Server=abm-vtg-sql01-dev.database.windows.net;Initial Catalog=abm-vtg-sqldb01-dev;Persist Security Info=False;User ID=abmvtgsqldevadmin;Password=K!ya5hNg;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;",
+    "IsSqlDbConnectionOn": true
+
+
+  },
+  "InsghtsServiceSettings": {
+    "MonthlyTransactionCountInterval": 13
+  },
+  "DashboardFunctionSettings": {
+    "MonthlyTransactionCountInterval": 13,
+    "MinimumValidCalculationDate": "2000-01-01T00:00:00.000Z"
+  },
+  "BlobStorage": {
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=abmvtgfunc02st01dev;AccountKey=+BKlhmbxNK+dRTMaVXhKuLRtkv38KL/aqZMmTgIyM8Rk6wU4opKvaVcmkvHuhyWdSjVwkTet9gAu+AStZFpTUA==;EndpointSuffix=core.windows.net",
+    "ImageContainer": "lpn-images"
+  }
 }

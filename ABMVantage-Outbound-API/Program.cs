@@ -6,6 +6,7 @@ using ABMVantage.Data.Service;
 using ABMVantage.Data.Tools;
 using ABMVantage_Outbound_API.Configuration;
 using ABMVantage_Outbound_API.DataAccess;
+using ABMVantage_Outbound_API.LPRImageUpload;
 using ABMVantage_Outbound_API.Services;
 using AutoFixture;
 using Azure.Identity;
@@ -156,6 +157,9 @@ namespace ABMVantage_Outbound_API
                 s.AddScoped<IDataCosmosAccessService, DataCosmosAccessService>();
                 s.AddScoped<ISingleTicketEVChargesService, SingleTicketEVChargesService>();
 
+                //LPM Image Upload Clients
+                s.AddScoped<ILPNImageCaptureMetadataService, LPNImageCaptureMetadataService>();
+                s.AddScoped<IImageBlobClient, ImageBlobClient>();
 
                 s.AddOptions();
 

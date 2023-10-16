@@ -10,7 +10,9 @@
   <ItemGroup>
 	<PackageReference Include="AutoFixture" Version="4.18.0" />
 	<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
+	<PackageReference Include="Azure.Storage.Blobs" Version="12.17.0" />
 	<PackageReference Include="AzureExtensions.Swashbuckle" Version="3.3.2" />
+	<PackageReference Include="HttpMultipartParser" Version="8.2.0" />
 	<PackageReference Include="Microsoft.AspNetCore.AzureKeyVault.HostingStartup" Version="2.0.4" />
 	<PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Azure.Identity" Version="1.8.2" />

@@ -45,6 +45,9 @@ namespace ABMVantage.Data.DataAccess
 
             //Other
             modelBuilder.Entity<FacilityLevelProductSQL>().HasKey(c => c.Id);
+
+            //LPNImageCaptureData
+            modelBuilder.Entity<LPNImageCaptureMetaData>().HasKey(c => c.Id);
         }
 
         //Insights
@@ -82,7 +85,7 @@ namespace ABMVantage.Data.DataAccess
 
         public DbSet<FacilityLevelProductSQL> FacilityLevelProductSQLData { get; set; }
 
-
+        public DbSet<LPNImageCaptureMetaData> LPNImageCaptureMetaData { get;set; }
 
 
     }
