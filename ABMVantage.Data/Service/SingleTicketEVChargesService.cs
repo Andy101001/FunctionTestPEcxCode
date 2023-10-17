@@ -10,16 +10,14 @@ namespace ABMVantage.Data.Service
     {
         private readonly ILogger<SingleTicketEVChargesService> _logger;
         private readonly CosmosClient _client;
-        private readonly Container _RawEvActiveSessionsContainer;
-        private readonly Container _RawEvClosedSessionsContainer;
+        private readonly Container _SingleTicketEVContainer;
 
         public SingleTicketEVChargesService(ILoggerFactory loggerFactory)
         {
             ArgumentNullException.ThrowIfNull(loggerFactory);
             _logger = loggerFactory.CreateLogger<SingleTicketEVChargesService>();
             _client = new CosmosClient("https://abm-vtg-cosmos01-dev.documents.azure.com:443/", "6CYkip2ZaFNGEsWy1JXWFe4LuV1fAJOOVDHeooIjmOWnxizz9BbWAkah3MEnjb8014upO3D91wuuACDb4rR0xg==");
-            _RawEvActiveSessionsContainer = _client.GetDatabase("VantageDB").GetContainer("RawEvActiveSessions");
-            _RawEvClosedSessionsContainer = _client.GetDatabase("VantageDB").GetContainer("RawEvClosedSessions");
+           _SingleTicketEVContainer = _client.GetDatabase("VantageDB_UI").GetContainer("SingleTicketEv");
         }
 
        /// <summary>
@@ -40,11 +38,7 @@ namespace ABMVantage.Data.Service
                     cosmosQuery += $" c.TicketId = '{request.TicketId}'";
                 cosmosQuery += $" ORDER BY c.TimeStampUTC DESC";
 
-                // Always first Check for Closed Session Event,
-                // If the Response is  NULL then Get the Latest Active Session
-                response = await CalculateEVCharges(_RawEvClosedSessionsContainer, cosmosQuery);
-                if (response == null)
-                    response = await CalculateEVCharges(_RawEvActiveSessionsContainer, cosmosQuery);
+                response = await CalculateEVCharges(_SingleTicketEVContainer, cosmosQuery);
             }
             catch (Exception ex)
             {
@@ -55,11 +49,11 @@ namespace ABMVantage.Data.Service
 
         private async Task<SingleTicketEVChargesResponse> CalculateEVCharges(Container container, string cosmosQuery)
         {
-            SingleTicketEVChargesResponse cResponse = null;
-            var results = new List<EVSession>();
+            SingleTicketEVChargesResponse cResponse = new();
+            var results = new List<SingleTicketEV>();
             try
             {
-                var feedIterator = container.GetItemQueryIterator<EVSession>(new QueryDefinition(cosmosQuery));
+                var feedIterator = container.GetItemQueryIterator<SingleTicketEV>(new QueryDefinition(cosmosQuery));
                 while (feedIterator.HasMoreResults)
                 {
                     var qresponse = await feedIterator.ReadNextAsync();
@@ -67,25 +61,28 @@ namespace ABMVantage.Data.Service
                 }
                 if (results.Count > 0)
                 {
-                    EVSession firstItem = results[0]; //We fetched only TOP 1 record from DB
+                    SingleTicketEV firstItem = results[0]; //We fetched only TOP 1 record from DB
+                    EvChargeSession? activeSession = firstItem.EvChargeSessions.FirstOrDefault( x => x.ChargeStartDateTimeUTC.HasValue && x.ChargeEndDateTimeUTC.HasValue);
                     cResponse = new SingleTicketEVChargesResponse()
                     {
-                        Id = firstItem.id,
-                        SessionId = firstItem.ChargeSessionId,
-                        SessionStartTimeInUtc = firstItem.ChargeStartDateTimeUTC,
-                        SessionEndTimeInUtc = firstItem.ChargeEndDateTimeUTC,
-                        EvChargingStationID = firstItem.ChargerId,
-                        TotalKwhUsed = firstItem.KWHoursDelivered,
+                        SingleTicketEvId = firstItem.SingleTicketEvId,
+                        ChargeSessionId = firstItem.ChargeSessionId,
+                        ClientId = firstItem.ClientId,
                         TicketId = firstItem.TicketId,
-                        Lpn = firstItem.Lpn
+                        Lpn = firstItem.Lpn,
+                        RawTicketId = firstItem.RawTicketId,
+                        ParkingSpaceId = firstItem.ParkingSpaceId,
+                        SessionStartTimeInUtc = activeSession!.ChargeStartDateTimeUTC,
+                        SessionEndTimeInUtc = activeSession!.ChargeStartDateTimeUTC,
+                        EvChargingFee = activeSession!.Fee,
+                        TotalKWHoursDelivered = activeSession.KWHoursDelivered
                     };
                 }
-            }catch (Exception ex)
+            }catch (Exception)
             {
-                throw ex;
+                throw;
             }
             return cResponse;
-
         }
     }
 }
