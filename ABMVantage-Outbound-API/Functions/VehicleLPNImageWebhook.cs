@@ -3,7 +3,6 @@ using ABMVantage.Data.Interfaces;
 using ABMVantage.Data.Models;
 using ABMVantage_Outbound_API.LPRImageUpload;
 using HttpMultipartParser;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -46,9 +45,7 @@ namespace ABMVantage_Outbound_API.Functions
                 string deCodedString = ExtensionMethods.DecodeBase64(request!.body!);
                 using (var stream = GenerateStreamFromString(deCodedString))
                 {
-                    var parser = await MultipartFormDataParser.ParseAsync(stream, Encoding.UTF7).ConfigureAwait(false);
-                     //string s1Data = GenerateStringFromStream(parser.Files[3].Data, enCoding);
-                    // await _imageBlobClient.UploadBlobAsync("TestFileName.jpeg", parser.Files[3].Data);
+                    var parser = await MultipartFormDataParser.ParseAsync(stream, Encoding.UTF8).ConfigureAwait(false);
                     // Loop through all the files
                     foreach (var file in parser.Files)
                     {
@@ -110,99 +107,6 @@ namespace ABMVantage_Outbound_API.Functions
                 return reader.ReadToEnd();
             }
         }
-
-    }
-
-    public class VehicleLPNImageWebhook_D
-    {
-        private readonly ILogger _logger;
-        private readonly ILPNImageCaptureMetadataService _mService;
-        private readonly IImageBlobClient _imageBlobClient;
-
-        public VehicleLPNImageWebhook_D(ILoggerFactory loggerFactory, ILPNImageCaptureMetadataService mService, IImageBlobClient imageBlobCliet)
-        {
-            _logger = loggerFactory.CreateLogger<VehicleLPNImageWebhook>();
-            _mService = mService;
-            _imageBlobClient = imageBlobCliet;
-        }
-
-        [Function("ABM Vantage - Vehicle LPN Image Capture - DUMMY")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "vehiclelpnImageWebhook_D")] HttpRequest req)
-        {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-            var content = await new StreamReader(req.Body).ReadToEndAsync();
-
-           var image = req.Form.Files["file"];
-
-            try
-            {
-                WebhookInput? request = JsonConvert.DeserializeObject<WebhookInput>(content);
-                string deCodedString = ExtensionMethods.DecodeBase64(content);
-                using (var stream = GenerateStreamFromString(deCodedString))
-                {
-                    var parser = await MultipartFormDataParser.ParseAsync(stream, Encoding.UTF8).ConfigureAwait(false);
-                    // Loop through all the files
-                    foreach (var file in parser.Files)
-                    {
-                        if (file.Name == "Events" && file.FileName.Contains(".json"))
-                        {
-                            string sData = GenerateStringFromStream(file.Data);
-                            EventInputPayload? payload = JsonConvert.DeserializeObject<EventInputPayload>(sData);
-                            var dbInput = new LPNImageCaptureMetaData()
-                            {
-                                EventName = payload!.EventName,
-                                UID = payload!.UID,
-                                AreaType = payload.AreaType,
-                                Mode = payload.Mode,
-                                EnterUTC = payload.EnterUTC,
-                                ExitUTC = payload!.ExitUTC,
-                                TimeStampUTC = payload!.TimeStampUTC,
-                                LPRTimeStampUTC = payload!.LPR!.LPRTimeStampUTC,
-                                LPR = payload!.LPR!.LPR,
-                                LPRCode = payload!.LPR!.LPRCode,
-                                LPN = payload!.LPR!.LPN,
-                                Occupied = payload!.LPR!.Occupied,
-                                CreatedDate = DateTime.Now,
-                                CreatedBy = "VehicleLPNImageWebhook-AzureFunction"
-                            };
-                            _mService.Insert(dbInput);
-                        }
-                        else if (file.Name == "image" && file.FileName.Contains(".png"))
-                        {
-                            string sfileName = file.FileName.Replace(".png", ".jpeg");
-                            await _imageBlobClient.UploadBlobAsync(sfileName, file.Data);
-                        }
-                    } 
-                } 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(VehicleLPNImageWebhook)} Missing or invalid request object {ex.Message}");
-                return new BadRequestObjectResult("Missing or invalid request object.");
-
-            }
-            return new OkObjectResult("Success");
-        }
-
-        public static Stream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream, Encoding.Default);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-
-        public static string GenerateStringFromStream(Stream stream)
-        {
-            stream.Position = 0;
-            using (StreamReader reader = new StreamReader(stream, Encoding.Default))
-            {
-                return reader.ReadToEnd();
-            }
-        }
-
     }
 
     public static class ExtensionMethods
