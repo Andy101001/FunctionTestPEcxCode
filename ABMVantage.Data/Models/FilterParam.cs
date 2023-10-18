@@ -57,9 +57,9 @@
     {
         public string FacilityId { get; set; }
         public string FacilityName { get; set; }
-        public string LevelId { get; set; }
-        public string Level { get; set; }
-        public int Id { get; set; }
+        public string? LevelId { get; set; }
+        public string? Level { get; set; }
+        public int? Id { get; set; }
         public string Name { get; set; }
     }
 
