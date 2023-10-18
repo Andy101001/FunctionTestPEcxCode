@@ -124,7 +124,7 @@
                 //bug:5723 dated: 08/30/2023
                 var result = sqlContext.OccupancyDetailSQLData.Where(x => facilities!.Contains(x.FacilityId!)
                     && levels!.Contains(x.LevelId!)
-                    //&& products!.Contains(x.ProductId!.Value)
+                    && products!.Contains(x.ProductId!)
                       && x.BeginningOfHour >= fromDate && x.BeginningOfHour != null &&
                       x.BeginningOfHour <= toDate
                       ).ToList();

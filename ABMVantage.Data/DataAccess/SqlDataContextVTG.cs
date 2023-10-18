@@ -50,6 +50,8 @@ namespace ABMVantage.Data.DataAccess
             //Other
             modelBuilder.Entity<FacilityLevelProductSQL>().HasKey(c => c.Id);
             modelBuilder.Entity<RptDataReferesh>().HasKey(c => c.Id);
+            //LPNImageCaptureData
+            modelBuilder.Entity<LPNImageCaptureMetaData>().HasKey(c => c.Id);
             
         }
 
@@ -86,6 +88,7 @@ namespace ABMVantage.Data.DataAccess
         //RptDataReferesh
         public DbSet<RptDataReferesh> RptDataRefereshSQlData { get; set; }
 
+        public DbSet<LPNImageCaptureMetaData> LPNImageCaptureMetaData { get;set; }
 
 
 

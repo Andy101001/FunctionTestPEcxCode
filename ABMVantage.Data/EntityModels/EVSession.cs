@@ -1,16 +1,43 @@
-﻿using Newtonsoft.Json;
+﻿using ABMVantage.Data.Models;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace ABMVantage.Data.EntityModels
 {
-    public class EVSession
+    public class SingleTicketEV
     {
         [Key]
-        [JsonProperty("id")]
-        public string id { get; set; }
+        [JsonProperty("SingleTicketEvId")]
+        public string? SingleTicketEvId { get; set; }
 
         [JsonProperty("ChargeSessionId")]
         public string? ChargeSessionId { get; set; }
+
+        [JsonProperty("ClientId")]
+        public string? ClientId { get; set; }
+
+        [JsonProperty("Lpn")]
+        public string? Lpn { get; set; }
+
+        [JsonProperty("ParkingSpaceId")]
+        public string? ParkingSpaceId { get; set; }
+
+        [JsonProperty("RawTicketId")]
+        public string? RawTicketId { get; set; }
+
+        [JsonProperty("TicketId")]
+        public string? TicketId { get; set; }
+
+        [JsonProperty("EvChargeSessions")]
+        public List<EvChargeSession> EvChargeSessions { get; set; } = new ();
+
+    }
+
+
+    public class EvChargeSession
+    {
+        [JsonProperty("KWHoursDelivered")]
+        public double KWHoursDelivered { get; set; }
 
         [JsonProperty("ChargeStartDateTimeUTC")]
         public DateTime? ChargeStartDateTimeUTC { get; set; }
@@ -18,29 +45,12 @@ namespace ABMVantage.Data.EntityModels
         [JsonProperty("ChargeEndDateTimeUTC")]
         public DateTime? ChargeEndDateTimeUTC { get; set; }
 
-        [JsonProperty("TimeStampUTC")]
-        public DateTime? TimeStampUTC { get; set; }
-
-        [JsonProperty("ChargerId")]
-        public string? ChargerId { get; set; }
-
-        [JsonProperty("ClientId")]
-        public string? ClientId { get; set; }
-
-        [JsonProperty("KWHoursDelivered")]
-        public double KWHoursDelivered { get; set; }
-
-        [JsonProperty("Lpn")]
-        public string? Lpn { get; set; }
-
         [JsonProperty("ParkingSpace")]
         public string? ParkingSpace { get; set; }
 
-        [JsonProperty("ReservationId")]
-        public string? ReservationId { get; set; }
-
-        [JsonProperty("TicketId")]
-        public string? TicketId { get; set; }
+        [JsonProperty("Fee")]
+        public double? Fee { get; set; }
 
     }
+
 }
