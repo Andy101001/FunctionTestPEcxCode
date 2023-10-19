@@ -34,13 +34,16 @@ namespace ABMVantage.Data.Service
                 var custBuList = request.BUs.Select(x => x.Bu).ToArray();
 
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
+               
                 var rawData = sqlContext.filterDataSQLData;
                 result.Facilities = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode)).GroupBy(g => new { g.FacilityId, g.FacilityName }).Select(f => new FacilityData { Id = f.Key.FacilityId, Name = f.Key.FacilityName }).ToList().Distinct();
-                result.Levels = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode) /*&& x.LevelId !=null*/).Select(l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, Id = l.LevelId, Level = l.Level }).Distinct().ToList();
-                //var firstFacility = result.Facilities.FirstOrDefault();
-                //levels.Insert(0, new LevelData { FacilityId = firstFacility.Id, FacilityName = string.Empty, Id = null, Level = "Show items with no associated Level" });
-                result.Products = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode) && x.ProductId != null).Select(l => new ProductData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, LevelId = l.LevelId, Level = l.Level, Id = l.ProductId, Name = l.ProductName!}).Distinct().ToList();
-                
+                var levels = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode) && x.LevelId != null).Select(l => new LevelData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, Id = l.LevelId, Level = l.Level }).Distinct().ToList();
+                var firstFacility = result.Facilities.FirstOrDefault();
+                levels.Insert(0, new LevelData { FacilityId = firstFacility.Id, FacilityName = string.Empty, Id = null, Level = "Show items with no associated Level" });
+                result.Levels = levels;
+                result.Products = rawData.Where(x => x.CustomerId == request.CustomerId && custBuList.Contains(x.BuCode) && x.LevelId != null && x.ProductId != null).Select(l => new ProductData { FacilityId = l.FacilityId, FacilityName = l.FacilityName, LevelId = l.LevelId, Level = l.Level, Id = l.ProductId, Name = l.ProductName! }).ToList().Distinct();
+
+
             }
             catch (Exception ex)
             {
