@@ -86,7 +86,7 @@
                     && levels!.Contains(x.LevelId!)
                       && products!.Contains(x.ProductId!)
                       && (x.TransactionDate>= fromDate && x.TransactionDate != null &&
-                      x.TransactionDate < toDate
+                      x.TransactionDate < toDate && x.Duration != null
                       )).GroupBy(x => new { x.Duration }).Select(g =>
                  new OccWeeklyOccByDuration
                  {
