@@ -172,7 +172,7 @@
                            Month = g.Key.ToString("MMM"),
                            //BgtVariance = g.Sum(x => x.BudgetedRevenue) > 0 ? ((g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue)) / g.Sum(x => x.BudgetedRevenue)) : 0,
                            //Bug # 5710 desc: Budget Vs Actual Variance Card shows percentage when it should show a number
-                           BgtVariance = g.Sum(x => x.BudgetedRevenue) > 0 ? ((g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue))) : 0,
+                           BgtVariance = g.Sum(x => x.Revenue) - g.Sum(x => x.BudgetedRevenue),
                        }
                        ).OrderBy(x => x.FirstDayOfMonth).ToArray();
 
