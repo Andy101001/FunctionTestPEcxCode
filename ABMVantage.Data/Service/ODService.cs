@@ -174,7 +174,7 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                var toDate = filterParameters!.FromDate;
+                var toDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1); ;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)
