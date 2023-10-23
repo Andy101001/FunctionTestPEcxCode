@@ -72,7 +72,7 @@
 
         public async Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam filterParameters)
         {
-            var occWeeklyOccByDuration = new OccWeeklyOccByDurationList();
+            var occWeeklyOccByDuration = new OccWeeklyOccByDurationList() { IsDataForOneDate = true };
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -86,7 +86,7 @@
                     && levels!.Contains(x.LevelId!)
                       && products!.Contains(x.ProductId!)
                       && (x.TransactionDate>= fromDate && x.TransactionDate != null &&
-                      x.TransactionDate < toDate
+                      x.TransactionDate < toDate && x.Duration != null
                       )).GroupBy(x => new { x.Duration }).Select(g =>
                  new OccWeeklyOccByDuration
                  {
@@ -108,7 +108,7 @@
 
         public async Task<OccCurrentList> GetOccCurrent(FilterParam filterParameters)
         {
-            var resultByHourWithZeroes = new OccCurrentList();
+            var resultByHourWithZeroes = new OccCurrentList() { IsDataForOneDate = true };
             try
             {
                 //Requirement expressed by Arjun and captured in story 2976 the data is from the 24 hours preceding the start date
@@ -174,7 +174,7 @@
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
                 var facilities = filterParameters?.Facilities.Select(x => x.Id).ToList();
                 var products = filterParameters?.Products.Select(x => x.Id).ToList();
-                var toDate = filterParameters!.FromDate;
+                var toDate = new DateTime(filterParameters!.FromDate.Year, filterParameters!.FromDate.Month, 1); ;
                 var fromDate = toDate.AddMonths(-13); //13 Months of data going back from start date -story 2977
                 using var sqlContext = _sqlDataContextVTG.CreateDbContext();
                 var result = sqlContext.RevenueTransactionSQLData.Where(x => facilities!.Contains(x.FacilityId!)

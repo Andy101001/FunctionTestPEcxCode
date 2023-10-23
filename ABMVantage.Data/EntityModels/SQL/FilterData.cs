@@ -29,7 +29,7 @@ namespace ABMVantage.Data.EntityModels.SQL
         public string? Level { get; set; }
 
         [Column("ProductId")]
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
 
         [Column("ProductName")]
         public string? ProductName { get; set; }

@@ -36,7 +36,7 @@
         }
         public async Task<DailyAverageOccupancy>? GetDailyAverageOccupancy(FilterParam? filterParameters)
         {
-            DailyAverageOccupancy? dailyAverageOccupancy = new DailyAverageOccupancy() { AverageDailyOccupancyInteger = 0, AverageDailyOccupancyPercentage = 0 };
+            DailyAverageOccupancy? dailyAverageOccupancy = new DailyAverageOccupancy() { AverageDailyOccupancyInteger = 0, AverageDailyOccupancyPercentage = 0, IsDataForOneDate = true };
 
             try
             {
@@ -81,7 +81,7 @@
 
         public async Task<Revenue> GetDailyTotalRevenueAsync(FilterParam filterParameters)
         {
-            var revenue = new Revenue { TotalRevenue = 0 };
+            var revenue = new Revenue { TotalRevenue = 0, IsDataForOneDate = true };
             
             try
             {
@@ -119,7 +119,7 @@
         public async Task<Transaction> GetDailyTransactiontCountAsync(FilterParam filterParameters)
         {
             //int totalTransactionsCount = 0;
-            var trasaction = new Transaction { totalTransactions = 0 };
+            var trasaction = new Transaction { totalTransactions = 0 , IsDataForOneDate = true };
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -140,6 +140,7 @@
                           && (x.TransactionDate >= filterParameters!.FromDate && x.TransactionDate < filterParameters!.ToDate));
 
                 trasaction.totalTransactions = result.Count();
+
             }
             catch (Exception ex)
             {
@@ -150,7 +151,7 @@
         
         public async Task<DashboardDailyReservationCountByHour> GetHourlyReservationsByProduct(FilterParam filterParameters)
         {
-            DashboardDailyReservationCountByHour? dashboardDailyReservationCountByHour = new DashboardDailyReservationCountByHour();
+            DashboardDailyReservationCountByHour? dashboardDailyReservationCountByHour = new DashboardDailyReservationCountByHour() { IsDataForOneDate = true };
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -206,6 +207,7 @@
                 }
 
                 dashboardDailyReservationCountByHour.ReservationsByHour = resultWithGroupingAndZerosForMissingData;
+
             }
             catch (Exception ex)
             {
