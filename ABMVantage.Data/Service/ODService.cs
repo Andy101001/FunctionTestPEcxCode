@@ -72,7 +72,7 @@
 
         public async Task<OccWeeklyOccByDurationList> GetWeeklyOccByDuration(FilterParam filterParameters)
         {
-            var occWeeklyOccByDuration = new OccWeeklyOccByDurationList();
+            var occWeeklyOccByDuration = new OccWeeklyOccByDurationList() { IsDataForOneDate = true };
             try
             {
                 var levels = filterParameters?.ParkingLevels.Select(x => x.Id).ToList();
@@ -108,7 +108,7 @@
 
         public async Task<OccCurrentList> GetOccCurrent(FilterParam filterParameters)
         {
-            var resultByHourWithZeroes = new OccCurrentList();
+            var resultByHourWithZeroes = new OccCurrentList() { IsDataForOneDate = true };
             try
             {
                 //Requirement expressed by Arjun and captured in story 2976 the data is from the 24 hours preceding the start date

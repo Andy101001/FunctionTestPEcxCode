@@ -92,7 +92,7 @@
 
         public async Task<CurrentTransactionList> GetTransacionByHours(FilterParam parameters)
         {
-            var transactions = new CurrentTransactionList();
+            var transactions = new CurrentTransactionList() { IsDataForOneDate = true };
 
             transactions.CurrentTransactions = new List<CurrentTransaction>();
             try
@@ -326,7 +326,7 @@
           
         public async Task<RevenueByProductList> GetRevenueByProductByDays(FilterParam parameters)
         {
-            var revenueProducts = new RevenueByProductList();
+            var revenueProducts = new RevenueByProductList() { IsDataForOneDate = true };
             revenueProducts.RevenueByProducts = new List<RevenueByProduct>();
 
             try

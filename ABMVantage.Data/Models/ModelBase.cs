@@ -10,12 +10,15 @@ namespace ABMVantage.Data.Models
     {
         public DateTime ToDate { get; set; }
         public DateTime FromDate { get; set; }
-
+        public bool IsDataForOneDate { get; set; } = false;
         public string displayTimeFrameText
         {
             get
             {
+                if(!IsDataForOneDate)
                 return $"Data from {this.FromDate.ToShortDateString()} to {this.ToDate.ToShortDateString()}";
+                else
+                   return $"Data on {this.FromDate.ToShortDateString()}";
             }
         }
 
